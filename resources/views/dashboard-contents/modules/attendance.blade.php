@@ -73,8 +73,8 @@
                                     @if($attend->user_id == $my_user->id)
                                         <tr>
                                             <td><input type="checkbox" /></td>
-                                            <td>{{ $attend->time_in; }}</td>
-                                            <td>{{ $attend->time_out; }}</td>
+                                            <td>{{ $attend->time_in }}</td>
+                                            <td>{{ $attend->time_out }}</td>
                                         </tr>
                                     @endif
                                 @endforeach

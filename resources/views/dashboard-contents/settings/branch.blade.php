@@ -48,7 +48,7 @@
                                 @foreach ($branches as $branch)   
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td id="code_{{ $branch->id; }}">{{ $branch->code; }}</td>
+                                        <td id="code_{{ $branch->id }}">{{ $branch->code; }}</td>
                                         <td id="city_{{ $branch->id; }}">{{ $branch->city; }}</td>
                                         <td id="branch_{{ $branch->id; }}">{{ $branch->branch; }}</td>
                                         <td id="address_{{ $branch->id; }}">{{ $branch->address; }}</td>

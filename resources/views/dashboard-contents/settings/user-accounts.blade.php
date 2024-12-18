@@ -56,8 +56,8 @@
                     @foreach ($users as $user)
                     <tr>
                         <td><input type="checkbox" /></td>
-                        <td>{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</td>
-                        <td>{{ $user->username; }}</td>
+                        <td>{{ $user->fname.' '.$user->mname.' '.$user->lname }}</td>
+                        <td>{{ $user->username }}</td>
                         <td>
                         @if($user->usertype == 1)
                             Admin
