@@ -444,15 +444,5 @@ class DatabaseSeeder extends Seeder
             'description' => '-',
         ]);
 
-        /**
-         * OR Management Table Seeder
-         */
-
-        \App\Models\ORManagement::factory()->create([
-            'branch_id' => 1,
-            'program_id' => 1,
-            'or_code' => 'AGD180'
-        ]);
-
     }
 }
