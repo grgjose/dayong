@@ -27,14 +27,22 @@ class MainController extends Controller
             $today = date('Y-m-d');
             $my_user = auth()->user();
 
+            $collections = DB::table('entries')
+            ->where('created_at', '>', $today.' 00:00:00')
+            ->where('created_at', '<', $today.' 23:59:59')->get();
+
             $active_agents = DB::table('users')
             ->where('status', '=', 'active')
             ->count();
 
-            $collections_today = DB::table('entries')
-            ->where('created_at', '>', $today.' 00:00:00')
-            ->where('created_at', '<', $today.' 23:59:59')
-            ->count();
+            $collections_today = $collections->count();
+            $total_col_this_month = 0;
+
+            foreach($collections as $col){
+                if($col->remarks != "REGISTRATION"){
+                    $total_col_this_month = $total_col_this_month + $col->amount;
+                }
+            }
 
             $members_today = DB::table('members')
             ->where('created_at', '>', $today.' 00:00:00')
@@ -55,6 +63,7 @@ class MainController extends Controller
                 'my_user' => $my_user,
                 'active_agents' => $active_agents,
                 'collections_today' => $collections_today,
+                'total_col_this_month' => $total_col_this_month,
                 'members_today' => $members_today,
                 'profit_today' => $profit_today,
             ])

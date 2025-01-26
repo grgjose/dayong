@@ -212,7 +212,7 @@
                   <div class="col-sm-3 col-6">
                     <div class="description-block border-right">
                       <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 17%</span>
-                      <h5 class="description-header">₱1,000,210.43</h5>
+                      <h5 class="description-header">₱{{ $total_col_this_month; }}</h5>
                       <span class="description-text">TOTAL COLLECTION</span>
                     </div>
                     <!-- /.description-block -->

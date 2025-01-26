@@ -265,8 +265,8 @@ class MemberController extends Controller
                 $entry->amount = $validated['registration_fee'];
                 $entry->number_of_payment = 1;
                 $entry->program_id = $validated['program_id'];
-                $entry->month_from = date('YYYY-MM');
-                $entry->month_to = date('YYYY-MM');
+                $entry->month_from = date('Y-m');
+                $entry->month_to = date('Y-m');
                 $entry->is_reactivated = 0;
                 $entry->is_transferred = 0;
                 $entry->remarks = "REGISTRATION";
