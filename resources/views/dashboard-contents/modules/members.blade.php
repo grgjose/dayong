@@ -136,6 +136,13 @@
                                         <label for="app_no">Application #:</label>
                                         <input type="number" class="form-control" id="app_no" name="app_no" placeholder="Enter Application Number">
                                     </div>
+                                    @php
+                                        $curr = date('Y-m-d');
+                                    @endphp
+                                    <div class="form-group col">
+                                        <label for="app_no">Creation Date:</label>
+                                        <input type="date" class="form-control" id="created_at" name="created_at" value="{{ $curr }}">
+                                    </div>
                                 </div>
                             </fieldset>
                             
@@ -344,6 +351,20 @@
                                     <div class="form-group col">
                                         <label for="registration_fee">Registration Fee:</label>
                                         <input type="number" class="form-control" id="registration_fee" name="registration_fee" placeholder="Enter Registration Fee Amount">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col">
+                                        <label for="contact_person_num">Agent:</label>
+                                        <select class="form-control chosen-select" id="agent_id" name="agent_id">
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id; }}">{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="contact_person_num">Incentives (%):</label>
+                                        <input type="text" class="form-control" id="incentive" name="incentive" placeholder="Enter Incentive's Percentage">
                                     </div>
                                 </div>
                             </fieldset>

@@ -72,6 +72,7 @@ class MemberController extends Controller
         if(auth()->check()){
 
             $my_user = auth()->user();
+            $users = DB::table('users')->orderBy('usertype', 'asc')->get();
             $members = DB::table('members')->orderBy('created_at', 'desc')->get();
             $programs = DB::table('programs')->orderBy('code')->get();
             $branches = DB::table('branches')->orderBy('branch')->get();
@@ -83,7 +84,8 @@ class MemberController extends Controller
                 'my_user' => $my_user,
                 'members' => $members,
                 'programs' => $programs,
-                'branches' => $branches
+                'branches' => $branches,
+                'users' => $users,
             ])
             ->with('header_title', 'Membership Registration')
             ->with('subview', 'dashboard-contents.modules.members');

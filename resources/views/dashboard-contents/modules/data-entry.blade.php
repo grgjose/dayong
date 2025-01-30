@@ -231,6 +231,24 @@
                                         <input type="number" class="form-control" id="incentive" name="incentive" onkeyup="enforceMinMax(this)" min="1" max="50">
                                     </div>
                                     <div class="form-group col">
+                                        <label for="fidelity">Fidelity 1-10 (%):</label>
+                                        <input type="number" class="form-control" id="fidelity" name="fidelity" onkeyup="enforceMinMax(this)" min="1" max="10">
+                                    </div>
+                                    <div class="form-group col">
+                                        <div class="custom-control custom-switch custom-switch-on-warning" style="padding-left: 3.25rem; padding-top: 2.25rem;">
+                                            <input type="checkbox" class="custom-control-input" id="reactivated" name="reactivated" value="reactivated">
+                                            <label for="reactivated" class="custom-control-label">Is Reactivated</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col">
+                                        <div class="custom-control custom-switch custom-switch-on-success" style="padding-left: 3.25rem; padding-top: 2.25rem;">
+                                            <input type="checkbox" class="custom-control-input" id="transferred" name="transferred" value="transferred">
+                                            <label for="transferred" class="custom-control-label">Is Transferred</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col">
                                         <label for="remarks">Remarks:</label>
                                         <input type="text" class="form-control" id="remarks" name="remarks" value="">
                                     </div>

@@ -85,14 +85,24 @@ class EntryController extends Controller
                 "program_id" => ['nullable'],
                 "month_from" => ['nullable'],
                 "month_to" => ['nullable'],
+                "incentive" => ['nullable'],
+                "fidelity" => ['nullable'],
+                "reactivated" => ['nullable'],
+                "transferred" => ['nullable'],
                 "remarks" => ['nullable'],
             ]);
+            
+            $my_user = auth()->user();
 
-            //dd($validated["month_from"]);
+            $fids = DB::table('fidelity')->where('user_id', $validated["marketting_agent"])->get();
+            $fid = false;
+            if(count($fids) == 0){ $fid = false; }
+            else { $fid = true; }
 
             $contents = new Entry();
 
             $contents->branch_id = $validated["branch_id"];
+            $contents->encoder_id = $my_user->id;
             $contents->marketting_agent = $validated["marketting_agent"];
             $contents->member_id = $validated["member_id"];
             $contents->or_number = $validated["or_number"];
@@ -101,8 +111,26 @@ class EntryController extends Controller
             $contents->program_id = $validated["program_id"];
             $contents->month_from = $validated["month_from"];
             $contents->month_to = $validated["month_to"];
+            $contents->incentives = $validated["incentive"];
+
+            if($fid == true) {
+                $contents->incentives_total = $validated["amount"] * ($validated["incentives"] / 100);
+                $contents->incentives_total = $contents->incentives_total - ($contents->incentives_total * 0.1);
+                $contents->net = $validated["amount"] - $contents->incentives_total;
+                $contents->fidelity = ($contents->incentives_total * 0.1);
+            } else {
+                $contents->incentives_total = $validated["amount"] * ($validated["incentive"] / 100);
+                $contents->net = $validated["amount"] - $contents->incentives_total;
+                $contents->fidelity = 0;
+            }
+
             $contents->is_reactivated = 0;
+            if(isset($validated["reactivated"])){ $contents->is_reactivated = 1; }
+
             $contents->is_transferred = 0;
+            if(isset($validated["transferred"])){ $contents->is_transferred = 1; }
+
+            $contents->is_remitted = false;
             $contents->remarks = $validated["remarks"];
 
             $contents->save();

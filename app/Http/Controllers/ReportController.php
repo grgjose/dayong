@@ -64,6 +64,21 @@ class ReportController extends Controller
             // Collection
             $collection = DB::table('entries')->where('created_at', '<', date('Y-m-d'));
 
+            /*
+            
+            $users = DB::table('users')
+            ->join('entries', 'users.id', '=', 'entries.marketting_agent')
+            ->select([
+                'users.name as user_name',
+                DB::raw('COUNT(DISTINCT entries.account_name) as number_of_accounts'),
+                DB::raw('SUM(entries.amount) as total_amount'),
+                DB::raw('MIN(entries.created_at) as created_at')
+            ])
+            ->groupBy('users.id', 'users.name')
+            ->get();
+        
+            */
+
             $filename = 'daily_report_'. date('m_d_Y') .'.pdf';
 
             $pdf = Pdf::loadView('forms.daily_report', [
@@ -73,6 +88,8 @@ class ReportController extends Controller
                 'date' => date('m/d/Y'),
                 'branch' => $name,
                 'cashier' => $my_user->lname.' '.$my_user->fname,
+                'ns_result' => array(),
+                'col_result' => array(),
             ])->setOptions(['defaultFont' => 'Courier']);
 
             $content = $pdf->download()->getOriginalContent();
@@ -80,6 +97,7 @@ class ReportController extends Controller
 
         } else if($validated["type"] == "weekly"){
 
+            
         } else if($validated["type"] == "monthly"){
 
         }

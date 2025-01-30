@@ -66,23 +66,20 @@
           </div>
           <h4>D' SAN ROQUE DAYONG PROVIDERS INC.</h4>
           <p>BRGY. 74-A MATINA CROSSING DAVAO CITY</p>
-          <p>STATEMENT OF ACCOUNT FOR {{ strtoupper($monthAndYear); }}</p>
+          <p>DAILY REPORT FOR {{ strtoupper($date); }}</p>
         </div>
 
         <div class="details">
             <table>
                 <tr>
                     <th>Date</th>
-                    <td>{{ strtoupper($monthAndYear.' '.$date); }}</td>
+                    <td>{{ strtoupper($date); }}</td>
                 </tr>
                 <tr>
                     <th>Branch Name</th>
                     <td>
+                        {{ $branch; }}
                     </td>
-                </tr>
-                <tr>
-                    <th>Members Name</th>
-                    <td></td>
                 </tr>
                 <tr>
                     <th>Cashiers Name</th>
@@ -92,67 +89,61 @@
             </table>
         </div>
         <div class="transactions">
-            <h2>Transaction Details</h2>
+            <h2>New Sales</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>Date of Payment</th>
-                        <th>OR #</th>
-                        <th>Number of Payment</th>
-                        <th>Amount</th>
-                        <th>Months</th>
-                        <th>Remarks</th>
+                        <th>Name</th>
+                        <th>Accounts</th>
+                        <th>Gross</th>
+                        <th>Incentives</th>
+                        <th>Net</th>
+                        <th>Fidelity</th>
                     </tr>
                 </thead>
                 <tbody>
-
+                    @foreach($ns_result as $nsr)
+                        <tr>
+                            <th>{{ $nsr->name; }}</th>
+                            <th>{{ $nsr->accounts; }}</th>
+                            <th>{{ $nsr->gross; }}</th>
+                            <th>{{ $nsr->incentives; }}</th>
+                            <th>{{ $nsr->net; }}</th>
+                            <th>{{ $nsr->fidelity; }}</th>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
-        </div>
+        </div>        
         <div class="transactions">
-            <h2>Transaction Details</h2>
+            <h2>Collections</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Amount</th>
+                        <th>Name</th>
+                        <th>Accounts</th>
+                        <th>Gross</th>
+                        <th>Incentives</th>
+                        <th>Net</th>
+                        <th>Fidelity</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>June 1, 2024</td>
-                        <td>Payment Received</td>
-                        <td>-$200.00</td>
-                    </tr>
-                    <tr>
-                        <td>June 5, 2024</td>
-                        <td>Purchase at ABC Store</td>
-                        <td>$50.00</td>
-                    </tr>
-                    <tr>
-                        <td>June 7, 2024</td>
-                        <td>Purchase at DEF Store</td>
-                        <td>$30.00</td>
-                    </tr>
-                    <tr>
-                        <td>June 10, 2024</td>
-                        <td>Purchase at XYZ Store</td>
-                        <td>$100.00</td>
-                    </tr>
-                    <tr>
-                        <td>June 12, 2024</td>
-                        <td>Refund from DEF Store</td>
-                        <td>-$30.00</td>
-                    </tr>
-                    <tr>
-                        <td>June 15, 2024</td>
-                        <td>Purchase at GHI Store</td>
-                        <td>$50.00</td>
-                    </tr>
+                    @foreach($col_result as $colr)
+                        <tr>
+                            <th>{{ $colr->name; }}</th>
+                            <th>{{ $colr->accounts; }}</th>
+                            <th>{{ $colr->gross; }}</th>
+                            <th>{{ $colr->incentives; }}</th>
+                            <th>{{ $colr->net; }}</th>
+                            <th>{{ $colr->fidelity; }}</th>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
+
+
         <!-- div class="details">
             <h2>Branches</h2>
             <table>

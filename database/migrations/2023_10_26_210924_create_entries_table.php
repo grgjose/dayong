@@ -14,19 +14,23 @@ return new class extends Migration
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
             $table->integer("branch_id");
+            $table->integer("encoder_id");
             $table->integer("marketting_agent");
             $table->integer("member_id");
             $table->string("or_number");
-            $table->string("amount");
+            $table->double("amount");
             $table->integer("number_of_payment");
             $table->string("program_id");
             $table->string("month_from")->nullable();
             $table->string("month_to")->nullable();
             $table->integer("incentives");
+            $table->double("incentives_total");
+            $table->double("net");
             $table->integer("fidelity");
+            $table->double("fidelity_total");
             $table->integer("is_reactivated");
             $table->integer("is_transferred");
-            $table->integer("is_remitted");
+            $table->boolean("is_remitted");
             $table->string("remarks")->nullable();
             $table->timestamps();
         });

@@ -282,7 +282,7 @@ class DatabaseSeeder extends Seeder
 
         /**
          * Branches Table Seeder
-         */
+         */ 
 
         \App\Models\Branch::factory()->create([
             'code' => '0001',
@@ -444,5 +444,11 @@ class DatabaseSeeder extends Seeder
             'description' => '-',
         ]);
 
+        /**
+         * Members Table Seeder
+         */ 
+
+         //\App\Models\Member::factory(10)->create();
+        
     }
 }
