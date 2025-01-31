@@ -102,16 +102,39 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $all_ns_number_of_accounts = 0;
+                        $all_ns_total_amount = 0;
+                        $all_ns_total_incentives = 0;
+                        $all_ns_total_net = 0;
+                        $all_ns_total_fidelity = 0;
+
+                    @endphp
                     @foreach($results_ns as $nsr)
                         <tr>
-                            <th>{{ $nsr->user_name; }}</th>
-                            <th>{{ $nsr->number_of_accounts; }}</th>
-                            <th>{{ $nsr->total_amount; }}</th>
-                            <th>{{ $nsr->total_incentives; }}</th>
-                            <th>{{ $nsr->total_net; }}</th>
-                            <th>{{ $nsr->total_fidelity; }}</th>
+                            <td>{{ $nsr->user_name; }}</td>
+                            <td>{{ $nsr->number_of_accounts; }}</td>
+                            <td>{{ $nsr->total_amount; }}</td>
+                            <td>{{ $nsr->total_incentives; }}</td>
+                            <td>{{ $nsr->total_net; }}</td>
+                            <td>{{ $nsr->total_fidelity; }}</td>
                         </tr>
+                        @php
+                            $all_ns_number_of_accounts = $all_ns_number_of_accounts + $nsr->number_of_accounts;
+                            $all_ns_total_amount = $all_ns_total_amount + $nsr->total_amount;
+                            $all_ns_total_incentives = $all_ns_total_incentives + $nsr->total_incentives;
+                            $all_ns_total_net = $all_ns_total_net + $nsr->total_net;
+                            $all_ns_total_fidelity = $all_ns_total_fidelity + $nsr->total_fidelity;
+                        @endphp
                     @endforeach
+                    <tr>
+                        <th>TOTAL:</td>
+                        <td>{{ $all_ns_number_of_accounts; }}</td>
+                        <td>{{ $all_ns_total_amount; }}</td>
+                        <td>{{ $all_ns_total_incentives; }}</td>
+                        <td>{{ $all_ns_total_net; }}</td>
+                        <td>{{ $all_ns_total_fidelity; }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>        
@@ -129,16 +152,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($col_result as $colr)
+                    @php
+                        $all_col_number_of_accounts = 0;
+                        $all_col_total_amount = 0;
+                        $all_col_total_incentives = 0;
+                        $all_col_total_net = 0;
+                        $all_col_total_fidelity = 0;
+                    @endphp
+                    @foreach($results_col as $colr)
                         <tr>
-                            <th>{{ $colr->name; }}</th>
-                            <th>{{ $colr->accounts; }}</th>
-                            <th>{{ $colr->gross; }}</th>
-                            <th>{{ $colr->incentives; }}</th>
-                            <th>{{ $colr->net; }}</th>
-                            <th>{{ $colr->fidelity; }}</th>
+                            <td>{{ $colr->user_name; }}</td>
+                            <td>{{ $colr->number_of_accounts; }}</td>
+                            <td>{{ $colr->total_amount; }}</td>
+                            <td>{{ $colr->total_incentives; }}</td>
+                            <td>{{ $colr->total_net; }}</td>
+                            <td>{{ $colr->total_fidelity; }}</td>
                         </tr>
+                        @php
+                            $all_col_number_of_accounts = $all_col_number_of_accounts + $colr->number_of_accounts;
+                            $all_col_total_amount = $all_col_total_amount + $colr->total_amount;
+                            $all_col_total_incentives = $all_col_total_incentives + $colr->total_incentives;
+                            $all_col_total_net = $all_col_total_net + $colr->total_net;
+                            $all_col_total_fidelity = $all_col_total_fidelity + $colr->total_fidelity;
+                        @endphp
                     @endforeach
+                    <tr>
+                        <th>TOTAL:</td>
+                        <td>{{ $all_col_number_of_accounts; }}</td>
+                        <td>{{ $all_col_total_amount; }}</td>
+                        <td>{{ $all_col_total_incentives; }}</td>
+                        <td>{{ $all_col_total_net; }}</td>
+                        <td>{{ $all_col_total_fidelity; }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -177,20 +222,28 @@
             <h2>Summary</h2>
             <table>
                 <tr>
-                    <th>Previous Balance</th>
-                    <td>$500.00</td>
+                    <th>Total Accounts</th>
+                    <td>{{ $all_col_number_of_accounts + $all_ns_number_of_accounts; }}</td>
                 </tr>
                 <tr>
-                    <th>Payments</th>
-                    <td>$200.00</td>
+                    <th>Total Gross</th>
+                    <td>{{ $all_col_total_amount + $all_ns_total_amount; }}</td>
                 </tr>
                 <tr>
-                    <th>New Charges</th>
-                    <td>$150.00</td>
+                    <th>Total Incentives</th>
+                    <td>{{ $all_col_total_incentives + $all_ns_total_incentives; }}</td>
                 </tr>
                 <tr>
-                    <th>New Balance</th>
-                    <td>$450.00</td>
+                    <th>Total Fid. Bond</th>
+                    <td>{{ $all_col_total_fidelity + $all_ns_total_fidelity; }}</td>
+                </tr>
+                <tr>
+                    <th>Total Net Remittance</th>
+                    <td>{{ $all_col_total_net + $all_ns_total_net; }}</td>
+                </tr>
+                <tr>
+                    <th>Expenses</th>
+                    <td></td>
                 </tr>
             </table>
         </div>

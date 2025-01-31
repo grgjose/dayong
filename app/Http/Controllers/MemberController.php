@@ -257,7 +257,11 @@ class MemberController extends Controller
             $memberProgram->agent_id = $validated['agent_id'];
             $memberProgram->amount = $validated['amount'];
             $memberProgram->incentives = $validated['incentives'];
+            $memberProgram->incentives_total = $memberProgram->amount - ($memberProgram->amount * ($memberProgram->incentives / 100));
             $memberProgram->fidelity = $validated['fidelity'];
+            $memberProgram->fidelity_total = $memberProgram->incentives_total * ($memberProgram->fidelity / 100);
+            $memberProgram->incentives_total = $memberProgram->incentives_total - $memberProgram->fidelity_total;
+            $memberProgram->net = $memberProgram->amount  - $memberProgram->incentives_total - $memberProgram->fidelity_total;
             $memberProgram->contact_person = $validated['contact_person'];
             $memberProgram->contact_person_num = $validated['contact_person_num'];
             $memberProgram->status = "active";

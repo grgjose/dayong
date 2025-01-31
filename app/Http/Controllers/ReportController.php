@@ -76,6 +76,7 @@ class ReportController extends Controller
                 DB::raw('SUM(entries.amount) as total_amount'),
                 DB::raw('SUM(entries.incentives_total) as total_incentives'),
                 DB::raw('SUM(entries.net) as total_net'),
+                DB::raw('SUM(entries.fidelity_total) as total_fidelity'),
                 DB::raw('MIN(entries.created_at) as created_at')
             ])
             ->groupBy('users.id', 'users.lname')

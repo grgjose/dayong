@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer("incentives_total")->nullable();
             $table->integer("fidelity")->nullable();
             $table->integer("fidelity_total")->nullable();
+            $table->integer("net")->nullable();
             $table->string("contact_person")->nullable();
             $table->string("contact_person_num")->nullable();
             $table->string("status")->nullable();
