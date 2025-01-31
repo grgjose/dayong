@@ -363,8 +363,16 @@
                                         </select>
                                     </div>
                                     <div class="form-group col">
+                                        <label for="contact_person_num">Amount Collected:</label>
+                                        <input type="text" class="form-control" id="amount" name="amount" placeholder="Enter Amount">
+                                    </div>
+                                    <div class="form-group col">
                                         <label for="contact_person_num">Incentives (%):</label>
-                                        <input type="text" class="form-control" id="incentive" name="incentive" placeholder="Enter Incentive's Percentage">
+                                        <input type="text" class="form-control" id="incentives" name="incentives" placeholder="Enter Incentive's Percentage">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="contact_person_num">Fidelity (%):</label>
+                                        <input type="text" class="form-control" id="fidelity" name="fidelity" placeholder="Enter Fidelity">
                                     </div>
                                 </div>
                             </fieldset>

@@ -40,6 +40,8 @@ Route::post('/entries/upload', [EntryController::class, 'upload']);
 Route::get('/entries/view/{id}', [EntryController::class, 'viewDetails']);
 Route::get('/entries/edit/{id}', [EntryController::class, 'editDetails']);
 Route::post('/entries/importEntries', [EntryController::class, 'importEntries']);
+Route::get('/entries/getIncentivesMatrix/{id}/{program_id?}', [EntryController::class, 'getIncentivesMatrix']);
+
 
 Route::get('/members', [MemberController::class, 'index']);
 Route::post('/members/store', [MemberController::class, 'store']);

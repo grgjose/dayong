@@ -73,7 +73,7 @@
             <table>
                 <tr>
                     <th>Date</th>
-                    <td>{{ strtoupper($monthAndYear.' '.$date); }}</td>
+                    <td>{{ strtoupper($date); }}</td>
                 </tr>
                 <tr>
                     <th>Branch Name</th>

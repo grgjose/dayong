@@ -117,8 +117,8 @@
                                                 @endif
                                             @endforeach
                                         </td>
-                                        <td>{{ $entry->is_reactivated; }}</td>
-                                        <td>{{ $entry->is_transferred; }}</td>
+                                        <td>{{ ($entry->is_reactivated == 1)?'YES':'NO'; }}</td>
+                                        <td>{{ ($entry->is_transferred)?'YES':'NO'; }}</td>
                                         <td>{{ $entry->remarks; }}</td>
                                         <td>
                                             <button class="btn btn-outline-info class-with-tooltip" data-toggle="modal" data-target="#ViewModal"
@@ -170,7 +170,7 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="member_id">Member:</label>
-                                        <select class="form-control chosen-select" id="member_id" name="member_id" onload="checkAutoFills(this.value)" onchange="checkAutoFills(this.value)">
+                                        <select class="form-control chosen-select" id="member_id" name="member_id" onload="checkAutoFills()" onchange="checkAutoFills()">
                                             @foreach($members as $member)
                                                 <option value="{{ $member->id; }}">{{ $member->fname.' '.$member->mname.' '.$member->lname; }}</option>
                                             @endforeach
@@ -196,7 +196,7 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="branch_id">Program:</label>
-                                        <select class="form-control chosen-select" id="program_id" name="program_id">
+                                        <select class="form-control chosen-select" id="program_id" name="program_id" onload="checkAutoFills()" onchange="checkAutoFills()">
                                             @foreach($programs as $program)
                                                 <option value="{{ $program->id; }}">{{ $program->code; }}</option>
                                             @endforeach
@@ -228,7 +228,7 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="incentive">Incentive 1-50 (%):</label>
-                                        <input type="number" class="form-control" id="incentive" name="incentive" onkeyup="enforceMinMax(this)" min="1" max="50">
+                                        <input type="number" class="form-control" id="incentives" name="incentives" onkeyup="enforceMinMax(this)" min="1" max="50">
                                     </div>
                                     <div class="form-group col">
                                         <label for="fidelity">Fidelity 1-10 (%):</label>
@@ -421,6 +421,9 @@
     </div>
 </div>
 
+
+<span style="display: none;" id="temp"></span>
+
 <script>
 
     function hideForm()
@@ -459,9 +462,19 @@
         $("#delete_id").val(id);
     }
 
-    function checkAutoFills(id)
+    function checkAutoFills()
     {
-        window.alert(id);
+
+        $( "#temp" ).load( "/entries/getIncentivesMatrix/"+$("#member_id").val()+"/"+$("#program_id").val(), function( response, status, xhr ) {
+            if ( status == "error" ) {
+                var msg = "Sorry but there was an error: ";
+                $( "#error" ).html( msg + xhr.status + " " + xhr.statusText );
+                window.alert(msg + xhr.status + " " + xhr.statusText);
+            }
+            if ( status == "success" ) {
+                $("#incentives").val(response);
+            }
+        });
     }
 
     function formatDate(date)

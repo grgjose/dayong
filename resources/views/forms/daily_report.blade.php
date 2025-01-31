@@ -102,14 +102,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($ns_result as $nsr)
+                    @foreach($results_ns as $nsr)
                         <tr>
-                            <th>{{ $nsr->name; }}</th>
-                            <th>{{ $nsr->accounts; }}</th>
-                            <th>{{ $nsr->gross; }}</th>
-                            <th>{{ $nsr->incentives; }}</th>
-                            <th>{{ $nsr->net; }}</th>
-                            <th>{{ $nsr->fidelity; }}</th>
+                            <th>{{ $nsr->user_name; }}</th>
+                            <th>{{ $nsr->number_of_accounts; }}</th>
+                            <th>{{ $nsr->total_amount; }}</th>
+                            <th>{{ $nsr->total_incentives; }}</th>
+                            <th>{{ $nsr->total_net; }}</th>
+                            <th>{{ $nsr->total_fidelity; }}</th>
                         </tr>
                     @endforeach
                 </tbody>

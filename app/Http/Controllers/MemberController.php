@@ -109,6 +109,7 @@ class MemberController extends Controller
                 "branch_id" => ['required'],
                 "or_number" => ['required'],
                 "app_no" => ['required'],
+                "created_at" => ['required'],
 
                 // Personal Information
                 "fname" => ['required'],
@@ -157,6 +158,10 @@ class MemberController extends Controller
                 "contact_person" => ['required'],
                 "contact_person_num" => ['required'],
                 "registration_fee" => ['nullable'],
+                "agent_id" => ['nullable'],
+                "amount" => ['nullable'],
+                "incentives" => ['nullable'],
+                "fidelity" => ['nullable'],
 
             ]);
 
@@ -249,6 +254,10 @@ class MemberController extends Controller
             $memberProgram->beneficiaries_ids = $beneficiaries_ids;
             $memberProgram->or_number = $validated['or_number'];
             $memberProgram->registration_fee = $validated['registration_fee'];
+            $memberProgram->agent_id = $validated['agent_id'];
+            $memberProgram->amount = $validated['amount'];
+            $memberProgram->incentives = $validated['incentives'];
+            $memberProgram->fidelity = $validated['fidelity'];
             $memberProgram->contact_person = $validated['contact_person'];
             $memberProgram->contact_person_num = $validated['contact_person_num'];
             $memberProgram->status = "active";
@@ -257,11 +266,12 @@ class MemberController extends Controller
 
             // Save Request Data (Entry)
 
+            /*
             if($validated['registration_fee'] != ""){
                 $entry = new Entry();
 
                 $entry->branch_id = $validated['branch_id'];;
-                $entry->marketting_agent = auth()->id();
+                $entry->marketting_agent = $validated['agent_id'];
                 $entry->member_id = $member_id;
                 $entry->or_number = $validated["or_number"];
                 $entry->amount = $validated['registration_fee'];
@@ -275,6 +285,7 @@ class MemberController extends Controller
 
                 $entry->save();
             }
+            */
 
             // Back to View
             return redirect('/members')->with("success_msg", $member->lname." Member Created Successfully");

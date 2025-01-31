@@ -85,7 +85,7 @@ class EntryController extends Controller
                 "program_id" => ['nullable'],
                 "month_from" => ['nullable'],
                 "month_to" => ['nullable'],
-                "incentive" => ['nullable'],
+                "incentives" => ['nullable'],
                 "fidelity" => ['nullable'],
                 "reactivated" => ['nullable'],
                 "transferred" => ['nullable'],
@@ -111,7 +111,7 @@ class EntryController extends Controller
             $contents->program_id = $validated["program_id"];
             $contents->month_from = $validated["month_from"];
             $contents->month_to = $validated["month_to"];
-            $contents->incentives = $validated["incentive"];
+            $contents->incentives = $validated["incentives"];
 
             if($fid == true) {
                 $contents->incentives_total = $validated["amount"] * ($validated["incentives"] / 100);
@@ -119,7 +119,7 @@ class EntryController extends Controller
                 $contents->net = $validated["amount"] - $contents->incentives_total;
                 $contents->fidelity = ($contents->incentives_total * 0.1);
             } else {
-                $contents->incentives_total = $validated["amount"] * ($validated["incentive"] / 100);
+                $contents->incentives_total = $validated["amount"] * ($validated["incentives"] / 100);
                 $contents->net = $validated["amount"] - $contents->incentives_total;
                 $contents->fidelity = 0;
             }
@@ -472,7 +472,7 @@ class EntryController extends Controller
     }
 
     public function getIncentivesMatrix($id, $program_id){
-        $matrix = DB::table('matrix')->where('program_id', $program_id)->get();
+        $matrix = DB::table('matrix')->where('program_id', $program_id)->orderBy('program_id')->get();
         $entries = DB::table('entries')
             ->where('member_id', $id)
             ->where('program_id', $program_id)
@@ -480,17 +480,22 @@ class EntryController extends Controller
             ->get();
         $nop = count($entries) + 1;
 
-        if(count($matrix) == 0){ return null; }
+        if(count($matrix) == 0){ return ""; }
 
         foreach($matrix as $m){
-            if(strpos($m->nop, $nop) != false){
-                return $m->percentage;
-            } else if(strpos($m->nop, "up") != false){
-                return $m->percentage;
+            $arr = explode('-', $m->nop);
+            if($arr[0] != 'up' && $arr[1] != 'up'){
+                if((int)$arr[0] <= (int)$nop && (int)$arr[1] >= (int)$nop){
+                    return $m->percentage;
+                }
+            } else {
+                if((int)$arr[0] >= $nop){
+                    return $m->percentage;
+                }
             }
         }
 
-        return null;
+        return "";
     }
 
 }
