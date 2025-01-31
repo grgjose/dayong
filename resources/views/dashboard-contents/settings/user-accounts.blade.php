@@ -66,7 +66,7 @@
                             Encoder
                         @endif  
                         @if($user->usertype == 3)
-                            Collector
+                            Marketting Agent
                         @endif  
                         </td>
                         <td>{{ $user->email; }}</td>
@@ -118,7 +118,7 @@
                                 <div class="form-group col">
                                     <label for="usertype">Usertype:</label>
                                     <select name="usertype" class="form-control chosen-select">
-                                        <option value="3">Collector</option>
+                                        <option value="3">Marketting Agent</option>
                                         <option value="2">Encoder</option>
                                         <option value="1">Admin</option>
                                     </select>
