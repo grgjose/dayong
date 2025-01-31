@@ -319,6 +319,7 @@
               <form action="/logout" method="post" id="logoutForm" style="display: none;">
                 @csrf
               </form>
+              @if($my_user->usertype == 1)
               <li class="nav-header">ADDITIONAL SETTINGS</li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -367,6 +368,7 @@
                   </li>
                 </ul>
               </li>
+              @endif
             </ul>
           </nav>
           <!-- /.sidebar-menu -->
