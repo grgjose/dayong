@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Fidelity extends Model
+class Matrix extends Model
 {
     use HasFactory;
 
-    protected $table = 'fidelity';
+    protected $table = 'matrix';
 }

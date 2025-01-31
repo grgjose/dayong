@@ -10,6 +10,7 @@ use App\Http\Controllers\ExcelNewSalesController;
 use App\Http\Controllers\FidelityController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\MatrixController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
@@ -87,6 +88,12 @@ Route::post('/user-accounts/store', [UserController::class, 'store']);
 Route::put('/user-accounts/update/{id}', [UserController::class, 'update']);
 Route::post('/user-accounts/destroy', [UserController::class, 'destroy']);
 Route::post('/user-accounts/change_pic', [UserController::class, 'change']);
+
+Route::get('/matrix', [MatrixController::class, 'index']);
+Route::post('/matrix/store', [MatrixController::class, 'store']);
+Route::put('/matrix/update/{id}', [MatrixController::class, 'update']);
+Route::post('/matrix/destroy', [MatrixController::class, 'destroy']);
+Route::post('/matrix/change_pic', [MatrixController::class, 'change']);
 
 Route::get('/excel-collection', [ExcelCollectionController::class, 'index']);
 Route::get('/excel-collection/retrieve', [ExcelCollectionController::class, 'retrieve']);

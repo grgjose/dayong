@@ -348,6 +348,12 @@
                     </a>
                   </li>
                   <li class="nav-item  tab-2">
+                    <a href="/matrix" class="nav-link">
+                      <i class="fas fa-percent nav-icon"></i>
+                      <p>Incentives Matrix</p>
+                    </a>
+                  </li>
+                  <li class="nav-item  tab-2">
                     <a href="/excel-collection" class="nav-link">
                       <i class="fas fa-donate nav-icon"></i>
                       <p>Excel Collection</p>

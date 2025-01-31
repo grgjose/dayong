@@ -471,4 +471,26 @@ class EntryController extends Controller
         return $excelEpoch->format('Y-m-d H:i:s');
     }
 
+    public function getIncentivesMatrix($id, $program_id){
+        $matrix = DB::table('matrix')->where('program_id', $program_id)->get();
+        $entries = DB::table('entries')
+            ->where('member_id', $id)
+            ->where('program_id', $program_id)
+            ->where('remarks', "!=", "REGISTRATION")
+            ->get();
+        $nop = count($entries) + 1;
+
+        if(count($matrix) == 0){ return null; }
+
+        foreach($matrix as $m){
+            if(strpos($m->nop, $nop) != false){
+                return $m->percentage;
+            } else if(strpos($m->nop, "up") != false){
+                return $m->percentage;
+            }
+        }
+
+        return null;
+    }
+
 }
