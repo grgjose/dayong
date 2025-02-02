@@ -452,192 +452,224 @@ class DatabaseSeeder extends Seeder
             'program_id' => 1,
             'nop' => '1-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 2,
             'nop' => '1-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 5,
             'nop' => '1-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 8,
             'nop' => '1-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 9,
             'nop' => '1-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 6,
             'nop' => '1-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 3,
             'nop' => '1-12',
             'percentage' => '50',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 24,
             'nop' => '1-12',
             'percentage' => '35',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 26,
             'nop' => '1-12',
             'percentage' => '35',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 25,
             'nop' => '1-12',
             'percentage' => '35',
+            'is_reactivated' => false,
         ]);
         
         \App\Models\Matrix::factory()->create([
             'program_id' => 21,
             'nop' => '1-12',
             'percentage' => '35',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 11,
             'nop' => '1',
             'percentage' => '50',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 12,
             'nop' => '1',
             'percentage' => '50',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 7,
             'nop' => '1',
             'percentage' => '50',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 7,
             'nop' => '1',
             'percentage' => '50',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 1,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 2,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 5,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 8,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 9,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 6,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 3,
             'nop' => '13-up',
             'percentage' => '12',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 24,
             'nop' => '13-up',
             'percentage' => '10',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 26,
             'nop' => '13-up',
             'percentage' => '10',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 25,
             'nop' => '13-up',
             'percentage' => '10',
+            'is_reactivated' => false,
         ]);
         
         \App\Models\Matrix::factory()->create([
             'program_id' => 21,
             'nop' => '13-up',
             'percentage' => '12',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 11,
             'nop' => '2-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 12,
             'nop' => '2-12',
             'percentage' => '40',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 7,
             'nop' => '2-12',
             'percentage' => '35',
+            'is_reactivated' => false,
         ]);
         
         \App\Models\Matrix::factory()->create([
             'program_id' => 11,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 12,
             'nop' => '13-up',
             'percentage' => '15',
+            'is_reactivated' => false,
         ]);
 
         \App\Models\Matrix::factory()->create([
             'program_id' => 7,
             'nop' => '13-up',
             'percentage' => '10',
+            'is_reactivated' => false,
         ]);
 
         /**

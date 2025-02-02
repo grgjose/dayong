@@ -76,7 +76,7 @@
 
                 <div class="card card-primary" id="form" style="display: none;">
                     <div class="card-header">
-                        <h3 class="card-title" style="padding-top: 10px;">Create Program Form</h3>
+                        <h3 class="card-title" style="padding-top: 10px;">Create Matrix Item Form</h3>
                         <button class="btn btn-secondary float-right" style="color: white;" onclick="hideForm()">
                             <span class="fas fa-times"></span> Cancel
                         </button>
@@ -88,35 +88,31 @@
                                 <legend class="h5 pl-2 pr-2" style="width: auto; !important">Program Details</legend>
                                 <div class="row">
                                     <div class="form-group col">
-                                        <label for="code">Code:</label>
-                                        <input type="text" class="form-control" id="code" name="code" value="" required>
-                                    </div>
-                                </div> <br>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="description">Description:</label>
-                                        <input type="text" class="form-control" id="description" name="description" value="" required>
-                                    </div>
-                                </div> <br>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="with_beneficiaries">With Beneficiaries:</label>
-                                        <select type="text" class="form-control chosen-select" id="with_beneficiaries" name="with_beneficiaries" value="" required>
-                                            <option value="yes">Yes</option>
-                                            <option value="no">No</option>
+                                        <label for="program_id">Program:</label>
+                                        <select type="text" class="form-control chosen-select" id="program_id" name="program_id" value="" required>
+                                            @foreach($programs as $program)
+                                                <option value="{{ $program->id; }}">{{ $program->code; }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col">
-                                        <label for="age_min">Minimum Age:</label>
-                                        <input type="number" class="form-control" id="age_min" name="age_min" value="">
+                                        <label for="nop">NOP:</label>
+                                        <input type="text" class="form-control" onblur="checkNOPFormat(this.value)" id="nop" name="nop" value="" required>
+                                    </div>
+                                </div> <br>
+                                <div class="row">
+                                    <div class="form-group col">
+                                        <label for="percentage">Percentage (%):</label>
+                                        <input type="number" class="form-control" id="percentage" name="percentage" onkeyup="enforceMinMax(this)" min="1" max="50">
                                     </div>
                                     <div class="form-group col">
-                                        <label for="age_max">Maximum Age:</label>
-                                        <input type="number" class="form-control" id="age_max" name="age_max" value="">
+                                        <div class="custom-control custom-switch custom-switch-on-warning" style="padding-left: 3.25rem; padding-top: 2.25rem;">
+                                            <input type="checkbox" class="custom-control-input" id="reactivated" name="reactivated" value="reactivated">
+                                            <label for="reactivated" class="custom-control-label">Is Reactivated</label>
+                                        </div>
                                     </div>
                                 </div> <br>
                             </fieldset>
-
                         </div>
                         <div class="card-footer">
                             <button id="store_btn" type="submit" class="btn btn-primary">Submit</button>
@@ -148,23 +144,6 @@
                                     <div class="form-group col">
                                         <label for="description">Description:</label>
                                         <input type="text" class="form-control" id="edit_description" name="description" value="" required>
-                                    </div>
-                                </div> <br>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="with_beneficiaries">With Beneficiaries:</label>
-                                        <select class="form-control chosen-select" id="edit_with_beneficiaries" name="with_beneficiaries" required>
-                                            <option value="yes">Yes</option>
-                                            <option value="no">No</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="age_min">Minimum Age:</label>
-                                        <input type="number" class="form-control" id="edit_age_min" name="age_min" value="">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="age_max">Maximum Age:</label>
-                                        <input type="number" class="form-control" id="edit_age_max" name="age_max" value="">
                                     </div>
                                 </div> <br>
                             </fieldset>
@@ -251,6 +230,27 @@
             day = '0' + day;
 
         return [year, month, day].join('-');
+    }
+
+    function checkNOPFormat(val){
+        const regex = /^\d+-(\d+|up)$/;
+        
+        if(!regex.test(val) && val != ""){
+            $("#nop").val("");
+            showErrorToast('Invalid NOP Value');
+        }
+
+    }
+
+    function enforceMinMax(el) {
+        if (el.value != "") {
+            if (parseInt(el.value) < parseInt(el.min)) {
+            el.value = el.min;
+            }
+            if (parseInt(el.value) > parseInt(el.max)) {
+            el.value = el.max;
+            }
+        }
     }
  
 </script>

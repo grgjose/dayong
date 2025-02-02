@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer("program_id");
             $table->string("nop");
             $table->integer("percentage");
+            $table->boolean("is_reactivated");
             $table->timestamps();
         });
     }
