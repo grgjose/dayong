@@ -23,6 +23,7 @@
         <div class="row">
             <div class="col-12">
 
+                <!-- MAIN TABLE -->
                 <div class="card card-info" id="table">
                     <div class="card-header">
                         <h2 class="card-title" style="padding-top: 10px;">Incentives Matrix</h2>
@@ -44,15 +45,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($matrix as $m)   
+                                @foreach ($matrix as $m)
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td id="program_{{ $m->id; }}">
+                                        <td>
                                             @foreach($programs as $program)
                                                 @if($program->id == $m->program_id)
                                                     {{ $program->code; }}
+                                                    <span id="program_id_{{ $m->id; }}" style="display: none;">{{ $program->id; }}</span>
                                                 @endif
                                             @endforeach
+                                            
                                         </td>
                                         <td id="nop_{{ $m->id; }}">{{ $m->nop; }}</td>
                                         <td id="percentage_{{ $m->id; }}">{{ $m->percentage; }}</td>
@@ -74,6 +77,7 @@
                     </div>
                 </div>
 
+                <!-- ADD TABLE -->
                 <div class="card card-primary" id="form" style="display: none;">
                     <div class="card-header">
                         <h3 class="card-title" style="padding-top: 10px;">Create Matrix Item Form</h3>
@@ -81,11 +85,11 @@
                             <span class="fas fa-times"></span> Cancel
                         </button>
                     </div>
-                    <form id="form_tag" action="/program/store" method="post">
+                    <form id="form_tag" action="/matrix/store" method="post">
                         @csrf
                         <div class="card-body">
                             <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Program Details</legend>
+                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Matrix Details</legend>
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="program_id">Program:</label>
@@ -121,36 +125,51 @@
                     </form>
                 </div>
 
+                <!-- UPDATE TABLE -->
                 <div class="card card-primary" id="edit_form" style="display: none;">
                     <div class="card-header">
-                        <h3 class="card-title" style="padding-top: 10px;">Update Program Form</h3>
+                        <h3 class="card-title" style="padding-top: 10px;">Update Matrix Item Form</h3>
                         <button class="btn btn-secondary float-right" style="color: white;" onclick="hideForm()">
                             <span class="fas fa-times"></span> Cancel
                         </button>
                     </div>
-                    <form id="editForm" action="/program/update" method="post">
+                    <form id="editForm" action="/matrix/update" method="post">
                         @method('PUT')
                         @csrf
                         <div class="card-body">
                             <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Program Details</legend>
+                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Matrix Details</legend>
                                 <div class="row">
                                     <div class="form-group col">
-                                        <label for="code">Code:</label>
-                                        <input type="text" class="form-control" id="edit_code" name="code" value="" required>
+                                        <label for="edit_program_id">Program:</label>
+                                        <select type="text" class="form-control chosen-select" id="edit_program_id" name="program_id" disabled required>
+                                            @foreach($programs as $program)
+                                                <option value="{{ $program->id; }}">{{ $program->code; }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="edit_nop">NOP:</label>
+                                        <input type="text" class="form-control" onblur="checkNOPFormat(this.value)" id="edit_nop" name="nop" value="" required>
                                     </div>
                                 </div> <br>
                                 <div class="row">
                                     <div class="form-group col">
-                                        <label for="description">Description:</label>
-                                        <input type="text" class="form-control" id="edit_description" name="description" value="" required>
+                                        <label for="edit_percentage">Percentage (%):</label>
+                                        <input type="number" class="form-control" id="edit_percentage" name="percentage" onkeyup="enforceMinMax(this)" min="1" max="50">
+                                    </div>
+                                    <div class="form-group col">
+                                        <div class="custom-control custom-switch custom-switch-on-warning" style="padding-left: 3.25rem; padding-top: 2.25rem;">
+                                            <input type="checkbox" class="custom-control-input" id="edit_reactivated" name="reactivated" value="reactivated">
+                                            <label for="edit_reactivated" class="custom-control-label">Is Reactivated</label>
+                                        </div>
                                     </div>
                                 </div> <br>
                             </fieldset>
 
                         </div>
                         <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
                             <button type="button" class="btn btn-secondary" style="margin-left: 10px;" onclick="hideForm()">Cancel</button>
                         </div>
                     </form>
@@ -161,20 +180,20 @@
     </div>
 </section>
 
-<!-- Delete Modal -->
+<!-- DELETE CONFIRMATION -->
 <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger">
-                <h5 class="modal-title">Delete Program</h5>
+                <h5 class="modal-title">Delete Matrix Item</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="deleteForm" action="/program/destroy" method="POST">
+            <form id="deleteForm" action="/matrix/destroy" method="POST">
                 @csrf
                 <div class="modal-body">
-                    <h6>Do you want to remove <span id="del_display"></span> Program?</h6>
+                    <h6>Do you want to remove <span id="del_display"></span> Matrix?</h6>
                     <input type="hidden" id="delete_id" name="id" value="" required>
                 </div>
                 <div class="modal-footer">
@@ -203,17 +222,15 @@
         $("#table").attr("style", "display: none;");
         $("#edit_form").removeAttr("style");
 
-        $("#edit_code").val($("#code_"+id).html());
-        $("#edit_description").val($("#description_"+id).html());
-        $("#edit_with_beneficiaries").val($("#with_beneficiaries_"+id).html().toLowerCase().trim()).trigger("chosen:updated");;
-        $("#edit_age_min").val($("#age_min_"+id).html());
-        $("#edit_age_max").val($("#age_max_"+id).html());
+        $("#edit_program_id").val($("#program_id_"+id).html().toLowerCase().trim()).trigger("chosen:updated");;
+        $("#edit_nop").val($("#nop_"+id).html());
+        $("#edit_percentage").val($("#percentage_"+id).html());
 
-        $("#editForm").attr("action", "/program/update/"+id);
+        $("#editForm").attr("action", "/matrix/update/"+id);
     }
 
     function deleteFunction(id){
-        var display = $("#code_"+id).html();
+        var display = $("#program_id_"+id).html() + ' ' + $("#nop_"+id).html();
         $("#del_display").html(display);
         $("#delete_id").val(id);
     }
@@ -237,6 +254,7 @@
         
         if(!regex.test(val) && val != ""){
             $("#nop").val("");
+            $("#edit_nop").val("");
             showErrorToast('Invalid NOP Value');
         }
 

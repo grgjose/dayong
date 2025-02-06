@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dayong Providers Inc. | {{ $header_title }}</title>
-
+    <!-- Site Icon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('storage/logo.ico') }}">
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome Icons -->
@@ -264,7 +265,15 @@
                 <a href="/entries" class="nav-link">
                   <i class="nav-icon far fa-image"></i>
                   <p>
-                    Data Entry (COL)
+                    Collection
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/new-sales" class="nav-link">
+                  <i class="nav-icon fas fa-users-cog"></i>
+                  <p>
+                    New Sales
                   </p>
                 </a>
               </li>
@@ -272,7 +281,7 @@
                 <a href="/members" class="nav-link">
                   <i class="nav-icon fas fa-users-cog"></i>
                   <p>
-                    Members (NS)
+                    Members
                   </p>
                 </a>
               </li>
