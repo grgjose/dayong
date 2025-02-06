@@ -77,9 +77,6 @@ class MemberController extends Controller
             $programs = DB::table('programs')->orderBy('code')->get();
             $branches = DB::table('branches')->orderBy('branch')->get();
 
-
-            
-
             return view('main', [
                 'my_user' => $my_user,
                 'members' => $members,

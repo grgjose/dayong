@@ -8,6 +8,7 @@ use App\Http\Controllers\EntryController;
 use App\Http\Controllers\ExcelCollectionController;
 use App\Http\Controllers\ExcelNewSalesController;
 use App\Http\Controllers\FidelityController;
+use App\Http\Controllers\NewSalesController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\MatrixController;
@@ -41,6 +42,17 @@ Route::get('/entries/view/{id}', [EntryController::class, 'viewDetails']);
 Route::get('/entries/edit/{id}', [EntryController::class, 'editDetails']);
 Route::post('/entries/importEntries', [EntryController::class, 'importEntries']);
 Route::get('/entries/getIncentivesMatrix/{id}/{program_id?}', [EntryController::class, 'getIncentivesMatrix']);
+
+
+Route::get('/new-sales', [NewSalesController::class, 'index']);
+Route::post('/new-sales/store', [NewSalesController::class, 'store']);
+Route::put('/new-sales/update/{id}', [NewSalesController::class, 'update']);
+Route::post('/new-sales/destroy', [NewSalesController::class, 'destroy']);
+Route::post('/new-sales/upload', [NewSalesController::class, 'upload']);
+Route::get('/new-sales/view/{id}', [NewSalesController::class, 'viewDetails']);
+Route::get('/new-sales/edit/{id}', [NewSalesController::class, 'editDetails']);
+Route::get('/new-sales/print/{id}', [NewSalesController::class, 'print']);
+Route::post('/new-sales/importnew-sales', [NewSalesController::class, 'importnew-sales']);
 
 
 Route::get('/members', [MemberController::class, 'index']);

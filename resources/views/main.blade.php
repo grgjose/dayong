@@ -263,7 +263,7 @@
               </li>
               <li class="nav-item">
                 <a href="/entries" class="nav-link">
-                  <i class="nav-icon far fa-image"></i>
+                  <i class="nav-icon fas fa-coins"></i>
                   <p>
                     Collection
                   </p>
@@ -271,7 +271,7 @@
               </li>
               <li class="nav-item">
                 <a href="/new-sales" class="nav-link">
-                  <i class="nav-icon fas fa-users-cog"></i>
+                  <i class="nav-icon fas fa-comment-dollar"></i>
                   <p>
                     New Sales
                   </p>
@@ -285,14 +285,14 @@
                   </p>
                 </a>
               </li>
-              <li class="nav-item">
+              <!-- li class="nav-item">
                 <a href="/audit" class="nav-link disabled">
                   <i class="nav-icon fas fa-book"></i>
                   <p>
                     Audit (Disabled Temporarily)
                   </p>
                 </a>
-              </li>
+              </li -->
               <li class="nav-item">
                 <a href="/fidelity" class="nav-link">
                   <i class="nav-icon fas fa-hand-holding-usd"></i>
