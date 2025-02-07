@@ -39,6 +39,7 @@
                                     <th>Program</th>
                                     <th>NOP</th>
                                     <th>Percentage (%)</th>
+                                    <th>For Reactivated</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Action</th>
@@ -59,6 +60,7 @@
                                         </td>
                                         <td id="nop_{{ $m->id; }}">{{ $m->nop; }}</td>
                                         <td id="percentage_{{ $m->id; }}">{{ $m->percentage; }}</td>
+                                        <td id="is_reactivated_{{ $m->id; }}">{{ $m->is_reactivated == false?"NO":"YES"; }}</td>
                                         <td id="created_at_{{ $m->id; }}">{{ $m->created_at; }}</td>
                                         <td id="updated_at_{{ $m->id; }}">{{ $m->updated_at; }}</td>
                                         <td>
@@ -225,6 +227,8 @@
         $("#edit_program_id").val($("#program_id_"+id).html().toLowerCase().trim()).trigger("chosen:updated");;
         $("#edit_nop").val($("#nop_"+id).html());
         $("#edit_percentage").val($("#percentage_"+id).html());
+        var x = $("#is_reactivated_"+id).html();
+        $("#edit_reactivated").attr("checked", $("#is_reactivated_"+id).html() == "YES"?true:false);
 
         $("#editForm").attr("action", "/matrix/update/"+id);
     }

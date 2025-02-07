@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Matrix;
 use App\Models\Program;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -38,26 +39,24 @@ class MatrixController extends Controller
 
             // Get Request Data
             $validated = $request->validate([
-                "code" => ['required', 'unique:programs'],
-                "description" => ['nullable'],
-                "with_beneficiaries" => ['required'],
-                "age_min" => ['nullable'],
-                "age_max" => ['nullable'],
+                "program_id" => ['required'],
+                "nop" => ['nullable'],
+                "percentage" => ['required'],
+                "reactivated" => ['nullable']
             ]);
 
             // Save Request Data
-            $contents = new Program();
+            $contents = new Matrix();
 
-            $contents->code = $validated['code'];
-            $contents->description = $validated['description'];
-            $contents->with_beneficiaries = ($validated['with_beneficiaries'] == "yes" ? true : false);
-            $contents->age_min = $validated['age_min'];
-            $contents->age_max = $validated['age_max'];
+            $contents->program_id = $validated['program_id'];
+            $contents->nop = $validated['nop'];
+            $contents->percentage = $validated['percentage'];
+            $contents->is_reactivated = (isset($validated['reactivated']) ? true : false);
 
             $contents->save();
 
             // Back to View
-            return redirect('/program')->with("success_msg", $contents->code." Program Created Successfully");
+            return redirect('/matrix')->with("success_msg", $contents->code." Matrix Item Created Successfully");
 
         } else {
             return redirect('/');
@@ -69,27 +68,22 @@ class MatrixController extends Controller
 
             // Get Request Data
             $validated = $request->validate([
-                "code" => ['required'],
-                "description" => ['nullable'],
-                "with_beneficiaries" => ['required'],
-                "age_min" => ['nullable'],
-                "age_max" => ['nullable'],
+                "nop" => ['nullable'],
+                "percentage" => ['required'],
+                "reactivated" => ['nullable']
             ]);
 
             // Save Request Data
-            $contents = Program::find($id);
+            $contents = Matrix::find($id);
 
-            $contents->code = $validated['code'];
-            $contents->description = $validated['description'];
-            $contents->with_beneficiaries = ($validated['with_beneficiaries'] == "yes" ? true : false);
-            $contents->age_min = $validated['age_min'];
-            $contents->age_max = $validated['age_max'];
-            $contents->updated_at = date('Y-m-d G:i:s');
+            $contents->nop = $validated['nop'];
+            $contents->percentage = $validated['percentage'];
+            $contents->is_reactivated = (isset($validated['reactivated']) ? true : false);
 
             $contents->save();
 
             // Back to View
-            return redirect('/program')->with("success_msg", $contents->code." Program Updated Successfully");
+            return redirect('/matrix')->with("success_msg", $contents->code." Matrix Item Created Successfully");
 
         } else {
             return redirect('/');

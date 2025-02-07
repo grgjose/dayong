@@ -50,7 +50,7 @@
                 <!-- TABLE SECTION -->
                 <div class="card card-info" id="table">
                     <div class="card-header">
-                        <h2 class="card-title" style="padding-top: 10px;">Data Entries Table</h2>
+                        <h2 class="card-title" style="padding-top: 10px;">Collection Table</h2>
                         @if($my_user->usertype != 3)
                             <button class="btn btn-success float-right" onclick="showForm()">
                                 <span class="fas fa-plus"></span> Add Collection

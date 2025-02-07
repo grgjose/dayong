@@ -87,8 +87,8 @@ class NewSalesController extends Controller
                 'branches' => $branches,
                 'users' => $users,
             ])
-            ->with('header_title', 'Membership Registration')
-            ->with('subview', 'dashboard-contents.modules.members');
+            ->with('header_title', 'New Sales')
+            ->with('subview', 'dashboard-contents.modules.new-sales');
 
         } else {
             return redirect('/');

@@ -63,7 +63,7 @@ class EntryController extends Controller
                 'entries' => $entries,
                 'users' => $users
             ])
-            ->with('header_title', 'Data Entries')
+            ->with('header_title', 'Collection')
             ->with('subview', 'dashboard-contents.modules.data-entry');
 
         } else {
