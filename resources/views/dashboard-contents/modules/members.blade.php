@@ -32,12 +32,12 @@
                         <h2 class="card-title" style="padding-top: 10px;">Members List</h2>
                         @if($my_user->usertype != 3)
                             <button class="btn btn-success float-right" onclick="showForm()">
-                                <span class="fas fa-plus"></span> Register Member
+                                <span class="fas fa-plus"></span> Register a Member
                             </button>
                         @endif
                         @if($my_user->usertype == 1)
                             <button class="btn btn-secondary float-right mr-3" data-toggle="modal" data-target="#ImportModal">
-                                <span class="fas fa-upload"></span> Import from Excel New Sales
+                                <span class="fas fa-upload"></span> Import a Members List
                             </button>
                         @endif
                     </div>
