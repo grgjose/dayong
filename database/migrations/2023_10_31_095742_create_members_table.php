@@ -25,6 +25,11 @@ return new class extends Migration
             $table->string("contact_num")->nullable();
             $table->string("email")->nullable();
             $table->string("address")->nullable();
+            $table->string("agent_id")->nullable();
+            $table->string("claimants_id")->nullable();
+            $table->string("beneficiaries_ids")->nullable();
+            $table->boolean("is_deleted")->nullable()->default(false);
+            $table->integer("lastUpdatedBy")->nullable();
             $table->timestamps();
         });
     }

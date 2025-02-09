@@ -52,6 +52,7 @@
                                     <th>Last Name</th>
                                     <th>Address</th>
                                     <th>Contact No.</th>
+                                    <th>MAS</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -64,6 +65,14 @@
                                         <td id="{{ $member->id; }}_mname">{{ $member->mname; }}</td>
                                         <td id="{{ $member->id; }}_lname">{{ $member->lname; }}</td>
                                         <td id="{{ $member->id; }}_address">{{ $member->address; }}</td>
+                                        <td id="{{ $member->id; }}_agent">
+                                            @foreach($users as $user)
+                                                @if($user->id == $member->agent_id)
+                                                    <span style="display: none;" id="{{ $member->id; }}_agent_id">{{ $member->agent_id; }}</span>
+                                                    {{ $user->fname.' '.$user->mname.' '.$user->lname }}
+                                                @endif
+                                            @endforeach
+                                        </td>
                                         <td id="{{ $member->id; }}_contact_num">{{ $member->contact_num; }}</td>
 
                                         <td>
@@ -107,46 +116,6 @@
                         <div class="card-body">
 
                             <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Location and Program</legend>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="branch_id">Branch</label>
-                                        <select class="form-control chosen-select" id="branch_id" name="branch_id">
-                                            @foreach($branches as $branch)
-                                                <option value="{{ $branch->id; }}">{{ $branch->branch; }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="program_id">Program</label>
-                                        <select class="form-control chosen-select" id="program_id" name="program_id" onchange="checkBeneficiaries()">
-                                            @foreach($programs as $program)
-                                                <option value="{{ $program->id; }}">{{ $program->code; }}</option>
-                                            @endforeach
-                                        </select>
-                                        @foreach($programs as $program)
-                                            <span style="display: none;" id="ben_{{ $program->id }}">{{ $program->with_beneficiaries; }}</span>
-                                        @endforeach
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="or_num">OR #:</label>
-                                        <input type="number" class="form-control" id="or_number" name="or_number" placeholder="Enter OR Number">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="app_no">Application #:</label>
-                                        <input type="number" class="form-control" id="app_no" name="app_no" placeholder="Enter Application Number">
-                                    </div>
-                                    @php
-                                        $curr = date('Y-m-d');
-                                    @endphp
-                                    <div class="form-group col">
-                                        <label for="app_no">Creation Date:</label>
-                                        <input type="date" class="form-control" id="created_at" name="created_at" value="{{ $curr }}">
-                                    </div>
-                                </div>
-                            </fieldset>
-                            
-                            <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
                                 <legend class="h5 pl-2 pr-2" style="width: auto; !important">Personal Information</legend>
                                 <div class="row">
                                     <div class="form-group col">
@@ -165,8 +134,16 @@
                                         <label for="ext">Ext Name</label>
                                         <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
                                     </div>
+                                    
                                 </div>
                                 <div class="row">
+                                    @php
+                                        $curr = date('Y-m-d');
+                                    @endphp
+                                    <div class="form-group col">
+                                        <label for="app_no">Creation Date:</label>
+                                        <input type="date" class="form-control" id="created_at" name="created_at" value="{{ $curr }}">
+                                    </div>
                                     <div class="form-group col">
                                         <label for="birthdate">Birthdate</label>
                                         <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Enter Birthdate">
@@ -336,47 +313,6 @@
                                     </div>
                                 </div>
                             </fieldset>
-
-                            <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Others</legend>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="contact_person">Contact Person</label>
-                                        <input type="text" class="form-control" id="contact_person" name="contact_person" placeholder="Enter Contact Person">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_person_num">Contact #:</label>
-                                        <input type="text" class="form-control" id="contact_person_num" name="contact_person_num" placeholder="Enter Contact Person's Number">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="registration_fee">Registration Fee:</label>
-                                        <input type="number" class="form-control" id="registration_fee" name="registration_fee" placeholder="Enter Registration Fee Amount">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="contact_person_num">Agent:</label>
-                                        <select class="form-control chosen-select" id="agent_id" name="agent_id">
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->id; }}">{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_person_num">Amount Collected:</label>
-                                        <input type="text" class="form-control" id="amount" name="amount" placeholder="Enter Amount">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_person_num">Incentives (%):</label>
-                                        <input type="text" class="form-control" id="incentives" name="incentives" placeholder="Enter Incentive's Percentage">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_person_num">Fidelity (%):</label>
-                                        <input type="text" class="form-control" id="fidelity" name="fidelity" placeholder="Enter Fidelity">
-                                    </div>
-                                </div>
-                            </fieldset>
-
                         </div>
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -428,25 +364,32 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="uploadForm" action="/members/importMembers" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="/members/loadSheets" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-row">
                         <div class="col">
-                            <label for="data_count">Data Count (The higher the slower)</label>
-                            <select class="form-control chosen-select" id="data_count" name="data_count" value="10">
-                                <option value="10">10</option>
-                                <option value="20">50</option>
-                                <option value="20">100</option>
-                                <option value="20">200</option>
-                                <option value="20">500</option>
-                            </select>
+                            <label class="form-label">Membership Accounts Monitoring File</label>
+                            <div id="response"></div>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                  <input type="file" class="custom-file-input" id="upload_file" name="upload_file">
+                                  <label class="custom-file-label" for="upload_file">Choose file</label>
+                                </div>
+                            </div> <br>
+
+                            <div class="form-group col">
+                                <label for="sheets" class="form-label">Sheets</label>
+                                <select class="form-control chosen-select" id="sheets" name="sheetName">
+                                </select>
+                            </div>
                         </div>
                     </div> <br>
                 </div>
                 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" id="uploadButton" class="btn btn-success" disabled>Upload</button>
+                    <button type="submit" class="btn btn-warning">Load Sheets</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </form>
@@ -459,7 +402,7 @@
 </form>
 
 <script>
-    
+
     function showForm()
     {
         $("#table").attr("style", "display: none;");
@@ -474,23 +417,9 @@
         $("#table").removeAttr("style");
     }
 
-    function checkBeneficiaries()
-    {
-        var program = $("#program_id").val();
-        var x = $("#ben_" + program).html();
-        if(x == 0){
-            $(".beneficiaries").removeAttr("style");
-            $(".beneficiaries").attr("style", "display: none;");
-        } else {
-            $(".beneficiaries").removeAttr("style");
-            $(".beneficiaries").attr("style", "--bs-border-opacity: .5;");
-        }
-    }
-
     function viewFunction(id)
     {
         $("#view").load('/members/view/'+id);
-        checkBeneficiaries();
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
     }
@@ -498,7 +427,6 @@
     function editFunction(id)
     {
         $("#view").load('/members/edit/'+id);
-        checkBeneficiaries();
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
     }

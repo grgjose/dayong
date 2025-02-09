@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Events\ProcessExcelFile;
 use DateTime;
 use App\Jobs\ImportExcelFile;
 use App\Imports\SalesImport;
 use App\Imports\ExcelImport;
+use App\Imports\ExcelMembersImport;
 use App\Models\Entry;
 use App\Models\Member;
 use App\Models\MembersProgram;
@@ -73,7 +74,7 @@ class MemberController extends Controller
 
             $my_user = auth()->user();
             $users = DB::table('users')->orderBy('usertype', 'asc')->get();
-            $members = DB::table('members')->orderBy('created_at', 'desc')->get();
+            $members = DB::table('members')->where('is_deleted', false)->orderBy('created_at', 'desc')->get();
             $programs = DB::table('programs')->orderBy('code')->get();
             $branches = DB::table('branches')->orderBy('branch')->get();
 
@@ -101,11 +102,6 @@ class MemberController extends Controller
             $my_user = auth()->user();
             $validated = $request->validate([
 
-                // Location and Program
-                "program_id" => ['required'],
-                "branch_id" => ['required'],
-                "or_number" => ['required'],
-                "app_no" => ['required'],
                 "created_at" => ['required'],
 
                 // Personal Information
@@ -150,21 +146,11 @@ class MemberController extends Controller
                 "sex_b2" => ['nullable'],
                 "relationship_b2" => ['nullable'],
                 "contact_num_b2" => ['nullable'],
-                
-                // Others
-                "contact_person" => ['required'],
-                "contact_person_num" => ['required'],
-                "registration_fee" => ['nullable'],
-                "agent_id" => ['nullable'],
-                "amount" => ['nullable'],
-                "incentives" => ['nullable'],
-                "fidelity" => ['nullable'],
 
             ]);
 
             // Get Next Auto Increment
             $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
-            $member_id = $statement[0]->Auto_increment;
             
             // Save Request Data (Member's Personal Information)
             $member = new Member();
@@ -181,8 +167,8 @@ class MemberController extends Controller
             $member->contact_num = $validated['contact_num'];
             $member->email = $validated['email'];
             $member->address = $validated['address'];
-
-            $member->save();
+            $member->created_at = $validated['created_at'];
+            $member->agent_id = $my_user->id;
 
             // Get Next Auto Increment
             $statement = DB::select("SHOW TABLE STATUS LIKE 'claimants'");
@@ -198,8 +184,10 @@ class MemberController extends Controller
             $claimant->birthdate = $validated['birthdate_c'];
             $claimant->sex = $validated['sex_c'];
             $claimant->contact_num = $validated['contact_num_c'];
+            $claimant->created_at = $validated['created_at'];
 
             $claimant->save();
+            $member->claimants_id = $claimants_id;
 
             // Get Next Auto Increment
             $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
@@ -219,6 +207,7 @@ class MemberController extends Controller
                 $beneficiary_1->relationship = $validated['relationship_b1'];
                 $beneficiary_1->sex = $validated['sex_b1'];
                 $beneficiary_1->contact_num = $validated['contact_num_b1']; 
+                $beneficiary_1->created_at = $validated['created_at'];
 
                 $beneficiary_1->save();
                 $beneficiaries_ids = $beneficiaries_ids . $beneficiary_id;
@@ -235,58 +224,14 @@ class MemberController extends Controller
                 $beneficiary_2->relationship = $validated['relationship_b2'];
                 $beneficiary_2->sex = $validated['sex_b2'];
                 $beneficiary_2->contact_num = $validated['contact_num_b2']; 
+                $beneficiary_2->created_at = $validated['created_at'];
 
                 $beneficiary_2->save();
                 $beneficiaries_ids = $beneficiaries_ids . "," . (string)((int)$beneficiary_id + 1);
             }
 
-            // Save Request Data (Members_Program)
-            $memberProgram = new MembersProgram();
-            $memberProgram->app_no = $validated['app_no'];
-            $memberProgram->user_id = $my_user->id;
-            $memberProgram->member_id = $member_id;
-            $memberProgram->program_id = $validated['program_id'];
-            $memberProgram->branch_id = $validated['branch_id'];
-            $memberProgram->claimants_id = $claimants_id;
-            $memberProgram->beneficiaries_ids = $beneficiaries_ids;
-            $memberProgram->or_number = $validated['or_number'];
-            $memberProgram->registration_fee = $validated['registration_fee'];
-            $memberProgram->agent_id = $validated['agent_id'];
-            $memberProgram->amount = $validated['amount'];
-            $memberProgram->incentives = $validated['incentives'];
-            $memberProgram->incentives_total = $memberProgram->amount - ($memberProgram->amount * ($memberProgram->incentives / 100));
-            $memberProgram->fidelity = $validated['fidelity'];
-            $memberProgram->fidelity_total = $memberProgram->incentives_total * ($memberProgram->fidelity / 100);
-            $memberProgram->incentives_total = $memberProgram->incentives_total - $memberProgram->fidelity_total;
-            $memberProgram->net = $memberProgram->amount  - $memberProgram->incentives_total - $memberProgram->fidelity_total;
-            $memberProgram->contact_person = $validated['contact_person'];
-            $memberProgram->contact_person_num = $validated['contact_person_num'];
-            $memberProgram->status = "active";
-
-            $memberProgram->save();
-
-            // Save Request Data (Entry)
-
-            /*
-            if($validated['registration_fee'] != ""){
-                $entry = new Entry();
-
-                $entry->branch_id = $validated['branch_id'];;
-                $entry->marketting_agent = $validated['agent_id'];
-                $entry->member_id = $member_id;
-                $entry->or_number = $validated["or_number"];
-                $entry->amount = $validated['registration_fee'];
-                $entry->number_of_payment = 1;
-                $entry->program_id = $validated['program_id'];
-                $entry->month_from = date('Y-m');
-                $entry->month_to = date('Y-m');
-                $entry->is_reactivated = 0;
-                $entry->is_transferred = 0;
-                $entry->remarks = "REGISTRATION";
-
-                $entry->save();
-            }
-            */
+            $member->beneficiaries_ids = $beneficiaries_ids;
+            $member->save();
 
             // Back to View
             return redirect('/members')->with("success_msg", $member->lname." Member Created Successfully");
@@ -305,12 +250,6 @@ class MemberController extends Controller
             // Get Request Data
             $my_user = auth()->user();
             $validated = $request->validate([
-
-                // Location and Program
-                "program_id" => ['required'],
-                "branch_id" => ['required'],
-                "or_number" => ['nullable'],
-                "app_no" => ['required'],
 
                 // Personal Information
                 "fname" => ['required'],
@@ -380,6 +319,8 @@ class MemberController extends Controller
             $member->contact_num = $validated['contact_num'];
             $member->email = $validated['email'];
             $member->address = $validated['address'];
+            $member->agent_id = $validated['address'];
+            $member->updated_at = date('Y-m-d');
 
             $member->save();
 
@@ -397,6 +338,7 @@ class MemberController extends Controller
             $claimant->birthdate = $validated['birthdate_c'];
             $claimant->sex = $validated['sex_c'];
             $claimant->contact_num = $validated['contact_num_c'];
+            $claimant->updated_at = date('Y-m-d');
 
             $claimant->save();
 
@@ -416,7 +358,8 @@ class MemberController extends Controller
                     $beneficiary_1->birthdate = $validated['birthdate_b1'];
                     $beneficiary_1->relationship = $validated['relationship_b1'];
                     $beneficiary_1->sex = $validated['sex_b1'];
-                    $beneficiary_1->contact_num = $validated['contact_num_b1']; 
+                    $beneficiary_1->contact_num = $validated['contact_num_b1'];
+                    $beneficiary_1->updated_at = date('Y-m-d');
 
                     $beneficiary_1->save();
                 }
@@ -434,47 +377,10 @@ class MemberController extends Controller
                     $beneficiary_2->relationship = $validated['relationship_b2'];
                     $beneficiary_2->sex = $validated['sex_b2'];
                     $beneficiary_2->contact_num = $validated['contact_num_b2']; 
+                    $beneficiary_2->updated_at = date('Y-m-d');
 
                     $beneficiary_2->save();
                 }
-            }
-
-            // Save Request Data (Members_Program)
-            $memberProgram = MembersProgram::find($membersProgram[0]->id);
-            $memberProgram->app_no = $validated['app_no'];
-            $memberProgram->user_id = $my_user->id;
-            $memberProgram->member_id = $member_id;
-            $memberProgram->program_id = $validated['program_id'];
-            $memberProgram->branch_id = $validated['branch_id'];
-            $memberProgram->claimants_id = $claimants_id;
-            //$memberProgram->beneficiaries_ids = $beneficiaries_ids;
-            //$memberProgram->or_number = $validated['or_number'];
-            $memberProgram->registration_fee = $validated['registration_fee'];
-            $memberProgram->contact_person = $validated['contact_person'];
-            $memberProgram->contact_person_num = $validated['contact_person_num'];
-            $memberProgram->status = "active";
-
-            $memberProgram->save();
-
-            // Save Request Data (Entry)
-
-            if($validated['registration_fee'] != ""){
-
-                $entries = DB::table('entries')->where('or_number', $validated['or_number'])->get();
-                $entry = Entry::find($entries[0]->id);
-
-                $entry->branch_id = $validated['branch_id'];;
-                $entry->marketting_agent = auth()->id();
-                $entry->member_id = $member_id;
-                //$entry->or_number = $validated["or_number"];
-                $entry->amount = $validated['registration_fee'];
-                $entry->number_of_payment = 1;
-                $entry->program_id = $validated['program_id'];
-                $entry->is_reactivated = 0;
-                $entry->is_transferred = 0;
-                $entry->remarks = "REGISTRATION";
-
-                $entry->save();
             }
 
             // Back to View
@@ -489,12 +395,18 @@ class MemberController extends Controller
     {
         if(auth()->check()){
 
-            $memberProgram = DB::table('members_program')->where('id', $request->input("id"))->get();
+            $memberProgramId = DB::table('members_program')->where('id', $request->input("id"))->get();
 
-            // Destroy Request Data
-            Member::where("id", $request->input("id"))->delete();
-            MembersProgram::where("id", $request->input("id"))->delete();
+            // Destroy Request Data (Soft Delete)
+            $member = Member::find($request->input("id"));
+            $member->is_deleted = true;
+            $member->save();
+
+            $memberProgram = MembersProgram::find($memberProgramId[0]->id);
+            $memberProgram->is_deleted = true;
+            $memberProgram->save();
             
+            /*
             foreach($memberProgram as $mp){
                 Claimant::where("id", $mp->claimants_id)->delete();
                 if($mp->beneficiaries_ids != ""){
@@ -503,8 +415,8 @@ class MemberController extends Controller
                         Beneficiary::where("id", (int)$t)->delete();
                     }
                 }
-
             }
+            */
 
             return redirect('/members')->with("success_msg", "Deleted Successfully");
 
@@ -517,15 +429,148 @@ class MemberController extends Controller
     {
         if(auth()->check()){
 
-            set_time_limit(300);
+            $my_user = auth()->user();
+            $validated = $request->validate([
+                'upload_file' => ['required'],
+                'sheetName' => ['required'],
+            ]);
 
-            $validated = $request->validate(['upload_file' => ['required', 'file']]);
-            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('upload_file'));
-            (new ExcelImport($spreadsheet->getSheetCount()))->import($request->file('upload_file'));
+            $user = DB::table('users')->where('lname', strtolower($validated['sheetName']))->get()[0];
 
-            //ProcessExcelFile::dispatch($array);
+            $col['phmember'] = 3;
+            $col['address'] = 4;
+
+            $import = new ExcelMembersImport($validated['sheetName']);
+            $array = Excel::toCollection($import, $validated['upload_file']);
+            $spreadsheet = $array[$validated['sheetName']];
+            $enabledReading = false;  
+            $names = array();
+            $addresses = array();
+
+            for($cnt = 0; $cnt <= count($spreadsheet) - 1; $cnt++){
+
+                $phmember = trim($spreadsheet[$cnt][$col['phmember']]);
+                $address = trim($spreadsheet[$cnt][$col['address']]);
+
+                if($enabledReading == true){
+
+                    if( $phmember != "" && 
+                        $phmember != null && 
+                        $phmember != "SUSPENDED ACCOUNTS" && 
+                        $phmember != "FORFEITED / DROPPED ACCOUNTS"){
+
+                        $fullname = $this->parseFullName($phmember);
+                        array_push($names, $fullname);
+                        array_push($addresses, $address);
+                    }
+                }
+                if($phmember == 'PH/MEMBER'){ $enabledReading = true; }
+            }
+
+            for($cnt = 0; $cnt <= count($names) - 1; $cnt++){
+
+                $fullname = $names[$cnt];
+                $address = trim($addresses[$cnt]);
+
+                $member = new Member();
+                $member->fname = trim($fullname['fname']);
+                $member->mname = trim($fullname['mname']);
+                $member->lname = trim($fullname['lname']);
+                $member->ext = trim($fullname['ext']);
+                $member->address = $address;
+                $member->agent_id = $user->id;
+                $member->lastUpdatedBy = $my_user->id;
+                $member->save();
+
+            }
 
             return redirect('/members')->with("success_msg", "Uploaded Successfully");
+
+        } else {
+            return redirect('/');
+        }
+
+    }
+
+    public function parseFullName($fullName) 
+    {
+        // Define common name extensions
+        $extensions = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'];
+
+        // Trim and clean up extra spaces
+        $fullName = trim(preg_replace('/\s+/', ' ', $fullName));
+
+        // Check if input is in "Last, First, Middle" or "Last, First Extension, Middle" format
+        if (strpos($fullName, ',') !== false) {
+            $parts = array_map('trim', explode(',', $fullName));
+
+            $lastName = $parts[0] ?? '';
+            $firstName = $parts[1] ?? '';
+            $middleName = $parts[2] ?? '';
+
+            // Split first name to check for an extension
+            $firstNameParts = explode(' ', $firstName);
+            if (count($firstNameParts) > 1 && in_array(end($firstNameParts), $extensions)) {
+                $nameExtension = array_pop($firstNameParts);
+                $firstName = implode(' ', $firstNameParts);
+            } else {
+                $nameExtension = '';
+            }
+
+            return [
+                'fname' => ucwords(strtolower($firstName)),
+                'mname' => ucwords(strtolower($middleName)),
+                'lname' => ucwords(strtolower($lastName)),
+                'ext' => ucwords(strtolower($nameExtension))
+            ];
+        }
+
+        // Default format: "First Middle Last Extension"
+        $parts = explode(' ', $fullName);
+        $count = count($parts);
+
+        $firstName = '';
+        $middleName = '';
+        $lastName = '';
+        $nameExtension = '';
+
+        if ($count == 1) {
+            $firstName = $parts[0];
+        } elseif ($count == 2) {
+            $firstName = $parts[0];
+            $lastName = $parts[1];
+        } elseif ($count >= 3) {
+            if (in_array($parts[$count - 1], $extensions)) {
+                $nameExtension = $parts[$count - 1];
+                array_pop($parts);
+                $count--;
+            }
+
+            $firstName = $parts[0];
+            $lastName = $parts[$count - 1];
+
+            if ($count > 2) {
+                $middleName = implode(' ', array_slice($parts, 1, $count - 2));
+            }
+        }
+
+        return [
+            'fname' => $firstName,
+            'mname' => $middleName,
+            'lname' => $lastName,
+            'ext' => $nameExtension
+        ];
+    }
+
+    public function loadSheets(Request $request)
+    {
+        if(auth()->check()){
+
+            $validated = $request->validate(['upload_file' => ['required', 'file']]);
+            $spreadsheet = IOFactory::load($validated['upload_file']);
+            $sheets = $spreadsheet->getSheetNames();
+
+            return $sheets;
 
         } else {
             return redirect('/');
@@ -562,23 +607,17 @@ class MemberController extends Controller
     {
         $my_user = auth()->user();
         $member = DB::table('members')->where('id', $id)->get();
-        $member_program = DB::table('members_program')->where('member_id', $id)->get();
-        $claimant = DB::table('claimants')->where('id', $member_program[0]->claimants_id)->get();
-        $arr = explode(",", $member_program[0]->beneficiaries_ids); array_pop($arr);
+        $claimant = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+        $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
         $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
-        $branches = DB::table('branches')->where('id', $member_program[0]->branch_id)->get();
-        $programs = DB::table('programs')->where('id', $member_program[0]->program_id)->get();
-        
+
         if(auth()->check()){
 
             return view('dashboard-contents.modules.members-view', [
                 'id' => $id,
                 'member' => $member[0],
-                'member_program' => $member_program[0],
                 'claimant' => $claimant[0],
                 'beneficiaries' => $beneficiaries,
-                'programs' => $programs[0],
-                'branches' => $branches[0]
             ]);
 
         } 
@@ -588,31 +627,18 @@ class MemberController extends Controller
     {
         $my_user = auth()->user();
 
-        $branches = DB::table('branches')->orderBy('id')->get();
-        $programs = DB::table('programs')->orderBy('id')->get();
-
         $member = DB::table('members')->where('id', $id)->get();
-        $member_program = DB::table('members_program')->where('member_id', $id)->get();
-        $claimant = DB::table('claimants')->where('id', $member_program[0]->claimants_id)->get();
-        $arr = explode(",", $member_program[0]->beneficiaries_ids); array_pop($arr);
+        $claimant = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+        $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
         $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
-
-        
-        $branch_one = DB::table('branches')->where('id', $member_program[0]->branch_id)->get();
-        $program_one = DB::table('programs')->where('id', $member_program[0]->program_id)->get();
         
         if(auth()->check()){
 
             return view('dashboard-contents.modules.members-edit', [
                 'id' => $id,
                 'member' => $member[0],
-                'member_program' => $member_program[0],
                 'claimant' => $claimant[0],
                 'beneficiaries' => $beneficiaries,
-                'programs' => $programs,
-                'branches' => $branches,
-                'branch_one' => $branch_one[0],
-                'program_one' => $program_one[0],
             ]);
 
         } 
@@ -901,6 +927,10 @@ class MemberController extends Controller
 
         // Back to View
         return redirect('/members')->with("success_msg","Created Successfully"); 
+    }
+
+    public function importMembers2(){
+
     }
 
     public function excelTimestampToString($excelTimestamp) 

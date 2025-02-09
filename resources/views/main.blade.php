@@ -66,7 +66,7 @@
     
   </style>
 
-  <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+  <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 
     <div class="wrapper">
 
@@ -78,7 +78,7 @@
       @endisset
 
       <!-- Navbar -->
-      <nav class="main-header navbar navbar-expand navbar-dark">
+      <nav class="main-header navbar navbar-expand navbar-light">
         <!-- Left navbar links -->
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -473,6 +473,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     <!-- Custom Scripts -->
+    <script src="{{asset('js/importfiles.js')}}"></script>
+    <script src="{{asset('admin_lte/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
+    <script> $(function () { bsCustomFileInput.init(); }); </script>
+
     <script>
 
       $(document).ready(function (){

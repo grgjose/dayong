@@ -60,6 +60,7 @@ Route::post('/members/store', [MemberController::class, 'store']);
 Route::put('/members/update/{id}', [MemberController::class, 'update']);
 Route::post('/members/destroy', [MemberController::class, 'destroy']);
 Route::post('/members/upload', [MemberController::class, 'upload']);
+Route::post('/members/loadSheets', [MemberController::class, 'loadSheets']);
 Route::get('/members/view/{id}', [MemberController::class, 'viewDetails']);
 Route::get('/members/edit/{id}', [MemberController::class, 'editDetails']);
 Route::get('/members/print/{id}', [MemberController::class, 'print']);

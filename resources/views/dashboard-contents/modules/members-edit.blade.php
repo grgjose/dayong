@@ -10,37 +10,6 @@
     @csrf
     <div class="card-body">
         <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-            <legend class="h5 pl-2 pr-2" style="width: auto; !important">Location and Program</legend>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="branch_id">Branch</label>
-                    <select class="form-control chosen-select" id="branch_id" name="branch_id" value="{{ $member_program->branch_id; }}">
-                        @foreach($branches as $branch)
-                            <option value="{{ $branch->id; }}">{{ $branch->branch; }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group col">
-                    <label for="program_id">Program</label>
-                    <select class="form-control chosen-select" id="program_id" name="program_id" value="{{ $member_program->program_id; }}" onchange="checkBeneficiaries()">
-                        @foreach($programs as $program)
-                            <option value="{{ $program->id; }}">{{ $program->code; }}</option>
-                            <span style="display: none;" id="ben_{{ $program->id }}">{{ $program->with_beneficiaries; }}</span>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group col">
-                    <label for="or_num">OR #:</label>
-                    <input type="number" class="form-control" id="or_number" name="or_number" placeholder="Enter OR Number" value="{{ $member_program->or_number; }}">
-                </div>
-                <div class="form-group col">
-                    <label for="or_num">Application #:</label>
-                    <input type="number" class="form-control" id="app_no" name="app_no" placeholder="Enter OR Number" value="{{ $member_program->app_no; }}" required>
-                </div>
-            </div>
-        </fieldset>
-        
-        <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
             <legend class="h5 pl-2 pr-2" style="width: auto; !important">Personal Information</legend>
             <div class="row">
                 <div class="form-group col">
@@ -198,27 +167,6 @@
         @endphp
 
         @endforeach
-
-        <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-            <legend class="h5 pl-2 pr-2" style="width: auto; !important">Others</legend>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="contact_person">Contact Person</label>
-                    <input type="text" class="form-control" id="contact_person" name="contact_person" 
-                    placeholder="Enter Contact Person" value="{{ $member_program->contact_person; }}">
-                </div>
-                <div class="form-group col">
-                    <label for="contact_person_num">Contact #:</label>
-                    <input type="text" class="form-control" id="contact_person_num" name="contact_person_num" 
-                    placeholder="Enter Contact Person's Number" value="{{ $member_program->contact_person_num; }}">
-                </div>
-                <div class="form-group col">
-                    <label for="registration_fee">Registration Fee:</label>
-                    <input type="number" class="form-control" id="registration_fee" name="registration_fee" 
-                    placeholder="Enter Registration Fee Amount" value="{{ $member_program->registration_fee; }}">
-                </div>
-            </div>
-        </fieldset>
 
     </div>
     <div class="card-footer">
