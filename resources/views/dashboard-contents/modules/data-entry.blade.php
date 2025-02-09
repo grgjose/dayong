@@ -20,7 +20,7 @@
     .chosen-container-single {
         border-radius: 5px;
         height: calc(2.25rem + 2px);
-        padding-top: 10px;
+        /* padding-top: 10px; */
     }
 
     .class-with-tooltip:hover:after{
