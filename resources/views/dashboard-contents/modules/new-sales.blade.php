@@ -46,39 +46,72 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Member ID</th>
-                                    <th>First Name</th>
-                                    <th>Middle Name</th>
-                                    <th>Last Name</th>
-                                    <th>Address</th>
+                                    <th>Full Name</th>
+                                    <th>Branch</th>
+                                    <th>Program</th>
                                     <th>Contact No.</th>
+                                    <th>OR #</th>
+                                    <th>MAS</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($members as $member)
+                                @foreach ($members_program as $mp)
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td>{{ $member->id; }}</td>
-                                        <td id="{{ $member->id; }}_fname">{{ $member->fname; }}</td>
-                                        <td id="{{ $member->id; }}_mname">{{ $member->mname; }}</td>
-                                        <td id="{{ $member->id; }}_lname">{{ $member->lname; }}</td>
-                                        <td id="{{ $member->id; }}_address">{{ $member->address; }}</td>
-                                        <td id="{{ $member->id; }}_contact_num">{{ $member->contact_num; }}</td>
-
+                                        <td>
+                                            @foreach($members as $member)
+                                                @if($member->id == $mp->member_id)
+                                                    {{ $member->fname.' '.$member->mname.' '.$member->lname.' '.$member->ext; }}
+                                                @endif
+                                            @endforeach
+                                        </td>
+                                        <td id="{{ $mp->id; }}_fname">
+                                            @foreach($members as $member)
+                                                @if($branch->id == $mp->branch_id)
+                                                    {{ $branch->branch; }}
+                                                @endif
+                                            @endforeach 
+                                        </td>
+                                        <td id="{{ $mp->id; }}_mname">
+                                            @foreach($programs as $program)
+                                                @if($program->id == $mp->program_id)
+                                                    {{ $program->code; }}
+                                                @endif
+                                            @endforeach 
+                                        </td>
+                                        <td>
+                                            @foreach($members as $member)
+                                                @if($member->id == $mp->member_id)
+                                                    {{ $member->contact_num; }}
+                                                @endif
+                                            @endforeach
+                                        </td>
+                                        <td>{{ $mp->or_number; }}</td>
+                                        <td id="{{ $mp->id; }}_address">
+                                            @foreach($members as $member)
+                                                @if($member->id == $mp->member_id)
+                                                    @foreach($users as $user)
+                                                        @if($user->id == $member->agent_id)
+                                                            {{ $user->fname.' '.$user->mname.' '.$user->lname; }}
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            @endforeach
+                                        </td>
                                         <td>
                                            
                                             <button class="btn btn-outline-info" data-toggle="modal" data-target="#ViewModal"
-                                                    title="View Member" onclick="viewFunction({{ $member->id; }})" >
+                                                    title="View Member" onclick="viewFunction({{ $mp->id; }})" >
                                                 <span class="fas fa-eye"></span>
                                             </button>
                                             @if($my_user->usertype == 1)
                                                 <button class="btn btn-outline-primary" data-toggle="modal" data-target="#EditModal"
-                                                        title="Edit Member Info" onclick="editFunction({{ $member->id; }})" >
+                                                        title="Edit Member Info" onclick="editFunction({{ $mp->id; }})" >
                                                     <span class="fas fa-pen"></span>
                                                 </button>
                                                 <button class="btn btn-outline-danger" data-toggle="modal" data-target="#DeleteModal"
-                                                        title="Remove Member" onclick="deleteFunction({{ $member->id; }})" >
+                                                        title="Remove Member" onclick="deleteFunction({{ $mp->id; }})" >
                                                     <span class="fas fa-trash"></span>
                                                 </button>
                                             @endif
@@ -94,10 +127,10 @@
                     </div>
                 </div>
 
-                <!-- ADD MEMBER SECTION -->
+                <!-- ADD NEW SALES SECTION -->
                 <div class="card card-primary" id="form" style="display: none;">
                     <div class="card-header">
-                        <h3 class="card-title" style="padding-top: 10px;">Membership Application Form</h3>
+                        <h3 class="card-title" style="padding-top: 10px;">New Sales Form</h3>
                         <button class="btn btn-secondary float-right" style="color: white;" onclick="hideForm()">
                             <span class="fas fa-times"></span> Cancel
                         </button>

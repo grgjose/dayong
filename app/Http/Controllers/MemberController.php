@@ -395,17 +395,21 @@ class MemberController extends Controller
     {
         if(auth()->check()){
 
-            $memberProgramId = DB::table('members_program')->where('id', $request->input("id"))->get();
+            $memberProgramId = DB::table('members_program')
+            ->where('member_id', $request->input("id"))
+            ->where('is_deleted', false)->get();
 
             // Destroy Request Data (Soft Delete)
             $member = Member::find($request->input("id"));
             $member->is_deleted = true;
             $member->save();
 
-            $memberProgram = MembersProgram::find($memberProgramId[0]->id);
-            $memberProgram->is_deleted = true;
-            $memberProgram->save();
-            
+            if(count($memberProgramId) > 0){
+                $memberProgram = MembersProgram::find($memberProgramId[0]->id);
+                $memberProgram->is_deleted = true;
+                $memberProgram->save();
+            }
+
             /*
             foreach($memberProgram as $mp){
                 Claimant::where("id", $mp->claimants_id)->delete();
@@ -435,8 +439,13 @@ class MemberController extends Controller
                 'sheetName' => ['required'],
             ]);
 
-            $user = DB::table('users')->where('lname', strtolower($validated['sheetName']))->get()[0];
+            $users = DB::table('users')->where('lname', strtolower($validated['sheetName']))->get();
 
+            if(count($users) == 0){
+                return redirect('/members')->with("error_msg", "No User with Last Name ".$validated['sheetName']);
+            }
+
+            $user = $users[0];
             $col['phmember'] = 3;
             $col['address'] = 4;
 
@@ -583,12 +592,22 @@ class MemberController extends Controller
 
         
         $member = DB::table('members')->where('id', $id)->get()[0];
-        $members_program = DB::table('members_program')->where('member_id', $id)->get()[0];
-        $my_user = DB::table('users')->where('id', $members_program->user_id)->get()[0];
-        $branches = DB::table('branches')->orderBy('id')->get();
-        $users = DB::table('users')->orderBy('id')->get();
+        $members_program = DB::table('members_program')->where('member_id', $id)->get();
         $entries = DB::table('entries')->where('member_id', $id)->get();
 
+        if(count($members_program) == 0 && count($entries) == 0){ 
+            return redirect('/members')->with("error_msg", "No New Sales or Collection Found");
+        }
+
+        if(count($members_program) > 0){
+            $my_user = DB::table('users')->where('id', $members_program[0]->user_id)->get()[0];
+        } else {
+            $my_user = null;
+        }
+        
+        $branches = DB::table('branches')->orderBy('id')->get();
+        $users = DB::table('users')->orderBy('id')->get();
+        
         $pdf = Pdf::loadView('forms.statement_of_account', [
             'members_program' => $members_program,
             'member' => $member,
@@ -607,16 +626,27 @@ class MemberController extends Controller
     {
         $my_user = auth()->user();
         $member = DB::table('members')->where('id', $id)->get();
-        $claimant = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
-        $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
-        $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
+
+        if( $member[0]->claimants_id != "" &&  $member[0]->claimants_id != null){
+            $claimants = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+            $claimant = $claimants[0];
+        } else {
+            $claimant = null;
+        }
+
+        if($member[0]->beneficiaries_ids != ""){
+            $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
+            $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
+        } else {
+            $beneficiaries = array();
+        }
 
         if(auth()->check()){
 
             return view('dashboard-contents.modules.members-view', [
                 'id' => $id,
                 'member' => $member[0],
-                'claimant' => $claimant[0],
+                'claimant' => $claimant,
                 'beneficiaries' => $beneficiaries,
             ]);
 
@@ -626,18 +656,28 @@ class MemberController extends Controller
     public function editDetails($id)
     {
         $my_user = auth()->user();
-
         $member = DB::table('members')->where('id', $id)->get();
-        $claimant = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
-        $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
-        $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
-        
+
+        if( $member[0]->claimants_id != "" &&  $member[0]->claimants_id != null){
+            $claimants = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+            $claimant = $claimants[0];
+        } else {
+            $claimant = null;
+        }
+
+        if($member[0]->beneficiaries_ids != ""){
+            $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
+            $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
+        } else {
+            $beneficiaries = array();
+        }
+
         if(auth()->check()){
 
             return view('dashboard-contents.modules.members-edit', [
                 'id' => $id,
                 'member' => $member[0],
-                'claimant' => $claimant[0],
+                'claimant' => $claimant,
                 'beneficiaries' => $beneficiaries,
             ]);
 

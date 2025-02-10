@@ -45,26 +45,25 @@
                         <table id="normalTable" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Member ID</th>
-                                    <th>First Name</th>
-                                    <th>Middle Name</th>
-                                    <th>Last Name</th>
-                                    <th>Address</th>
-                                    <th>Contact No.</th>
-                                    <th>MAS</th>
-                                    <th>Action</th>
+                                    <th style="width: 5%">#</th>
+                                    <th style="width: 10%">First Name</th>
+                                    <th style="width: 10%">Middle Name</th>
+                                    <th style="width: 10%">Last Name</th>
+                                    <th style="width: 30%">Address</th>
+                                    <th style="width: 10%">Contact No.</th>
+                                    <th style="width: 10%">MAS</th>
+                                    <th style="width: 15%">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($members as $member)
                                     <tr>
                                         <td><input type="checkbox" /></td>
-                                        <td>{{ $member->id; }}</td>
                                         <td id="{{ $member->id; }}_fname">{{ $member->fname; }}</td>
                                         <td id="{{ $member->id; }}_mname">{{ $member->mname; }}</td>
                                         <td id="{{ $member->id; }}_lname">{{ $member->lname; }}</td>
                                         <td id="{{ $member->id; }}_address">{{ $member->address; }}</td>
+                                        <td id="{{ $member->id; }}_contact_num">{{ $member->contact_num; }}</td>
                                         <td id="{{ $member->id; }}_agent">
                                             @foreach($users as $user)
                                                 @if($user->id == $member->agent_id)
@@ -73,7 +72,7 @@
                                                 @endif
                                             @endforeach
                                         </td>
-                                        <td id="{{ $member->id; }}_contact_num">{{ $member->contact_num; }}</td>
+                                        
 
                                         <td>
                                            
@@ -120,19 +119,19 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="fname">First Name</label>
-                                        <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name">
+                                        <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="mname">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter Middle Name">
+                                        <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter Middle Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="lname">Last Name</label>
-                                        <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name">
+                                        <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="ext">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
+                                        <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" required>
                                     </div>
                                     
                                 </div>
@@ -142,49 +141,49 @@
                                     @endphp
                                     <div class="form-group col">
                                         <label for="app_no">Creation Date:</label>
-                                        <input type="date" class="form-control" id="created_at" name="created_at" value="{{ $curr }}">
+                                        <input type="date" class="form-control" id="created_at" name="created_at" value="{{ $curr }}" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="birthdate">Birthdate</label>
-                                        <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Enter Birthdate">
+                                        <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Enter Birthdate" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="sex">Sex</label>
-                                        <select class="form-control chosen-select" id="sex" name="sex">
+                                        <select class="form-control chosen-select" id="sex" name="sex" required>
                                             <option value="male">Male</option>
                                             <option value="female">Female</option>
                                         </select>
                                     </div>
                                     <div class="form-group col">
                                         <label for="birthplace">Place of Birth</label>
-                                        <input type="text" class="form-control" id="birthplace" name="birthplace" placeholder="Enter Place of Birth">
+                                        <input type="text" class="form-control" id="birthplace" name="birthplace" placeholder="Enter Place of Birth" required>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="citizenship">Citizenship</label>
-                                        <input type="text" class="form-control" id="citizenship" name="citizenship" placeholder="Enter Citizenship (Filipino, American, etc.)">
+                                        <input type="text" class="form-control" id="citizenship" name="citizenship" placeholder="Enter Citizenship (Filipino, American, etc.)" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="civil_status">Civil Status</label>
-                                        <select class="form-control chosen-select" id="civil_status" name="civil_status">
+                                        <select class="form-control chosen-select" id="civil_status" name="civil_status" required>
                                             <option value="single">Single</option>
                                             <option value="married">Married</option>
                                         </select>
                                     </div>
                                     <div class="form-group col">
                                         <label for="contact_num">Contact #</label>
-                                        <input type="number" class="form-control" id="contact_num" name="contact_num" placeholder="Enter Contact Number (+63)">
+                                        <input type="number" class="form-control" id="contact_num" name="contact_num" placeholder="Enter Contact Number (+63)" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="email">Email address</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email (Optional)">
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email (Optional)" required>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="address">Address</label>
-                                        <input type="text" class="form-control" id="address" name="address" placeholder="Enter Current Address">
+                                        <input type="text" class="form-control" id="address" name="address" placeholder="Enter Current Address" required>
                                     </div>
                                 </div>
                             </fieldset>
@@ -194,36 +193,36 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="fname_c">First Name</label>
-                                        <input type="text" class="form-control" id="fname_c" name="fname_c" placeholder="Enter First Name">
+                                        <input type="text" class="form-control" id="fname_c" name="fname_c" placeholder="Enter First Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="mname_c">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname_c" name="mname_c" placeholder="Enter Middle Name">
+                                        <input type="text" class="form-control" id="mname_c" name="mname_c" placeholder="Enter Middle Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="lname_c">Last Name</label>
-                                        <input type="text" class="form-control" id="lname_c" name="lname_c" placeholder="Enter Last Name">
+                                        <input type="text" class="form-control" id="lname_c" name="lname_c" placeholder="Enter Last Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="ext_c">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
+                                        <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" required>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="birthdate_c">Birthdate</label>
-                                        <input type="date" class="form-control" id="birthdate_c" name="birthdate_c" placeholder="Enter Birthdate">
+                                        <input type="date" class="form-control" id="birthdate_c" name="birthdate_c" placeholder="Enter Birthdate" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="sex_c">Sex</label>
-                                        <select class="form-control chosen-select" id="sex_c" name="sex_c">
+                                        <select class="form-control chosen-select" id="sex_c" name="sex_c" required>
                                             <option value="male">Male</option>
                                             <option value="female">Female</option>
                                         </select>
                                     </div>
                                     <div class="form-group col">
                                         <label for="contact_num_c">Contact #</label>
-                                        <input type="number" class="form-control" id="contact_num_c" name="contact_num_c" placeholder="Enter Contact Number (+63)">
+                                        <input type="number" class="form-control" id="contact_num_c" name="contact_num_c" placeholder="Enter Contact Number (+63)" required>
                                     </div>
                                 </div>
                             </fieldset>

@@ -18,8 +18,10 @@ return new class extends Migration
             $table->string('fname')->nullable();
             $table->string('mname')->nullable();
             $table->string('lname')->nullable();
+            $table->string('ext')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('status')->nullable();
+            $table->integer('branch_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('birthdate')->nullable();
             $table->string('contact_num')->nullable();

@@ -77,12 +77,14 @@ class NewSalesController extends Controller
             $my_user = auth()->user();
             $users = DB::table('users')->orderBy('usertype', 'asc')->get();
             $members = DB::table('members')->orderBy('created_at', 'desc')->get();
+            $members_program = DB::table('members_program')->where('is_deleted', false)->get();
             $programs = DB::table('programs')->orderBy('code')->get();
             $branches = DB::table('branches')->orderBy('branch')->get();
 
             return view('main', [
                 'my_user' => $my_user,
                 'members' => $members,
+                'members_program' => $members_program,
                 'programs' => $programs,
                 'branches' => $branches,
                 'users' => $users,

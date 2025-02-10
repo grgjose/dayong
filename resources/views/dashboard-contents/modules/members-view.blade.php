@@ -77,36 +77,36 @@
             <div class="row">
                 <div class="form-group col">
                     <label for="fname_c">First Name</label>
-                    <input type="text" class="form-control" id="fname_c" name="fname_c" placeholder="Enter First Name" value="{{ $claimant->fname; }}" disabled>
+                    <input type="text" class="form-control" id="fname_c" name="fname_c" placeholder="Enter First Name" value="{{ ((isset($claimant->fname)?$claimant->fname:'')); }}" disabled>
                 </div>
                 <div class="form-group col">
                     <label for="mname_c">Middle Name</label>
-                    <input type="text" class="form-control" id="mname_c" name="mname_c" placeholder="Enter Middle Name" value="{{ $claimant->mname; }}" disabled>
+                    <input type="text" class="form-control" id="mname_c" name="mname_c" placeholder="Enter Middle Name" value="{{ ((isset($claimant->mname)?$claimant->mname:'')); }}" disabled>
                 </div>
                 <div class="form-group col">
                     <label for="lname_c">Last Name</label>
-                    <input type="text" class="form-control" id="lname_c" name="lname_c" placeholder="Enter Last Name" value="{{ $claimant->lname; }}" disabled>
+                    <input type="text" class="form-control" id="lname_c" name="lname_c" placeholder="Enter Last Name" value="{{ ((isset($claimant->lname)?$claimant->lname:'')); }}" disabled>
                 </div>
                 <div class="form-group col">
                     <label for="ext_c">Ext Name</label>
-                    <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" value="{{ $claimant->ext; }}" disabled>
+                    <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" value="{{ ((isset($claimant->ext)?$claimant->ext:'')); }}" disabled>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col">
                     <label for="birthdate_c">Birthdate</label>
-                    <input type="date" class="form-control" id="birthdate_c" name="birthdate_c" placeholder="Enter Birthdate" value="{{ substr($claimant->birthdate, 0, 10); }}" disabled>
+                    <input type="date" class="form-control" id="birthdate_c" name="birthdate_c" placeholder="Enter Birthdate" value="{{ ((isset($claimant->birthdate)?substr($claimant->birthdate, 0, 10):'')); }}" disabled>
                 </div>
                 <div class="form-group col">
                     <label for="sex_c">Sex</label>
-                    <select class="form-control chosen-select" id="sex_c" name="sex_c" value="{{ $claimant->sex; }}" disabled>
+                    <select class="form-control chosen-select" id="sex_c" name="sex_c" value="{{ ((isset($claimant->sex)?$claimant->sex:'')); }}" disabled>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
                 </div>
                 <div class="form-group col">
                     <label for="contact_num_c">Contact #</label>
-                    <input type="number" class="form-control" id="contact_num_c" name="contact_num_c" placeholder="Enter Contact Number (+63)" value="{{ $claimant->contact_num; }}" disabled>
+                    <input type="number" class="form-control" id="contact_num_c" name="contact_num_c" placeholder="Enter Contact Number (+63)" value="{{ ((isset($claimant->contact_num)?$claimant->contact_num:'')); }}" disabled>
                 </div>
             </div>
         </fieldset>
