@@ -161,126 +161,284 @@ class EntryController extends Controller
         }
     }
  
-    public function importEntries(Request $request)
+    public function import(Request $request)
     {
-        set_time_limit(240);
+        $my_user = auth()->user();
         $programs = DB::table('programs')->orderBy('code')->get();
         $branches = DB::table('branches')->orderBy('branch')->get();
         $toImportEntries = DB::table('excel_entries')->orderBy('id')->skip(0)->take((int)$request->input('data_count'))->get();
 
         foreach($toImportEntries as $toImport) {
+
             if($toImport->timestamp != ""){
 
-                // Check if Marketting Agent in the User List
-                // If not, Create Default User for Agent
-                $name = ucwords(strtolower(trim($toImport->marketting_agent)), " .");
-                if(strpos($name, ",") > 0){
-                    $tmp = explode(",", $name);
-                    $fname = ucwords($tmp[1]);
-                    $lname = ucwords($tmp[0]);
-                } else {
-                    $fname = substr($name, strpos($name, " ") + 1);
-                    $lname = substr($name, 0, strpos($name, " "));
-                }
+                // (PERFORM VALIDATIONS)
 
-                $users = DB::table('users')->where('lname', $lname)
-                ->where('fname', 'LIKE', $fname)->get();
+                    // 1. Validate Timestamp
+                        $timestamp = $this->excelToMySQLDateTime(trim($toImport->timestamp));
+                        if($timestamp == null) { 
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Invalid Timestamp!";
+                            $excelMember->save();
+                            goto next; 
+                        }
+                    //
 
-                // Get Next Auto Increment
-                $statement = DB::select("SHOW TABLE STATUS LIKE 'users'");
-                $user_id = $statement[0]->Auto_increment;
+                    // 2. Validate Branch
 
-                if(count($users) == 0){
-                    // Save User Data
-                    $newuser = new User();
+                        $branches = DB::table('branches')->where('branch', trim($toImport->branch))->get();
 
-                    $newuser->username = strtolower($lname);
-                    $newuser->usertype = 3;
-                    $newuser->fname = $fname;
-                    $newuser->lname = $lname;
-                    $newuser->profile_pic = "default.png";
-                    $newuser->password = "password";
+                        if(count($branches) == 0){ 
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Branch is not in the Branches List";
+                            $excelMember->save();
+                            goto next;
+                        } elseif (count($branches) > 1){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "It matched with More than 2 Branches on the User List, please be specific";
+                            $excelMember->save();
+                            goto next;
+                        }
 
-                    $newuser->save();
-                } else {
-                    $user_id = $users[0]->id;
-                }
+                        // Get ID of Branch (For Member)
+                        $branch_id = $branches[0]->id;
 
-                // Save Entry Data (Member's Collection Information)
-                $entry = new Entry();
+                    //
 
-                $name = ucwords(strtolower(trim($toImport->phmember)), " .");
-                if(strpos($name, ",") > 0){
-                    $tmp = explode(",", $name);
-                    $fname = ucwords($tmp[1]);
-                    $lname = ucwords($tmp[0]);
-                } else {
-                    $fname = substr($name, strpos($name, " ") + 1);
-                    $lname = substr($name, 0, strpos($name, " "));
-                }
+                    // 3. Validate Marketting Agent
 
-                $members = DB::table('members')
-                ->where('lname', $entry->lname)
-                ->where('fname', 'LIKE', $entry->fname)
-                ->get();
+                        // If not Existing in User List, Add Remarks to the ID
+                        $name = ucwords(strtolower(trim($toImport->marketting_agent)), " .");
+                        if(strpos($name, ",") > 0){
+                            $tmp = explode(",", $name);
+                            $fname = ucwords(explode(".", $tmp[1])[0]);
+                            $lname = ucwords($tmp[0]);
+                        } else {
+                            $fname = substr($name, strpos($name, " ") + 1);
+                            $lname = substr($name, 0, strpos($name, " "));
+                        }
+                        
+                        $users = DB::table('users')->where('lname', $lname)
+                        ->where('fname', 'LIKE', $fname)->get();
 
-                //$anotherMembers = DB::table('members')->where('or_number', $toImport->or_number)->get();
-                //$excel_members = DB::table('excel_members')->where('or_number', $toImport->or_number)->get();
+                        if(count($users) == 0){ 
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Marketting Agent is not in the Users List";
+                            $excelMember->save();
+                            goto next;
+                        } elseif (count($users) > 1){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "It matched with More than 2 Marketting Agent on the User List, please be specific";
+                            $excelMember->save();
+                            goto next;
+                        }
 
-                
+                        $user_id = $users[0]->id;
 
-                if(count($members) > 0){
+                    //
 
-                    if(is_numeric($toImport->timestamp)){
-                        $timestamp = $this->excelTimestampToString((float)trim($toImport->timestamp));
-                    } else {
-                        break;
-                    }
+                    // 4. Validate Status
+                        if((strtolower(trim($toImport->status)) != "active") 
+                         && strtolower(trim($toImport->status)) != "collector"){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Status should be Active or Collector";
+                            $excelMember->save();
+                            goto next;
+                        }
+                        $status = trim($toImport->status);
+                    //
+
+                    // 5. Validate PH/Member
                     
+                        // Get Next Auto Increment
+                        $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
+                        $member_id = $statement[0]->Auto_increment;
+                        
+                        $fullname = $this->parseFullName(trim($toImport->phmember));
+
+                        $members = DB::table('members')
+                        ->where('lname', $fullname['lname'])
+                        ->where('fname', $fullname['fname'])
+                        ->where('mname', $fullname['mname'])
+                        ->where('ext', $fullname['ext'])
+                        ->get();
+
+                        if(count($members) == 0){ 
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Member is not existing in Member's List";
+                            $excelMember->save();
+                            goto next;
+                        } elseif (count($members) > 1){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "It matched with More than 2 Members on the Member List, please be specific";
+                            $excelMember->save();
+                            goto next;
+                        }
+
+                        $member_id = $members[0]->id;
+
+                    //
+
+                    // 6. Validate OR Number
+                        $query = DB::table('members_program')->where('or_number', '=', trim($toImport->or_number))->get();
+
+                        if (trim($toImport->or_number) == ""){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Missing OR Number!";
+                            $excelMember->save();
+                            goto next;
+                        } elseif (count($query) > 0){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "OR Number is already existing!";
+                            $excelMember->save();
+                            goto next;
+                        } elseif (!is_numeric(trim($toImport->or_number))){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "OR Number is not a Number!";
+                            $excelMember->save();
+                            goto next;
+                        } 
+                        $or_number = (int)trim($toImport->or_number);
+                    //
+
+                    // 7. Validate OR Date
+                        $or_date = $this->excelToMySQLDateTime(trim($toImport->or_date));
+
+                        if($or_date == null){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Invalid OR Date Value!";
+                            $excelMember->save();
+                            goto next;
+                        }
+                    //
+
+                    // 8. Validate Amount Collected
+                        if (trim($toImport->amount_collected) == ""){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Missing Amount Collected!";
+                            $excelMember->save();
+                            goto next;
+                        } elseif (!is_numeric(trim($toImport->amount_collected))){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Amount is not a Number!";
+                            $excelMember->save();
+                            goto next;
+                        } 
+                        $amount = (int)trim($toImport->amount_collected);
+                    //
+
+                    // 9. Validate Month Of (NOP)
+                        $month_of = trim($toImport->month_of);
+
+                        if($month_of == ""){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Month Of is Empty!";
+                            $excelMember->save();
+                            goto next;
+                        } else {
+
+                            $months = explode(",", $month_of);
+                            
+                            for($i = 0; $i <= count($months) - 1; $i++){
+                                $month = strtolower(trim($months[$i]));
+                                
+                                if(!$this->validateMonth($month)){
+                                    $excelMember = ExcelEntries::find($toImport->id);
+                                    $excelMember->remarks = "Invalid Month Value" . $month . "!";
+                                    $excelMember->save();
+                                    goto next;
+                                } 
+                            }
+
+                            $nop = count($months);
+                            $m1 = $this->getMonthNumber($months[0]);
+                            $m2 = $this->getMonthNumber($months[count($months) - 1]);
+                            
+                        }
+
+                    //
+
+                    // 10. Validate Date Remitted
+                        $date_remitted = $this->excelToMySQLDateTime(trim($toImport->date_remitted));
+
+                        if($date_remitted == null){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Invalid Date Remitted Value!";
+                            $excelMember->save();
+                            goto next;
+                        }
+                        
+                    //
+
+                    // 11. Validate Dayong Program
+                        $programs = DB::table('programs')
+                        ->where('code', '=', trim($toImport->dayong_program))->get();
+
+                        if(count($programs) == 0){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "Program not Existing in Settings!";
+                            $excelMember->save();
+                            goto next;
+                        } elseif (count($programs) > 1){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "More than 2 Programs found in Settings!";
+                            $excelMember->save();
+                            goto next;
+                        } else {
+                            $program_id = $programs[0]->id;
+                        }
+
+                    //
+
+                    // 12. Validate Type of Transaction
+                        if((strtolower(trim($toImport->reactivation)) != "no") 
+                         && strtolower(trim($toImport->reactivation)) != "yes"){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "reactivation column should only be No or Yes!";
+                            $excelMember->save();
+                            goto next;
+                        }
+
+                        if((strtolower(trim($toImport->transferred)) != "no") 
+                         && strtolower(trim($toImport->transferred)) != "yes"){
+                            $excelMember = ExcelEntries::find($toImport->id);
+                            $excelMember->remarks = "transferred column should only be No or Yes!";
+                            $excelMember->save();
+                            goto next;
+                        }
+
+                        $is_reactivated = (strtolower(trim($toImport->reactivation)) == "yes")? true: false;
+                        $is_transferred = (strtolower(trim($toImport->transferred)) == "yes")? true: false;
+                    //
+
+                //
+                
+                // IMPORT TO COLLECTION TABLE
+
+                    $entry = new Entry();
+                    $entry->branch_id = $branch_id;
+                    $entry->encoder_id = $my_user->id;
+                    $entry->agent_id = $user_id;
+                    $entry->branch_id = $branch_id;
+                    $entry->member_id = $member_id;
+                    $entry->or_number = $or_number;
+                    $entry->or_date = $or_date;
+                    $entry->amount = $amount;
+                    $entry->number_of_payment = $nop;
+                    $entry->program_id = $program_id;
+                    $entry->month_from = $m1;
+                    $entry->month_to = $m2;
+                    $entry->is_reactivated = $is_reactivated;
+                    $entry->is_transferred = $is_transferred;
                     $entry->created_at = $timestamp;
 
-                    try{
-                        $entry->save();
-                    }
-                    catch(Exception $e){
-                        dd($e->getMessage());   // insert query
-                    }
-
-                    $branch_id = 0;
-                    foreach($branches as $branch){
-                        if(strtolower(trim($branch->branch)) == strtolower(trim($toImport->branch))){
-                            $branch_id = $branch->id;
-                            break; break;
-                        }
-                    }
-
-                    $program_id = 0;
-                    foreach($programs as $program){
-                        if(strtolower(trim($program->code)) == strtolower(trim($toImport->dayong_program))){
-                            $program_id = $program->id;
-                            break; break;
-                        }
-                    }
-
-                    $entry->branch_id = $branch_id;
-
-                    $entry->marketting_agent = $user_id;
-                    $entry->member_id = $members[0]->id;
-                    $entry->or_number = $toImport->or_number;
-                    $entry->amount = $toImport->amount_collected;
-                    $entry->number_of_payment = $toImport->nop;
-                    $entry->program_id = $program_id; 
-                    $entry->is_reactivated = $toImport->reactivation == "Yes" ? 1 : 0;
-                    $entry->is_transferred = $toImport->transferred == "Yes" ? 1 : 0;
-
-                    $entry->save();
-
-                    $toDelete = ExcelEntries::find($toImport->id);
-                    $toDelete->delete();
-
-                }                        
+                //
             }
+
+            next:
+
         }
+
 
         // Back to View
         return redirect('/entries')->with("success_msg","Created Successfully"); 
@@ -496,6 +654,30 @@ class EntryController extends Controller
         }
 
         return "";
+    }
+
+    public function validateMonth($month) {
+        $months = [
+            'january', 'february', 'march', 'april', 'may', 'june',
+            'july', 'august', 'september', 'october', 'november', 'december',
+            'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+            'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+        ];
+    
+        return in_array(strtolower($month), $months, true);
+    }
+
+    public function getMonthNumber($month) {
+        $months = [
+            'january' => 1, 'february' => 2, 'march' => 3, 'april' => 4, 'may' => 5, 'june' => 6,
+            'july' => 7, 'august' => 8, 'september' => 9, 'october' => 10, 'november' => 11, 'december' => 12,
+            'jan' => 1, 'feb' => 2, 'mar' => 3, 'apr' => 4, 'may' => 5, 'jun' => 6,
+            'jul' => 7, 'aug' => 8, 'sep' => 9, 'oct' => 10, 'nov' => 11, 'dec' => 12
+        ];
+    
+        $month = strtolower($month);
+    
+        return $months[$month] ?? false;
     }
 
 }

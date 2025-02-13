@@ -37,151 +37,15 @@
             <legend class="h5 pl-2 pr-2" style="width: auto; !important">Personal Information</legend>
             <div class="row">
                 <div class="form-group col">
-                    <label for="fname">First Name</label>
-                    <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" value="{{ $member->fname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="mname">Middle Name</label>
-                    <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter Middle Name" value="{{ $member->mname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="lname">Last Name</label>
-                    <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" value="{{ $member->lname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="ext">Ext Name</label>
-                    <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" value="{{ $member->ext; }}" disabled>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="birthdate">Birthdate</label>
-                    <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Enter Birthdate" value="{{ substr($member->birthdate, 0, 10); }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="sex">Sex</label>
-                    <select class="form-control chosen-select" id="sex" name="sex" disabled>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                    <label for="fname">Members Name:</label>
+                    <select class="form-control chosen-select" id="member_id" name="member_id" value="{{ $member_program->member_id; }}" disabled>
+                        @foreach($members as $member)
+                            <option value="{{ $member->id; }}">{{ $member->fname.' '.$member->mname.' '.$member->lname.' '.$member->ext; }}</option>
+                        @endforeach
                     </select>
-                </div>
-                <div class="form-group col">
-                    <label for="birthplace">Place of Birth</label>
-                    <input type="text" class="form-control" id="birthplace" name="birthplace" placeholder="Enter Place of Birth" value="{{ $member->birthplace; }}" disabled>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="citizenship">Citizenship</label>
-                    <input type="text" class="form-control" id="citizenship" name="citizenship" placeholder="Enter Citizenship (Filipino, American, etc.)" value="{{ $member->citizenship; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="civil_status">Civil Status</label>
-                    <select class="form-control chosen-select" id="civil_status" name="civil_status" value="{{ $member->civil_status; }}" disabled>
-                        <option value="single">Single</option>
-                        <option value="married">Married</option>
-                    </select>
-                </div>
-                <div class="form-group col">
-                    <label for="contact_num">Contact #</label>
-                    <input type="number" class="form-control" id="contact_num" name="contact_num" placeholder="Enter Contact Number (+63)" value="{{ $member->contact_num; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="email">Email address</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email (Optional)" value="{{ $member->email; }}" disabled>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="address">Address</label>
-                    <input type="text" class="form-control" id="address" name="address" placeholder="Enter Current Address" value="{{ $member->address; }}" disabled>
                 </div>
             </div>
         </fieldset>
-        
-        <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-            <legend class="h5 pl-2 pr-2" style="width: auto; !important">Claimant's Personal Information</legend>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="fname_c">First Name</label>
-                    <input type="text" class="form-control" id="fname_c" name="fname_c" placeholder="Enter First Name" value="{{ $claimant->fname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="mname_c">Middle Name</label>
-                    <input type="text" class="form-control" id="mname_c" name="mname_c" placeholder="Enter Middle Name" value="{{ $claimant->mname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="lname_c">Last Name</label>
-                    <input type="text" class="form-control" id="lname_c" name="lname_c" placeholder="Enter Last Name" value="{{ $claimant->lname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="ext_c">Ext Name</label>
-                    <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" value="{{ $claimant->ext; }}" disabled>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="birthdate_c">Birthdate</label>
-                    <input type="date" class="form-control" id="birthdate_c" name="birthdate_c" placeholder="Enter Birthdate" value="{{ substr($claimant->birthdate, 0, 10); }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="sex_c">Sex</label>
-                    <select class="form-control chosen-select" id="sex_c" name="sex_c" value="{{ $claimant->sex; }}" disabled>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group col">
-                    <label for="contact_num_c">Contact #</label>
-                    <input type="number" class="form-control" id="contact_num_c" name="contact_num_c" placeholder="Enter Contact Number (+63)" value="{{ $claimant->contact_num; }}" disabled>
-                </div>
-            </div>
-        </fieldset>
-
-        @foreach($beneficiaries as $beneficiary)
-        <fieldset class="border p-3 mb-2 rounded beneficiaries" style="diplay: none;">
-            <legend class="h5 pl-2 pr-2" style="width: auto; !important">Beneficiaries #1</legend>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="fname_b1">First Name</label>
-                    <input type="text" class="form-control" id="fname_b1" name="fname_b1" placeholder="Enter First Name" value="{{ $beneficiary->fname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="mname_b1">Middle Name</label>
-                    <input type="text" class="form-control" id="mname_b1" name="mname_b1" placeholder="Enter Middle Name" value="{{ $beneficiary->mname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="lname_b1">Last Name</label>
-                    <input type="text" class="form-control" id="lname_b1" name="lname_b1" placeholder="Enter Last Name" value="{{ $beneficiary->lname; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="ext_">Ext Name</label>
-                    <input type="text" class="form-control" id="ext_b1" name="ext_b1" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" value="{{ $beneficiary->ext; }}" disabled>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col">
-                    <label for="birthdate_b1">Birthdate</label>
-                    <input type="date" class="form-control" id="birthdate_b1" name="birthdate_b1" placeholder="Enter Birthdate" value="{{ $beneficiary->birthdate; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="sex_b1">Sex</label>
-                    <select class="form-control chosen-select" id="sex_b1" name="sex_b1" value="{{ $beneficiary->sex; }}" disabled>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group col">
-                    <label for="relationship_b1">Relationship</label>
-                    <input type="text" class="form-control" id="relationship_b1" name="relationship_b1" placeholder="Enter Relationship" value="{{ $beneficiary->relationship; }}" disabled>
-                </div>
-                <div class="form-group col">
-                    <label for="contact_num_b1">Contact #</label>
-                    <input type="number" class="form-control" id="contact_num_b1" name="contact_num_b1" placeholder="Enter Contact Number (+63)" value="{{ $beneficiary->contact_num; }}" disabled>
-                </div>
-            </div>
-        </fieldset>
-        @endforeach
 
         <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
             <legend class="h5 pl-2 pr-2" style="width: auto; !important">Others</legend>
@@ -200,6 +64,28 @@
                     <label for="registration_fee">Registration Fee:</label>
                     <input type="number" class="form-control" id="registration_fee" name="registration_fee" 
                     placeholder="Enter Registration Fee Amount" value="{{ $member_program->registration_fee; }}" disabled>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col">
+                    <label for="contact_person_num">MAS:</label>
+                    <select class="form-control chosen-select" id="agent_id" name="agent_id" value="{{ $member_program->agent_id; }}" disabled>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id; }}">{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col">
+                    <label for="contact_person_num">Amount Collected:</label>
+                    <input type="text" class="form-control" id="amount" name="amount" placeholder="Enter Amount" value="{{ $member_program->amount; }}" disabled>
+                </div>
+                <div class="form-group col">
+                    <label for="contact_person_num">Incentives (%):</label>
+                    <input type="text" class="form-control" id="incentives" name="incentives" placeholder="Enter Incentive's Percentage" value="{{ $member_program->incentives; }}" disabled>
+                </div>
+                <div class="form-group col">
+                    <label for="contact_person_num">Fidelity (%):</label>
+                    <input type="text" class="form-control" id="fidelity" name="fidelity" placeholder="Enter Fidelity" value="{{ $member_program->fidelity; }}" disabled>
                 </div>
             </div>
         </fieldset>

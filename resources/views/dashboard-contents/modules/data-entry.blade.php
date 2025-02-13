@@ -395,7 +395,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="uploadForm" action="/entries/importEntries" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="/entries/import" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-row">

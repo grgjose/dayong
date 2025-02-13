@@ -123,7 +123,7 @@
                                     </div>
                                     <div class="form-group col">
                                         <label for="mname">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter Middle Name" required>
+                                        <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter Middle Name">
                                     </div>
                                     <div class="form-group col">
                                         <label for="lname">Last Name</label>
@@ -131,7 +131,7 @@
                                     </div>
                                     <div class="form-group col">
                                         <label for="ext">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" required>
+                                        <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
                                     </div>
                                     
                                 </div>

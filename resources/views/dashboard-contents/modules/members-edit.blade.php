@@ -35,6 +35,14 @@
                     <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Enter Birthdate" value="{{ substr($member->birthdate, 0, 10); }}">
                 </div>
                 <div class="form-group col">
+                    <label for="sex">Marketting Agent:</label>
+                    <select class="form-control chosen-select" id="agent_id" name="agent_id" value="{{ $member->agent_id; }}" disabled>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id; }}">{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col">
                     <label for="sex">Sex</label>
                     <select class="form-control chosen-select" id="sex" name="sex">
                         <option value="male">Male</option>

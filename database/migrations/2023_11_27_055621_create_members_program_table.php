@@ -19,9 +19,10 @@ return new class extends Migration
             $table->integer("member_id")->nullable();
             $table->integer("program_id")->nullable();
             $table->integer("branch_id")->nullable();
-            $table->integer("claimants_id")->nullable();
+            $table->integer("claimant_id")->nullable();
             $table->string("beneficiaries_ids")->nullable();
             $table->string("or_number")->nullable();
+            $table->dateTime("or_date")->nullable();
             $table->integer("registration_fee")->nullable();
             $table->integer("amount")->nullable();
             $table->integer("incentives")->nullable();
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->integer("fidelity")->nullable();
             $table->integer("fidelity_total")->nullable();
             $table->integer("net")->nullable();
+            $table->string("transaction_type")->nullable();
             $table->string("contact_person")->nullable();
             $table->string("contact_person_num")->nullable();
             $table->string("status")->nullable();

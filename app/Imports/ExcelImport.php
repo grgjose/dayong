@@ -11,33 +11,17 @@ class ExcelImport implements WithMultipleSheets
 {
     use Importable;
 
-    public $count = 0;
+    public $sheetName = '';
 
-    public function __construct($count)
+    public function __construct($sheetName)
     {
-        $this->count = $count;
+        $this->sheetName = $sheetName;
     }
 
     public function sheets(): array
     {
-
-        $array = [];
-
-        for($i = 0; $i < $this->count; $i++){
-            if($i == 0)
-            {
-                $array[0] = null;
-            }
-            elseif ($i != 0 && ($i % 2) == 1)
-            {
-                $array[$i] = new EntryImport();
-            }
-            elseif ($i != 0 && ($i % 2) == 0)
-            {
-                $array[$i] = new SalesImport();
-            }
-        }
-
-        return $array;
+        return [
+            $this->sheetName => new SalesImport(),
+        ];
     }
 }

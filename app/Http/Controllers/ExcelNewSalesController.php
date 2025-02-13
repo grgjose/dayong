@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ProcessExcelFile;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use DateTime;
 use App\Jobs\ImportExcelFile;
 use App\Imports\SalesImport;
@@ -92,7 +93,6 @@ class ExcelNewSalesController extends Controller
         }
     }
 
-
     public function retrieve(Request $request)
     {
         if(auth()->check()){
@@ -102,197 +102,6 @@ class ExcelNewSalesController extends Controller
         } else {
             return redirect('/');
         }   
-    }
-
-
-    public function store(Request $request)
-    {
-
-        if(auth()->check()){
-
-            // Get Request Data
-            $my_user = auth()->user();
-            $validated = $request->validate([
-
-                // Location and Program
-                "program_id" => ['required'],
-                "branch_id" => ['required'],
-                "or_num" => ['required'],
-
-                // Personal Information
-                "fname" => ['required'],
-                "mname" => ['required'],
-                "lname" => ['required'],
-                "ext" => ['nullable'],
-                "birthdate" => ['required'],
-                "sex" => ['required'],
-                "birthplace" => ['required'],
-                "citizenship" => ['required'],
-                "civil_status" => ['required'],
-                "contact_num" => ['required'],
-                "email" => ['nullable'],
-                "address" => ['required'],
-                
-                // Claimant's Personal Information
-                "fname_c" => ['required'],
-                "mname_c" => ['required'],
-                "lname_c" => ['required'],
-                "ext_c" => ['nullable'],
-                "birthdate_c" => ['required'],
-                "sex_c" => ['required'],
-                "contact_num_c" => ['required'],
-
-                // Beneficiaries's #1 Personal Information
-                "fname_b1" => ['nullable'],
-                "mname_b1" => ['nullable'],
-                "lname_b1" => ['nullable'],
-                "ext_b1" => ['nullable'],
-                "birthdate_b1" => ['nullable'],
-                "sex_b1" => ['nullable'],
-                "relationship_b1" => ['nullable'],
-                "contact_num_b1" => ['nullable'],
-
-                // Beneficiaries's #2 Personal Information
-                "fname_b2" => ['nullable'],
-                "mname_b2" => ['nullable'],
-                "lname_b2" => ['nullable'],
-                "ext_b2" => ['nullable'],
-                "birthdate_b2" => ['nullable'],
-                "sex_b2" => ['nullable'],
-                "relationship_b2" => ['nullable'],
-                "contact_num_b2" => ['nullable'],
-                
-                // Others
-                "contact_person" => ['required'],
-                "contact_person_num" => ['required'],
-                "registration_fee" => ['nullable'],
-
-            ]);
-
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
-            $member_id = $statement[0]->Auto_increment;
-            
-            // Save Request Data (Member's Personal Information)
-            $member = new Member();
-
-            $member->fname = $validated['fname'];
-            $member->mname = $validated['mname'];
-            $member->lname = $validated['lname'];
-            $member->ext = $validated['ext'];
-            $member->birthdate = $validated['birthdate'];
-            $member->sex = $validated['sex'];
-            $member->birthplace = $validated['birthplace'];
-            $member->citizenship = $validated['citizenship'];
-            $member->civil_status = $validated['civil_status'];
-            $member->contact_num = $validated['contact_num'];
-            $member->email = $validated['email'];
-            $member->address = $validated['address'];
-
-            $member->save();
-
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'claimants'");
-            $claimants_id = $statement[0]->Auto_increment;
-
-            // Save Request Data (Member's Claimants Information)
-            $claimant = new Claimant();
-
-            $claimant->fname = $validated['fname_c'];
-            $claimant->mname = $validated['mname_c'];
-            $claimant->lname = $validated['lname_c'];
-            $claimant->ext = $validated['ext_c'];
-            $claimant->birthdate = $validated['birthdate_c'];
-            $claimant->sex = $validated['sex_c'];
-            $claimant->contact_num = $validated['contact_num_c'];
-
-            $claimant->save();
-
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
-            $beneficiary_id = $statement[0]->Auto_increment;
-            $beneficiaries_ids = "";
-            
-            // Save Request Data (Member's Beneficiaries Information)
-
-            if($validated['fname_b1'] != ""){
-                $beneficiary_1 = new Beneficiary();
-
-                $beneficiary_1->fname = $validated['fname_b1'];
-                $beneficiary_1->mname = $validated['mname_b1'];
-                $beneficiary_1->lname = $validated['lname_b1'];
-                $beneficiary_1->ext = $validated['ext_b1'];
-                $beneficiary_1->birthdate = $validated['birthdate_b1'];
-                $beneficiary_1->relationship = $validated['relationship_b1'];
-                $beneficiary_1->sex = $validated['sex_b1'];
-                $beneficiary_1->contact_num = $validated['contact_num_b1']; 
-
-                $beneficiary_1->save();
-                $beneficiaries_ids = $beneficiaries_ids . $beneficiary_id;
-            }
-
-            if($validated['fname_b2'] != ""){
-                $beneficiary_2 = new Beneficiary();
-
-                $beneficiary_2->fname = $validated['fname_b2'];
-                $beneficiary_2->mname = $validated['mname_b2'];
-                $beneficiary_2->lname = $validated['lname_b2'];
-                $beneficiary_2->ext = $validated['ext_b2'];
-                $beneficiary_2->birthdate = $validated['birthdate_b2'];
-                $beneficiary_2->relationship = $validated['relationship_b2'];
-                $beneficiary_2->sex = $validated['sex_b2'];
-                $beneficiary_2->contact_num = $validated['contact_num_b2']; 
-
-                $beneficiary_2->save();
-                $beneficiaries_ids = $beneficiaries_ids . "," . (string)((int)$beneficiary_id + 1);
-            }
-
-            // Save Request Data (Members_Program)
-            $memberProgram = new MembersProgram();
-            $memberProgram->app_no = "0000";
-            $memberProgram->user_id = $my_user->id;
-            $memberProgram->member_id = $member_id;
-            $memberProgram->program_id = $validated['program_id'];
-            $memberProgram->branch_id = $validated['branch_id'];
-            $memberProgram->claimants_id = $claimants_id;
-            $memberProgram->beneficiaries_ids = $beneficiaries_ids;
-            $memberProgram->registration_fee = $validated['registration_fee'];
-            $memberProgram->contact_person = $validated['contact_person'];
-            $memberProgram->contact_person_num = $validated['contact_person_num'];
-            $memberProgram->status = "active";
-
-            $memberProgram->save();
-
-            // Save Request Data (Entry)
-
-            if($validated['registration_fee'] != ""){
-                $entry = new Entry();
-
-                $entry->branch_id = $validated['branch_id'];;
-                $entry->marketting_agent = auth()->id();
-                $entry->member_id = $member_id;
-                $entry->or_number = $validated["or_num"];
-                $entry->amount = $validated['registration_fee'];
-                $entry->number_of_payment = 1;
-                $entry->program_id = $validated['program_id'];
-                $entry->is_reactivated = 0;
-                $entry->is_transferred = 0;
-                $entry->remarks = "REGISTRATION";
-
-                $entry->save();
-            }
-
-            // Back to View
-            return redirect('/members')->with("success_msg", $member->lname." Member Created Successfully");
-
-        } else {
-            return redirect('/');
-        }
-    }
-
-    public function update(Request $request, $id)
-    {
-        //code
     }
 
     public function destroy(Request $request)
@@ -327,15 +136,108 @@ class ExcelNewSalesController extends Controller
     {
         if(auth()->check()){
 
-            set_time_limit(300);
+            $my_user = auth()->user();
+            $validated = $request->validate([
+                'upload_file' => ['required'],
+                'sheetName' => ['required'],
+            ]);
 
-            $validated = $request->validate(['upload_file' => ['required', 'file']]);
-            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('upload_file'));
-            (new ExcelSalesImport($spreadsheet->getSheetCount()))->import($request->file('upload_file'));
-
-            //ProcessExcelFile::dispatch($array);
+            $import = new ExcelSalesImport($validated['sheetName']);
+            //Excel::toImport($import, $validated['upload_file']);
+            (new ExcelSalesImport($validated['sheetName']))->import($validated['upload_file']);
 
             return redirect('/excel-new-sales')->with("success_msg", "Uploaded Successfully");
+
+        } else {
+            return redirect('/');
+        }
+
+    }
+
+    public function parseFullName($fullName) 
+    {
+        // Define common name extensions
+        $extensions = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'];
+
+        // Trim and clean up extra spaces
+        $fullName = trim(preg_replace('/\s+/', ' ', $fullName));
+
+        // Check if input is in "Last, First, Middle" or "Last, First Extension, Middle" format
+        if (strpos($fullName, ',') !== false) {
+            $parts = array_map('trim', explode(',', $fullName));
+
+            $lastName = $parts[0] ?? '';
+            $firstName = $parts[1] ?? '';
+            $middleName = $parts[2] ?? '';
+
+            // Split first name to check for an extension
+            $firstNameParts = explode(' ', $firstName);
+            if (count($firstNameParts) > 1 && in_array(end($firstNameParts), $extensions)) {
+                $nameExtension = array_pop($firstNameParts);
+                $firstName = implode(' ', $firstNameParts);
+            } else {
+                $nameExtension = '';
+            }
+
+            return [
+                'fname' => ucwords(strtolower($firstName)),
+                'mname' => ucwords(strtolower($middleName)),
+                'lname' => ucwords(strtolower($lastName)),
+                'ext' => ucwords(strtolower($nameExtension))
+            ];
+        }
+
+        // Default format: "First Middle Last Extension"
+        $parts = explode(' ', $fullName);
+        $count = count($parts);
+
+        $firstName = '';
+        $middleName = '';
+        $lastName = '';
+        $nameExtension = '';
+
+        if ($count == 1) {
+            $firstName = $parts[0];
+        } elseif ($count == 2) {
+            $firstName = $parts[0];
+            $lastName = $parts[1];
+        } elseif ($count >= 3) {
+            if (in_array($parts[$count - 1], $extensions)) {
+                $nameExtension = $parts[$count - 1];
+                array_pop($parts);
+                $count--;
+            }
+
+            $firstName = $parts[0];
+            $lastName = $parts[$count - 1];
+
+            if ($count > 2) {
+                $middleName = implode(' ', array_slice($parts, 1, $count - 2));
+            }
+        }
+
+        return [
+            'fname' => $firstName,
+            'mname' => $middleName,
+            'lname' => $lastName,
+            'ext' => $nameExtension
+        ];
+    }
+
+    public function loadSheets(Request $request)
+    {
+        if(auth()->check()){
+
+            ini_set('memory_limit', '2048M');
+            
+  
+            $validated = $request->validate(['upload_file' => ['required', 'file']]);
+            //$spreadsheet = IOFactory::load($validated['upload_file']);
+            $reader = IOFactory::createReaderForFile($validated['upload_file']);
+            /** @var IReader $reader */
+            $sheetNames = $reader->listWorksheetNames($validated['upload_file']); // No need to fully load the spreadsheet!
+
+            return $sheetNames;
 
         } else {
             return redirect('/');

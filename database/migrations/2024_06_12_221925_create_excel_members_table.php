@@ -32,8 +32,6 @@ return new class extends Migration
             $table->string("or_number")->nullable();
             $table->string("or_date")->nullable();
             $table->string("amount_collected")->nullable();
-            $table->string("reactivation")->nullable();
-            $table->string("transferred")->nullable();
 
             $table->string("name1")->nullable();
             $table->string("age1")->nullable();
@@ -47,7 +45,12 @@ return new class extends Migration
             $table->string("name4")->nullable();
             $table->string("age4")->nullable();
             $table->string("relationship4")->nullable();
-
+            $table->string("name5")->nullable();
+            $table->string("age5")->nullable();
+            $table->string("relationship5")->nullable();
+            
+            $table->string("sheetName")->nullable();
+            $table->string("remarks")->nullable();
             $table->boolean("isImported")->default(false)->nullable();
             $table->timestamps();
         });

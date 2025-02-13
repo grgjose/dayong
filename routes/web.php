@@ -120,6 +120,7 @@ Route::post('/excel-collection/destroy', [ExcelCollectionController::class, 'des
 Route::get('/excel-new-sales', [ExcelNewSalesController::class, 'index']);
 Route::get('/excel-new-sales/retrieve', [ExcelNewSalesController::class, 'retrieve']);
 Route::post('/excel-new-sales/upload', [ExcelNewSalesController::class, 'upload']);
+Route::post('/excel-new-sales/loadSheets', [ExcelNewSalesController::class, 'loadSheets']);
 Route::post('/excel-new-sales/store', [ExcelNewSalesController::class, 'store']);
 Route::put('/excel-new-sales/update/{id}', [ExcelNewSalesController::class, 'update']);
 Route::post('/excel-new-sales/destroy', [ExcelNewSalesController::class, 'destroy']);

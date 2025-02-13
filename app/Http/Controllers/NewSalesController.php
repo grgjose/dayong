@@ -76,7 +76,7 @@ class NewSalesController extends Controller
 
             $my_user = auth()->user();
             $users = DB::table('users')->orderBy('usertype', 'asc')->get();
-            $members = DB::table('members')->orderBy('created_at', 'desc')->get();
+            $members = DB::table('members')->orderBy('created_at', 'desc')->where('is_deleted', false)->get();
             $members_program = DB::table('members_program')->where('is_deleted', false)->get();
             $programs = DB::table('programs')->orderBy('code')->get();
             $branches = DB::table('branches')->orderBy('branch')->get();
@@ -122,50 +122,8 @@ class NewSalesController extends Controller
                 "branch_id" => ['required'],
                 "or_number" => ['required'],
                 "app_no" => ['required'],
+                "member_id" => ['required'],
                 "created_at" => ['required'],
-
-                // Personal Information
-                "fname" => ['required'],
-                "mname" => ['required'],
-                "lname" => ['required'],
-                "ext" => ['nullable'],
-                "birthdate" => ['required'],
-                "sex" => ['required'],
-                "birthplace" => ['required'],
-                "citizenship" => ['required'],
-                "civil_status" => ['required'],
-                "contact_num" => ['required'],
-                "email" => ['nullable'],
-                "address" => ['required'],
-                
-                // Claimant's Personal Information
-                "fname_c" => ['required'],
-                "mname_c" => ['required'],
-                "lname_c" => ['required'],
-                "ext_c" => ['nullable'],
-                "birthdate_c" => ['required'],
-                "sex_c" => ['required'],
-                "contact_num_c" => ['required'],
-
-                // Beneficiaries's #1 Personal Information
-                "fname_b1" => ['nullable'],
-                "mname_b1" => ['nullable'],
-                "lname_b1" => ['nullable'],
-                "ext_b1" => ['nullable'],
-                "birthdate_b1" => ['nullable'],
-                "sex_b1" => ['nullable'],
-                "relationship_b1" => ['nullable'],
-                "contact_num_b1" => ['nullable'],
-
-                // Beneficiaries's #2 Personal Information
-                "fname_b2" => ['nullable'],
-                "mname_b2" => ['nullable'],
-                "lname_b2" => ['nullable'],
-                "ext_b2" => ['nullable'],
-                "birthdate_b2" => ['nullable'],
-                "sex_b2" => ['nullable'],
-                "relationship_b2" => ['nullable'],
-                "contact_num_b2" => ['nullable'],
                 
                 // Others
                 "contact_person" => ['required'],
@@ -178,93 +136,13 @@ class NewSalesController extends Controller
 
             ]);
 
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
-            $member_id = $statement[0]->Auto_increment;
-            
-            // Save Request Data (Member's Personal Information)
-            $member = new Member();
-
-            $member->fname = $validated['fname'];
-            $member->mname = $validated['mname'];
-            $member->lname = $validated['lname'];
-            $member->ext = $validated['ext'];
-            $member->birthdate = $validated['birthdate'];
-            $member->sex = $validated['sex'];
-            $member->birthplace = $validated['birthplace'];
-            $member->citizenship = $validated['citizenship'];
-            $member->civil_status = $validated['civil_status'];
-            $member->contact_num = $validated['contact_num'];
-            $member->email = $validated['email'];
-            $member->address = $validated['address'];
-
-            $member->save();
-
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'claimants'");
-            $claimants_id = $statement[0]->Auto_increment;
-
-            // Save Request Data (Member's Claimants Information)
-            $claimant = new Claimant();
-
-            $claimant->fname = $validated['fname_c'];
-            $claimant->mname = $validated['mname_c'];
-            $claimant->lname = $validated['lname_c'];
-            $claimant->ext = $validated['ext_c'];
-            $claimant->birthdate = $validated['birthdate_c'];
-            $claimant->sex = $validated['sex_c'];
-            $claimant->contact_num = $validated['contact_num_c'];
-
-            $claimant->save();
-
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
-            $beneficiary_id = $statement[0]->Auto_increment;
-            $beneficiaries_ids = "";
-            
-            // Save Request Data (Member's Beneficiaries Information)
-
-            if($validated['fname_b1'] != ""){
-                $beneficiary_1 = new Beneficiary();
-
-                $beneficiary_1->fname = $validated['fname_b1'];
-                $beneficiary_1->mname = $validated['mname_b1'];
-                $beneficiary_1->lname = $validated['lname_b1'];
-                $beneficiary_1->ext = $validated['ext_b1'];
-                $beneficiary_1->birthdate = $validated['birthdate_b1'];
-                $beneficiary_1->relationship = $validated['relationship_b1'];
-                $beneficiary_1->sex = $validated['sex_b1'];
-                $beneficiary_1->contact_num = $validated['contact_num_b1']; 
-
-                $beneficiary_1->save();
-                $beneficiaries_ids = $beneficiaries_ids . $beneficiary_id;
-            }
-
-            if($validated['fname_b2'] != ""){
-                $beneficiary_2 = new Beneficiary();
-
-                $beneficiary_2->fname = $validated['fname_b2'];
-                $beneficiary_2->mname = $validated['mname_b2'];
-                $beneficiary_2->lname = $validated['lname_b2'];
-                $beneficiary_2->ext = $validated['ext_b2'];
-                $beneficiary_2->birthdate = $validated['birthdate_b2'];
-                $beneficiary_2->relationship = $validated['relationship_b2'];
-                $beneficiary_2->sex = $validated['sex_b2'];
-                $beneficiary_2->contact_num = $validated['contact_num_b2']; 
-
-                $beneficiary_2->save();
-                $beneficiaries_ids = $beneficiaries_ids . "," . (string)((int)$beneficiary_id + 1);
-            }
-
             // Save Request Data (Members_Program)
             $memberProgram = new MembersProgram();
             $memberProgram->app_no = $validated['app_no'];
             $memberProgram->user_id = $my_user->id;
-            $memberProgram->member_id = $member_id;
+            $memberProgram->member_id = $validated['member_id'];
             $memberProgram->program_id = $validated['program_id'];
             $memberProgram->branch_id = $validated['branch_id'];
-            $memberProgram->claimants_id = $claimants_id;
-            $memberProgram->beneficiaries_ids = $beneficiaries_ids;
             $memberProgram->or_number = $validated['or_number'];
             $memberProgram->registration_fee = $validated['registration_fee'];
             $memberProgram->agent_id = $validated['agent_id'];
@@ -281,31 +159,8 @@ class NewSalesController extends Controller
 
             $memberProgram->save();
 
-            // Save Request Data (Entry)
-
-            /*
-            if($validated['registration_fee'] != ""){
-                $entry = new Entry();
-
-                $entry->branch_id = $validated['branch_id'];;
-                $entry->marketting_agent = $validated['agent_id'];
-                $entry->member_id = $member_id;
-                $entry->or_number = $validated["or_number"];
-                $entry->amount = $validated['registration_fee'];
-                $entry->number_of_payment = 1;
-                $entry->program_id = $validated['program_id'];
-                $entry->month_from = date('Y-m');
-                $entry->month_to = date('Y-m');
-                $entry->is_reactivated = 0;
-                $entry->is_transferred = 0;
-                $entry->remarks = "REGISTRATION";
-
-                $entry->save();
-            }
-            */
-
             // Back to View
-            return redirect('/members')->with("success_msg", $member->lname." Member Created Successfully");
+            return redirect('/new-sales')->with("success_msg", "New Sales Created Successfully");
 
         } else {
             return redirect('/');
@@ -333,6 +188,10 @@ class NewSalesController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $validated = $request->request([
+            'branch_id' => ['required'],
+            'program_id' => ['required'],
+        ]);
         //
     }
 
@@ -343,4 +202,579 @@ class NewSalesController extends Controller
     {
         //
     }
+
+    /**
+     * Imports from Excel New Sales Settings to New Sales
+     */
+    public function import(Request $request)
+    {
+        $my_user = auth()->user();
+        $programs = DB::table('programs')->orderBy('code')->get();
+        $branches = DB::table('branches')->orderBy('branch')->get();
+        $toImportMembers = DB::table('excel_members')->orderBy('id')->skip(0)->take((int)$request->input('data_count'))->get();
+
+        foreach($toImportMembers as $toImport) {
+
+
+            if($toImport->timestamp != ""){
+
+                // (PERFORM VALIDATIONS)
+
+                    // 1. Validate Timestamp
+                        $timestamp = $this->excelToMySQLDateTime(trim($toImport->timestamp));
+                        if($timestamp == null) { 
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Invalid Timestamp!";
+                            $excelMember->save();
+                            continue; 
+                        }
+                    //
+
+                    // 2. Validate Branch
+
+                        $branches = DB::table('branches')->where('branch', trim($toImport->branch))->get();
+
+                        if(count($branches) == 0){ 
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Branch is not in the Branches List";
+                            $excelMember->save();
+                            continue;
+                        } elseif (count($branches) > 1){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "It matched with More than 2 Branches on the User List, please be specific";
+                            $excelMember->save();
+                            continue;
+                        }
+
+                        // Get ID of Branch (For Member)
+                        $branch_id = $branches[0]->id;
+
+                    //
+
+                    // 3. Validate Marketting Agent
+
+                        // If not Existing in User List, Add Remarks to the ID
+                        $name = ucwords(strtolower(trim($toImport->marketting_agent)), " .");
+                        if(strpos($name, ",") > 0){
+                            $tmp = explode(",", $name);
+                            $fname = ucwords(explode(".", $tmp[1])[0]);
+                            $lname = ucwords($tmp[0]);
+                        } else {
+                            $fname = substr($name, strpos($name, " ") + 1);
+                            $lname = substr($name, 0, strpos($name, " "));
+                        }
+                        
+                        $users = DB::table('users')->where('lname', $lname)
+                        ->where('fname', 'LIKE', $fname)->get();
+
+                        if(count($users) == 0){ 
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Marketting Agent is not in the Users List";
+                            $excelMember->save();
+                            continue;
+                        } elseif (count($users) > 1){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "It matched with More than 2 Marketting Agent on the User List, please be specific";
+                            $excelMember->save();
+                            continue;
+                        }
+
+                        $user_id = $users[0]->id;
+
+                    //
+
+                    // 4. Validate Status
+                        if((strtolower(trim($toImport->status)) != "active") 
+                         && strtolower(trim($toImport->status)) != "collector"){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Status should be Active or Collector";
+                            $excelMember->save();
+                            continue;
+                        }
+                        $status = trim($toImport->status);
+                    //
+
+                    // 5. Validate PH/Member
+                    
+                        // Get Next Auto Increment
+                        $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
+                        $member_id = $statement[0]->Auto_increment;
+                        
+                        $fullname = $this->parseFullName(trim($toImport->phmember));
+
+                        $members = DB::table('members')
+                        ->where('lname', $fullname['lname'])
+                        ->where('fname', $fullname['fname'])
+                        ->where('mname', $fullname['mname'])
+                        ->where('ext', $fullname['ext'])
+                        ->get();
+
+                        if(count($members) == 0){ 
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Member is not existing in Member's List";
+                            $excelMember->save();
+                            continue;
+                        } elseif (count($members) > 1){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "It matched with More than 2 Members on the Member List, please be specific";
+                            $excelMember->save();
+                            continue;
+                        }
+
+                        $member = Member::find($members[0]->id);
+
+                    //
+
+                    // 6. Validate Address
+                        $member->address = trim($toImport->address);
+                    //
+
+                    // 7. Validate Civil Status
+                        $member->civil_status = trim($toImport->civil_status);
+                    //
+
+                    // 8. Validate Birthdate
+                        $birthdate = $this->excelToMySQLDateTime(trim($toImport->birthdate));
+
+                        if($birthdate == null){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Invalid Birthdate Value!";
+                            $excelMember->save();
+                            continue;
+                        }
+                    
+                        $member->birthdate = $birthdate;
+                    //
+
+                    // 9. Validate Claimants Details (Name and Contact)
+                        $fullname = $this->parseFullName(trim($toImport->name));
+
+                        $claimants = DB::table('claimants')
+                        ->where('lname', $fullname['lname'])
+                        ->where('mname', $fullname['mname'])
+                        ->where('fname', $fullname['fname'])
+                        ->where('ext', $fullname['ext'])->get();
+
+                        // Get Next Auto Increment
+                        $statement = DB::select("SHOW TABLE STATUS LIKE 'claimants'");
+                        $claimant_id = $statement[0]->Auto_increment;
+
+                        if(count($claimants) == 0){
+                            
+                            $claimant = new Claimant();
+
+                            $claimant->fname = $fullname['fname'];
+                            $claimant->mname = $fullname['mname'];
+                            $claimant->lname = $fullname['lname'];
+                            $claimant->ext = $fullname['ext'];
+
+                            $claimant->contact_num = $toImport->contact_num;
+
+                        } elseif(count($claimants) > 1) {
+
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "More than 1 Claimants, Existing for Member!";
+                            $excelMember->save();
+                            continue;
+                        
+                        } else {
+
+                            $claimant = Claimant::find($claimants[0]->id);
+                            $claimant->contact_num = $toImport->contact_num;
+                            $claimant_id = $claimants[0]->id;
+
+                        }
+
+                    //
+
+                    // 10. Validate Type of Transaction
+                        if((strtolower(trim($toImport->type_of_transaction)) != "new sales") 
+                         && strtolower(trim($toImport->status)) != "reactivation"){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Transaction should be New Sales or Reactivation";
+                            $excelMember->save();
+                            continue;
+                        }
+
+                        $transaction_type = trim($toImport->type_of_transaction);
+                    //
+
+                    // 11. Validate Registration Amount
+                        if(is_numeric(trim($toImport->registration_amount))){
+                            $registration_fee = (float)trim($toImport->registration_amount);
+                        } else {
+                            $registration_fee = null;
+                        }
+                    //
+
+                    // 12. Validate Dayong Program
+                        $programs = DB::table('programs')
+                        ->where('code', '=', trim($toImport->dayong_program))->get();
+
+                        if(count($programs) == 0){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Program not Existing in Settings!";
+                            $excelMember->save();
+                            continue;
+                        } elseif (count($programs) > 1){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "More than 2 Programs found in Settings!";
+                            $excelMember->save();
+                            continue;
+                        } else {
+                            $program_id = $programs[0]->id;
+                        }
+
+                    //
+
+                    // 13. Validation Application No.
+                        $query = DB::table('members_program')->where('app_no', '=', trim($toImport->application_no))->get();
+
+                        if (trim($toImport->application_no) == ""){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Missing Application No.!";
+                            $excelMember->save();
+                            continue;
+                        } elseif (count($query) > 0){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Application No. is already existing!";
+                            $excelMember->save();
+                            continue;
+                        } elseif (!is_numeric(trim($toImport->application_no))){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Application No. is not a Number!";
+                            $excelMember->save();
+                            continue;
+                        } 
+                        $app_no = (int)trim($toImport->application_no);
+                    //
+
+                    // 14. Validate OR Number
+                        $query = DB::table('members_program')->where('or_number', '=', trim($toImport->or_number))->get();
+
+                        if (trim($toImport->or_number) == ""){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Missing OR Number!";
+                            $excelMember->save();
+                            continue;
+                        } elseif (count($query) > 0){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "OR Number is already existing!";
+                            $excelMember->save();
+                            continue;
+                        } elseif (!is_numeric(trim($toImport->or_number))){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "OR Number is not a Number!";
+                            $excelMember->save();
+                            continue;
+                        } 
+                        $or_number = (int)trim($toImport->or_number);
+                    //
+
+                    // 15. Validate OR Date
+                        $or_date = $this->excelToMySQLDateTime(trim($toImport->or_date));
+
+                        if($or_date == null){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Invalid OR Date Value!";
+                            $excelMember->save();
+                            continue;
+                        }
+                    //
+
+                    // 16. Validate Amount Collected
+                        if (trim($toImport->amount_collected) == ""){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Missing Amount Collected!";
+                            $excelMember->save();
+                            continue;
+                        } elseif (!is_numeric(trim($toImport->amount_collected))){
+                            $excelMember = ExcelMembers::find($toImport->id);
+                            $excelMember->remarks = "Amount is not a Number!";
+                            $excelMember->save();
+                            continue;
+                        } 
+                        $amount = (int)trim($toImport->amount_collected);
+                    //
+
+                    // 17. Validate Beneficiaries
+                        $names = array($toImport->name1, $toImport->name2, $toImport->name3, $toImport->name4, $toImport->name5);
+                        $relationships = array($toImport->relationship1, $toImport->relationship2, 
+                        $toImport->relationship3, $toImport->relationship4, $toImport->relationship5);
+                        $beneficiaries_ids = '';
+
+                        for($i = 0; $i <= count($names) - 1; $i++){
+                            if(trim($names[$i]) == "") continue;
+                            
+                            $fullnames = $this->parseFullName($names[$i]);
+                            $query = DB::table('beneficiaries')
+                            ->where('lname', $fullnames['lname'])
+                            ->where('mname', $fullnames['mname'])
+                            ->where('fname', $fullnames['fname'])
+                            ->where('ext', $fullnames['ext'])
+                            ->get();
+
+                            if(count($query) > 1){
+                                $excelMember = ExcelMembers::find($toImport->id);
+                                $excelMember->remarks = "More than 2 Beneficiaries found with the same record.";
+                                $excelMember->save();
+                                continue;
+                            } elseif(count($query) == 1){
+                                
+                                $beneficiaries_ids = $beneficiaries_ids . ',' . $query[0]->id;
+                                
+                            } else {
+
+                                // Get Next Auto Increment
+                                $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
+                                $beneficiary_id = $statement[0]->Auto_increment;
+
+                                $beneficiary = new Beneficiary();
+
+                                $beneficiary->fname = $fullnames['fname'];
+                                $beneficiary->mname = $fullnames['mname'];
+                                $beneficiary->lname = $fullnames['lname'];
+                                $beneficiary->ext = $fullnames['ext'];
+                                $beneficiary->relationship = $relationships[$i];
+
+                                $beneficiary->save();
+
+                                $beneficiaries_ids = $beneficiaries_ids . ',' . $beneficiary_id;
+
+                            }
+
+                        }
+
+                    //
+
+                //
+                
+                // IMPORT TO NEW SALES TABLE (MEMBER PROGRAM)
+                
+                    $member_program = new MembersProgram();
+
+                    $member_program->app_no = $app_no;
+                    $member_program->user_id = $my_user->id;
+                    $member_program->agent_id = $user_id;
+                    $member_program->member_id = $member->id;
+                    $member_program->program_id = $program_id;
+                    $member_program->branch_id = $branch_id;
+                    $member_program->claimant_id = $claimant_id;
+                    $member_program->beneficiaries_ids = $beneficiaries_ids;
+                    $member_program->or_number = $or_number;
+                    $member_program->or_date = $or_date;
+                    $member_program->registration_fee = $registration_fee;
+                    $member_program->amount = $amount;
+                    $member_program->transaction_type = $transaction_type;
+                    $member_program->status = $status;
+                    $member_program->created_at = $timestamp;
+                    $member_program->save();
+
+                    $member->save();
+                    $claimant->save();
+
+                //
+            }
+        }
+
+        // Back to View
+        return redirect('/members')->with("success_msg","Created Successfully"); 
+    }
+
+    public function viewDetails($id)
+    {
+        $my_user = auth()->user();
+        $member_program = DB::table('members_program')->where('id', $id)->get()[0];
+        $member = DB::table('members')->where('id', $member_program->member_id)->where('is_deleted', false)->get();
+        $members = DB::table('members')->where('is_deleted', false)->get();
+        $branches = DB::table('branches')->where('id', $member_program->branch_id)->get()[0];
+        $programs = DB::table('programs')->where('id', $member_program->program_id)->get()[0];
+        $users = DB::table('users')->where('usertype', 3)->get();
+
+        if( $member[0]->claimants_id != "" &&  $member[0]->claimants_id != null){
+            $claimants = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+            $claimant = $claimants[0];
+        } else {
+            $claimant = null;
+        }
+
+        if($member[0]->beneficiaries_ids != ""){
+            $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
+            $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
+        } else {
+            $beneficiaries = array();
+        }
+
+        if(auth()->check()){
+
+            return view('dashboard-contents.modules.new-sales-view', [
+                'id' => $id,
+                'member' => $member[0],
+                'members' => $members,
+                'claimant' => $claimant,
+                'beneficiaries' => $beneficiaries,
+                'member_program' => $member_program,
+                'users' => $users,
+                'branches' => $branches,
+                'programs' => $programs,
+                'users' => $users,
+            ]);
+
+        } 
+    }
+
+    public function editDetails($id)
+    {
+        $my_user = auth()->user();
+        $member_program = DB::table('members_program')->where('id', $id)->get()[0];
+        $member = DB::table('members')->where('id', $member_program->member_id)->where('is_deleted', false)->get();
+        $members = DB::table('members')->where('is_deleted', false)->get();
+        $branches = DB::table('branches')->get();
+        $programs = DB::table('programs')->get();
+        $users = DB::table('users')->where('usertype', 3)->get();
+
+        if( $member[0]->claimants_id != "" &&  $member[0]->claimants_id != null){
+            $claimants = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+            $claimant = $claimants[0];
+        } else {
+            $claimant = null;
+        }
+
+        if($member[0]->beneficiaries_ids != ""){
+            $arr = explode(",", $member[0]->beneficiaries_ids); array_pop($arr);
+            $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
+        } else {
+            $beneficiaries = array();
+        }
+
+        if(auth()->check()){
+
+            return view('dashboard-contents.modules.new-sales-edit', [
+                'id' => $id,
+                'member' => $member[0],
+                'members' => $members,
+                'claimant' => $claimant,
+                'beneficiaries' => $beneficiaries,
+                'member_program' => $member_program,
+                'users' => $users,
+                'branches' => $branches,
+                'programs' => $programs,
+                'users' => $users,
+            ]);
+
+        } 
+    }
+
+    public function parseFullName($fullName) 
+    {
+        // Define common name extensions
+        $extensions = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'];
+
+        // Trim and clean up extra spaces
+        $fullName = trim(preg_replace('/\s+/', ' ', $fullName));
+
+        // Check if input is in "Last, First, Middle" or "Last, First Extension, Middle" format
+        if (strpos($fullName, ',') !== false) {
+            $parts = array_map('trim', explode(',', $fullName));
+
+            $lastName = $parts[0] ?? '';
+            $firstName = $parts[1] ?? '';
+            $middleName = $parts[2] ?? '';
+
+            // Split first name to check for an extension
+            $firstNameParts = explode(' ', $firstName);
+            if (count($firstNameParts) > 1 && in_array(end($firstNameParts), $extensions)) {
+                $nameExtension = array_pop($firstNameParts);
+                $firstName = implode(' ', $firstNameParts);
+            } else {
+                $nameExtension = '';
+            }
+
+            return [
+                'fname' => ucwords(strtolower($firstName)),
+                'mname' => ucwords(strtolower($middleName)),
+                'lname' => ucwords(strtolower($lastName)),
+                'ext' => ucwords(strtolower($nameExtension))
+            ];
+        }
+
+        // Default format: "First Middle Last Extension"
+        $parts = explode(' ', $fullName);
+        $count = count($parts);
+
+        $firstName = '';
+        $middleName = '';
+        $lastName = '';
+        $nameExtension = '';
+
+        if ($count == 1) {
+            $firstName = $parts[0];
+        } elseif ($count == 2) {
+            $firstName = $parts[0];
+            $lastName = $parts[1];
+        } elseif ($count >= 3) {
+            if (in_array($parts[$count - 1], $extensions)) {
+                $nameExtension = $parts[$count - 1];
+                array_pop($parts);
+                $count--;
+            }
+
+            $firstName = $parts[0];
+            $lastName = $parts[$count - 1];
+
+            if ($count > 2) {
+                $middleName = implode(' ', array_slice($parts, 1, $count - 2));
+            }
+        }
+
+        return [
+            'fname' => $firstName,
+            'mname' => $middleName,
+            'lname' => $lastName,
+            'ext' => $nameExtension
+        ];
+    }
+
+    public function excelDateToPhpDate($excelDate) 
+    {
+        // Ensure it's a float
+        $excelDate = (float) $excelDate;
+    
+        // Convert Excel date to Unix timestamp
+        $unixTimestamp = ($excelDate - 25569) * 86400;
+    
+        // Format the date as M/D/YYYY H:i:s AM/PM
+        return date("n/j/Y g:i:s A", $unixTimestamp);
+    }
+
+    public function excelToMySQLDateTime($excelDate) {
+        try {
+            // Ensure $excelDate is numeric (supports both strings and numbers)
+            if (!is_numeric($excelDate)) {
+                return null; // Return null if the input is not a number
+            }
+
+            // Convert to float to handle cases like "36881.5"
+            $excelDate = floatval($excelDate);
+
+            // Excel dates must be >= 0 (Excel does not support negative serial dates)
+            if ($excelDate < 0) {
+                return null;
+            }
+
+            // Convert Excel date to Unix timestamp
+            $unixTimestamp = ($excelDate - 25569) * 86400;
+
+            // Validate the Unix timestamp (prevent invalid conversions)
+            if ($unixTimestamp <= 0) {
+                return null;
+            }
+
+            // Format as MySQL DATETIME (YYYY-MM-DD HH:MM:SS)
+            return date("Y-m-d H:i:s", $unixTimestamp);
+        } catch (Exception $e) {
+            return null; // Return null if an error occurs
+        }
+    }
+
 }

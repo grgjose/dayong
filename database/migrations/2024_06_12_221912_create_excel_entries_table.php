@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string("dayong_program")->nullable();
             $table->string("reactivation")->nullable();
             $table->string("transferred")->nullable();
+
+            $table->string("sheetName")->nullable();
             $table->boolean("isImported")->default(false)->nullable();
             $table->timestamps();
         });

@@ -24,9 +24,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+
+                <!-- TABLE SECTION -->       
                 <div class="card card-info" id="table">
                     <div class="card-header">
-                        <h2 class="card-title" style="padding-top: 10px;">Members List</h2>
+                        <h2 class="card-title" style="padding-top: 10px;">New Sales Excel List</h2>
                         @if($my_user->usertype == 1)
                             <button class="btn btn-secondary float-right mr-3" onclick="importExcel()" data-toggle="modal" data-target="#ImportModal">
                                 <span class="fas fa-upload"></span> Import Excel
@@ -75,6 +77,7 @@
                                     <td>Age 4</td>
                                     <td>Relationship 4</td>
 
+                                    <td>SheetName</td>
                                     <td>Is Imported</td>
                                     <td>Created At</td>
                                     <td>Updated At</td>
@@ -102,19 +105,32 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="uploadForm" action="/excel-new-sales/upload" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm_excelNewSales" action="/excel-new-sales/loadSheets" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-row">
                         <div class="col">
-                            <label for="formFileSm">Database Excel:</label>
-                            <input class="form-control form-control-sm" id="upload_file" name="upload_file" type="file" style="padding-bottom: 30px;">
+                            <label class="form-label">Database File:</label>
+                            <div id="response"></div>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                  <input type="file" class="custom-file-input" id="upload_file" name="upload_file">
+                                  <label class="custom-file-label" for="upload_file">Choose file</label>
+                                </div>
+                            </div> <br>
+
+                            <div class="form-group col">
+                                <label for="sheets" class="form-label">Sheets</label>
+                                <select class="form-control chosen-select" id="sheets" name="sheetName">
+                                </select>
+                            </div>
                         </div>
                     </div> <br>
                 </div>
                 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" id="uploadButton_excelNewSales" class="btn btn-success" disabled>Upload</button>
+                    <button type="submit" class="btn btn-warning">Load Sheets</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </form>

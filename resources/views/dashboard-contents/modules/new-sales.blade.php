@@ -45,14 +45,14 @@
                         <table id="normalTable" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Full Name</th>
-                                    <th>Branch</th>
-                                    <th>Program</th>
-                                    <th>Contact No.</th>
-                                    <th>OR #</th>
-                                    <th>MAS</th>
-                                    <th>Action</th>
+                                    <th style="width: 5%;">#</th>
+                                    <th style="width: 25%;">Full Name</th>
+                                    <th style="width: 10%;">Branch</th>
+                                    <th style="width: 10%;">Program</th>
+                                    <th style="width: 10%;">Contact No.</th>
+                                    <th style="width: 10%;">OR #</th>
+                                    <th style="width: 15%;">MAS</th>
+                                    <th style="width: 15%;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -67,7 +67,7 @@
                                             @endforeach
                                         </td>
                                         <td id="{{ $mp->id; }}_fname">
-                                            @foreach($members as $member)
+                                            @foreach($branches as $branch)
                                                 @if($branch->id == $mp->branch_id)
                                                     {{ $branch->branch; }}
                                                 @endif
@@ -115,9 +115,9 @@
                                                     <span class="fas fa-trash"></span>
                                                 </button>
                                             @endif
-                                            <button class="btn btn-outline-success" title="Print Statement of Account" 
-                                                    onclick="printFunction({{ $member->id; }})" >
-                                                <span class="fas fa-print"></span>
+                                            <button class="btn btn-outline-success" data-toggle="modal" data-target="#RemitModal"
+                                                onclick="pushRemittance({{ $mp->id; }})" data-title="Remit">
+                                                <span class="fas fa-money-bill-wave-alt"></span>
                                             </button>
                                         </td>
                                     </tr>
@@ -135,7 +135,7 @@
                             <span class="fas fa-times"></span> Cancel
                         </button>
                     </div>
-                    <form action="/members/store" method="POST">
+                    <form action="/new-sales/store" method="POST">
                         @csrf
                         <div class="card-body">
 
@@ -183,189 +183,13 @@
                                 <legend class="h5 pl-2 pr-2" style="width: auto; !important">Personal Information</legend>
                                 <div class="row">
                                     <div class="form-group col">
-                                        <label for="fname">First Name</label>
-                                        <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="mname">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter Middle Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="lname">Last Name</label>
-                                        <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="ext">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="birthdate">Birthdate</label>
-                                        <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Enter Birthdate">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="sex">Sex</label>
-                                        <select class="form-control chosen-select" id="sex" name="sex">
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
+                                        <label for="fname">Members Name:</label>
+                                        <select class="form-control chosen-select" id="member_id" name="member_id" value="0">
+                                            <option value="0">None</option>
+                                            @foreach($members as $member)
+                                                <option value="{{ $member->id; }}">{{ $member->fname.' '.$member->mname.' '.$member->lname.' '.$member->ext; }}</option>
+                                            @endforeach
                                         </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="birthplace">Place of Birth</label>
-                                        <input type="text" class="form-control" id="birthplace" name="birthplace" placeholder="Enter Place of Birth">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="citizenship">Citizenship</label>
-                                        <input type="text" class="form-control" id="citizenship" name="citizenship" placeholder="Enter Citizenship (Filipino, American, etc.)">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="civil_status">Civil Status</label>
-                                        <select class="form-control chosen-select" id="civil_status" name="civil_status">
-                                            <option value="single">Single</option>
-                                            <option value="married">Married</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_num">Contact #</label>
-                                        <input type="number" class="form-control" id="contact_num" name="contact_num" placeholder="Enter Contact Number (+63)">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="email">Email address</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email (Optional)">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="address">Address</label>
-                                        <input type="text" class="form-control" id="address" name="address" placeholder="Enter Current Address">
-                                    </div>
-                                </div>
-                            </fieldset>
-
-                            <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
-                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Claimant's Personal Information</legend>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="fname_c">First Name</label>
-                                        <input type="text" class="form-control" id="fname_c" name="fname_c" placeholder="Enter First Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="mname_c">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname_c" name="mname_c" placeholder="Enter Middle Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="lname_c">Last Name</label>
-                                        <input type="text" class="form-control" id="lname_c" name="lname_c" placeholder="Enter Last Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="ext_c">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="birthdate_c">Birthdate</label>
-                                        <input type="date" class="form-control" id="birthdate_c" name="birthdate_c" placeholder="Enter Birthdate">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="sex_c">Sex</label>
-                                        <select class="form-control chosen-select" id="sex_c" name="sex_c">
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_num_c">Contact #</label>
-                                        <input type="number" class="form-control" id="contact_num_c" name="contact_num_c" placeholder="Enter Contact Number (+63)">
-                                    </div>
-                                </div>
-                            </fieldset>
-
-                            <fieldset class="border p-3 mb-2 rounded beneficiaries" style="diplay: none;">
-                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Beneficiaries #1</legend>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="fname_b1">First Name</label>
-                                        <input type="text" class="form-control" id="fname_b1" name="fname_b1" placeholder="Enter First Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="mname_b1">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname_b1" name="mname_b1" placeholder="Enter Middle Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="lname_b1">Last Name</label>
-                                        <input type="text" class="form-control" id="lname_b1" name="lname_b1" placeholder="Enter Last Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="ext_">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext_b1" name="ext_b1" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="birthdate_b1">Birthdate</label>
-                                        <input type="date" class="form-control" id="birthdate_b1" name="birthdate_b1" placeholder="Enter Birthdate">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="sex_b1">Sex</label>
-                                        <select class="form-control chosen-select" id="sex_b1" name="sex_b1">
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="relationship_b1">Relationship</label>
-                                        <input type="text" class="form-control" id="relationship_b1" name="relationship_b1" placeholder="Enter Relationship">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_num_b1">Contact #</label>
-                                        <input type="number" class="form-control" id="contact_num_b1" name="contact_num_b1" placeholder="Enter Contact Number (+63)">
-                                    </div>
-                                </div>
-                            </fieldset>
-
-                            <fieldset class="border p-3 mb-2 rounded beneficiaries" style="diplay: none;">
-                                <legend class="h5 pl-2 pr-2" style="width: auto; !important">Beneficiaries #2</legend>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="fname_b2">First Name</label>
-                                        <input type="text" class="form-control" id="fname_b2" name="fname_b2" placeholder="Enter First Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="mname_b2">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname_b2" name="mname_b2" placeholder="Enter Middle Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="lname_b2">Last Name</label>
-                                        <input type="text" class="form-control" id="lname_b2" name="lname_b2" placeholder="Enter Last Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="ext_b2">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext_b2" name="ext_b2" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="birthdate_b2">Birthdate</label>
-                                        <input type="date" class="form-control" id="birthdate_b2" name="birthdate_b2" placeholder="Enter Birthdate">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="sex_b2">Sex</label>
-                                        <select class="form-control chosen-select" id="sex_b2" name="sex_b2">
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="relationship_b2">Relationship</label>
-                                        <input type="text" class="form-control" id="relationship_b2" name="relationship_b2" placeholder="Enter Relationship">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_num_b2">Contact #</label>
-                                        <input type="number" class="form-control" id="contact_num_b2" name="contact_num_b2" placeholder="Enter Contact Number (+63)">
                                     </div>
                                 </div>
                             </fieldset>
@@ -388,7 +212,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col">
-                                        <label for="contact_person_num">Agent:</label>
+                                        <label for="contact_person_num">MAS:</label>
                                         <select class="form-control chosen-select" id="agent_id" name="agent_id">
                                             @foreach($users as $user)
                                                 <option value="{{ $user->id; }}">{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</option>
@@ -436,7 +260,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="deleteForm" action="/members/destroy" method="POST">
+            <form id="deleteForm" action="/new-sales/destroy" method="POST">
                 @csrf
                 <div class="modal-body">
                     <h6>Do you want to remove <span id="del_fname"></span> <span id="del_lname"></span> as a Member?</h6>
@@ -461,7 +285,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="uploadForm" action="/members/importMembers" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="/new-sales/import" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-row">
@@ -522,7 +346,7 @@
 
     function viewFunction(id)
     {
-        $("#view").load('/members/view/'+id);
+        $("#view").load('/new-sales/view/'+id);
         checkBeneficiaries();
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
@@ -530,7 +354,7 @@
 
     function editFunction(id)
     {
-        $("#view").load('/members/edit/'+id);
+        $("#view").load('/new-sales/edit/'+id);
         checkBeneficiaries();
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
