@@ -68,6 +68,21 @@ class DatabaseSeeder extends Seeder
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         ]);
 
+        \App\Models\User::factory()->create([
+            'username' => 'caceres',
+            'usertype' => 3,
+            'fname' => 'Mary',
+            'mname' => '',
+            'lname' => 'Caceres',
+            'email' => 'caceres@gmail.com',
+            'status' => 'active',
+            'email_verified_at' => now(),
+            //'birthdate' => date("1999-04-16"),
+            //'contact_num' => '09363362225',
+            'profile_pic' => 'default.jpg',
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        ]);
+
         /**
          * Programs Table Seeder
          */
@@ -280,6 +295,14 @@ class DatabaseSeeder extends Seeder
             'age_max' => null,
         ]);
 
+        \App\Models\Program::factory()->create([
+            'code' => 'D-300 (New)',
+            'description' => 'Dayong Cash Assistance Programs',
+            'with_beneficiaries' => false,
+            'age_min' => null,
+            'age_max' => null,
+        ]);
+
         /**
          * Branches Table Seeder
          */ 
@@ -440,6 +463,14 @@ class DatabaseSeeder extends Seeder
             'code' => '0020',
             'city' => 'SURIGAO DEL SUR',
             'branch' => 'BUTUAN',
+            'address' => '-',
+            'description' => '-',
+        ]);
+
+        \App\Models\Branch::factory()->create([
+            'code' => '0021',
+            'city' => 'METRO DAVAO',
+            'branch' => 'BALIOK',
             'address' => '-',
             'description' => '-',
         ]);

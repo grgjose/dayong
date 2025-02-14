@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Jobs\ImportExcelFile;
 use App\Models\Beneficiary;
 use App\Models\Member;
@@ -252,15 +253,111 @@ class ExcelCollectionController extends Controller
 
         if(auth()->check()){
 
-            set_time_limit(300);
+            set_time_limit(400);
+            //ini_set('memory_limit', '2048M');
 
+            $my_user = auth()->user();
+            $validated = $request->validate([
+                'upload_file' => ['required'],
+                'sheetName' => ['required'],
+            ]);
+
+            $import = new ExcelEntryImport($validated['sheetName']);
+            //Excel::toImport($import, $validated['upload_file']);
+            (new ExcelEntryImport($validated['sheetName']))->import($validated['upload_file']);
+
+            return redirect('/excel-new-sales')->with("success_msg", "Uploaded Successfully");
+
+        } else {
+            return redirect('/');
+        }
+
+    }
+
+    public function parseFullName($fullName) 
+    {
+        // Define common name extensions
+        $extensions = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'];
+
+        // Trim and clean up extra spaces
+        $fullName = trim(preg_replace('/\s+/', ' ', $fullName));
+
+        // Check if input is in "Last, First, Middle" or "Last, First Extension, Middle" format
+        if (strpos($fullName, ',') !== false) {
+            $parts = array_map('trim', explode(',', $fullName));
+
+            $lastName = $parts[0] ?? '';
+            $firstName = $parts[1] ?? '';
+            $middleName = $parts[2] ?? '';
+
+            // Split first name to check for an extension
+            $firstNameParts = explode(' ', $firstName);
+            if (count($firstNameParts) > 1 && in_array(end($firstNameParts), $extensions)) {
+                $nameExtension = array_pop($firstNameParts);
+                $firstName = implode(' ', $firstNameParts);
+            } else {
+                $nameExtension = '';
+            }
+
+            return [
+                'fname' => ucwords(strtolower($firstName)),
+                'mname' => ucwords(strtolower($middleName)),
+                'lname' => ucwords(strtolower($lastName)),
+                'ext' => ucwords(strtolower($nameExtension))
+            ];
+        }
+
+        // Default format: "First Middle Last Extension"
+        $parts = explode(' ', $fullName);
+        $count = count($parts);
+
+        $firstName = '';
+        $middleName = '';
+        $lastName = '';
+        $nameExtension = '';
+
+        if ($count == 1) {
+            $firstName = $parts[0];
+        } elseif ($count == 2) {
+            $firstName = $parts[0];
+            $lastName = $parts[1];
+        } elseif ($count >= 3) {
+            if (in_array($parts[$count - 1], $extensions)) {
+                $nameExtension = $parts[$count - 1];
+                array_pop($parts);
+                $count--;
+            }
+
+            $firstName = $parts[0];
+            $lastName = $parts[$count - 1];
+
+            if ($count > 2) {
+                $middleName = implode(' ', array_slice($parts, 1, $count - 2));
+            }
+        }
+
+        return [
+            'fname' => $firstName,
+            'mname' => $middleName,
+            'lname' => $lastName,
+            'ext' => $nameExtension
+        ];
+    }
+
+    public function loadSheets(Request $request)
+    {
+        if(auth()->check()){
+
+            ini_set('memory_limit', '2048M');
+            
+  
             $validated = $request->validate(['upload_file' => ['required', 'file']]);
-            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('upload_file'));
-            (new ExcelEntryImport($spreadsheet->getSheetCount()))->import($request->file('upload_file'));
+            //$spreadsheet = IOFactory::load($validated['upload_file']);
+            $reader = IOFactory::createReaderForFile($validated['upload_file']);
+            /** @var IReader $reader */
+            $sheetNames = $reader->listWorksheetNames($validated['upload_file']); // No need to fully load the spreadsheet!
 
-            //ImportExcelFile::dispatch($array);
-
-            return redirect('/excel-collection')->with("success_msg", "Uploaded Successfully");
+            return $sheetNames;
 
         } else {
             return redirect('/');

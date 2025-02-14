@@ -38,17 +38,18 @@ Route::post('/entries/store', [EntryController::class, 'store']);
 Route::put('/entries/update/{id}', [EntryController::class, 'update']);
 Route::post('/entries/destroy', [EntryController::class, 'destroy']);
 Route::post('/entries/upload', [EntryController::class, 'upload']);
+Route::post('/entries/import', [EntryController::class, 'import']);
 Route::get('/entries/view/{id}', [EntryController::class, 'viewDetails']);
 Route::get('/entries/edit/{id}', [EntryController::class, 'editDetails']);
 Route::post('/entries/importEntries', [EntryController::class, 'importEntries']);
 Route::get('/entries/getIncentivesMatrix/{id}/{program_id?}', [EntryController::class, 'getIncentivesMatrix']);
-
 
 Route::get('/new-sales', [NewSalesController::class, 'index']);
 Route::post('/new-sales/store', [NewSalesController::class, 'store']);
 Route::put('/new-sales/update/{id}', [NewSalesController::class, 'update']);
 Route::post('/new-sales/destroy', [NewSalesController::class, 'destroy']);
 Route::post('/new-sales/upload', [NewSalesController::class, 'upload']);
+Route::post('/new-sales/import', [NewSalesController::class, 'import']);
 Route::get('/new-sales/view/{id}', [NewSalesController::class, 'viewDetails']);
 Route::get('/new-sales/edit/{id}', [NewSalesController::class, 'editDetails']);
 Route::get('/new-sales/print/{id}', [NewSalesController::class, 'print']);
@@ -113,6 +114,7 @@ Route::post('/matrix/change_pic', [MatrixController::class, 'change']);
 Route::get('/excel-collection', [ExcelCollectionController::class, 'index']);
 Route::get('/excel-collection/retrieve', [ExcelCollectionController::class, 'retrieve']);
 Route::post('/excel-collection/upload', [ExcelCollectionController::class, 'upload']);
+Route::post('/excel-collection/loadSheets', [ExcelNewSalesController::class, 'loadSheets']);
 Route::post('/excel-collection/store', [ExcelCollectionController::class, 'store']);
 Route::put('/excel-collection/update/{id}', [ExcelCollectionController::class, 'update']);
 Route::post('/excel-collection/destroy', [ExcelCollectionController::class, 'destroy']);

@@ -562,10 +562,10 @@ class MemberController extends Controller
         }
 
         return [
-            'fname' => $firstName,
-            'mname' => $middleName,
-            'lname' => $lastName,
-            'ext' => $nameExtension
+            'fname' => ucwords(strtolower($firstName)),
+            'mname' => ucwords(strtolower($middleName)),
+            'lname' => ucwords(strtolower($lastName)),
+            'ext' => ucwords(strtolower($nameExtension))
         ];
     }
 

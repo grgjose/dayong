@@ -58,8 +58,6 @@
                                     <td>OR #</td>
                                     <td>OR Date</td>
                                     <td>Amount Collected</td>
-                                    <td>Reactivation</td>
-                                    <td>Transferred</td>
                                     
                                     <td>Name 1</td>
                                     <td>Age 1</td>
@@ -77,7 +75,12 @@
                                     <td>Age 4</td>
                                     <td>Relationship 4</td>
 
+                                    <td>Name 5</td>
+                                    <td>Age 5</td>
+                                    <td>Relationship 5</td>
+
                                     <td>SheetName</td>
+                                    <td>Remarks</td>
                                     <td>Is Imported</td>
                                     <td>Created At</td>
                                     <td>Updated At</td>

@@ -211,10 +211,11 @@ class NewSalesController extends Controller
         $my_user = auth()->user();
         $programs = DB::table('programs')->orderBy('code')->get();
         $branches = DB::table('branches')->orderBy('branch')->get();
-        $toImportMembers = DB::table('excel_members')->orderBy('id')->skip(0)->take((int)$request->input('data_count'))->get();
+        $toImportMembers = DB::table('excel_members')
+        ->where('isImported', false)->orderBy('id')
+        ->skip(0)->take((int)$request->input('data_count'))->get();
 
         foreach($toImportMembers as $toImport) {
-
 
             if($toImport->timestamp != ""){
 
@@ -264,8 +265,7 @@ class NewSalesController extends Controller
                             $lname = substr($name, 0, strpos($name, " "));
                         }
                         
-                        $users = DB::table('users')->where('lname', $lname)
-                        ->where('fname', 'LIKE', $fname)->get();
+                        $users = DB::table('users')->where('lname', $lname)->get();
 
                         if(count($users) == 0){ 
                             $excelMember = ExcelMembers::find($toImport->id);
@@ -303,13 +303,13 @@ class NewSalesController extends Controller
                         $fullname = $this->parseFullName(trim($toImport->phmember));
 
                         $members = DB::table('members')
-                        ->where('lname', $fullname['lname'])
-                        ->where('fname', $fullname['fname'])
-                        ->where('mname', $fullname['mname'])
-                        ->where('ext', $fullname['ext'])
+                        ->where('lname', '=', $fullname['lname'])
+                        ->where('fname', '=', $fullname['fname'])
+                        //->where('mname', '=', $fullname['mname'])
+                        ->where('ext', '=', $fullname['ext'])
                         ->get();
 
-                        if(count($members) == 0){ 
+                        if(count($members) == 0){
                             $excelMember = ExcelMembers::find($toImport->id);
                             $excelMember->remarks = "Member is not existing in Member's List";
                             $excelMember->save();
@@ -319,6 +319,10 @@ class NewSalesController extends Controller
                             $excelMember->remarks = "It matched with More than 2 Members on the Member List, please be specific";
                             $excelMember->save();
                             continue;
+                        }
+
+                        if($members[0]->mname != $fullname['mname']){
+                            dd($members[0]->mname.'/'.$fullname['mname']);
                         }
 
                         $member = Member::find($members[0]->id);
@@ -573,12 +577,17 @@ class NewSalesController extends Controller
                     $member->save();
                     $claimant->save();
 
+                    $excelMember = ExcelMembers::find($toImport->id);
+                    $excelMember->remarks = "";
+                    $excelMember->isImported = true;
+                    $excelMember->save();
+
                 //
             }
         }
 
         // Back to View
-        return redirect('/members')->with("success_msg","Created Successfully"); 
+        return redirect('/new-sales')->with("success_msg","Created Successfully"); 
     }
 
     public function viewDetails($id)
@@ -728,10 +737,10 @@ class NewSalesController extends Controller
         }
 
         return [
-            'fname' => $firstName,
-            'mname' => $middleName,
-            'lname' => $lastName,
-            'ext' => $nameExtension
+            'fname' => ucwords(strtolower($firstName)),
+            'mname' => ucwords(strtolower($middleName)),
+            'lname' => ucwords(strtolower($lastName)),
+            'ext' => ucwords(strtolower($nameExtension))
         ];
     }
 
@@ -749,31 +758,32 @@ class NewSalesController extends Controller
 
     public function excelToMySQLDateTime($excelDate) {
         try {
-            // Ensure $excelDate is numeric (supports both strings and numbers)
             if (!is_numeric($excelDate)) {
-                return null; // Return null if the input is not a number
+                return null;
             }
-
-            // Convert to float to handle cases like "36881.5"
+    
             $excelDate = floatval($excelDate);
-
-            // Excel dates must be >= 0 (Excel does not support negative serial dates)
+    
             if ($excelDate < 0) {
                 return null;
             }
-
-            // Convert Excel date to Unix timestamp
-            $unixTimestamp = ($excelDate - 25569) * 86400;
-
-            // Validate the Unix timestamp (prevent invalid conversions)
-            if ($unixTimestamp <= 0) {
-                return null;
-            }
-
-            // Format as MySQL DATETIME (YYYY-MM-DD HH:MM:SS)
-            return date("Y-m-d H:i:s", $unixTimestamp);
+    
+            $days = floor($excelDate);
+            $fraction = $excelDate - $days;
+    
+            $date = new DateTime('1899-12-30');
+            $date->modify("+$days days");
+    
+            // Calculate time as hours, minutes, and seconds
+            $hours = floor($fraction * 24);
+            $minutes = floor(($fraction * 1440) % 60);
+            $seconds = floor(($fraction * 86400) % 60);
+    
+            $date->setTime($hours, $minutes, $seconds);
+    
+            return $date->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            return null; // Return null if an error occurs
+            return null;
         }
     }
 

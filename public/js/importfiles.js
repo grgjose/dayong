@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     // Members Upload Form On Submit 
-    $("#uploadForm").on("submit", function (e) {
+    $("#uploadForm_ExcelMembers").on("submit", function (e) {
 
         if($('#sheets').val() == "" || $('#sheets').val() == null || $('#sheets').val() == "undefined"){
             e.preventDefault();
@@ -26,8 +26,8 @@ $(document).ready(function () {
                 }
             });
 
-            $("#uploadForm").attr("action", '/members/upload');
-            $("#uploadButton").removeAttr('disabled');
+            $("#uploadForm_ExcelMembers").attr("action", '/members/upload');
+            $("#uploadButton_ExcelMembers").removeAttr('disabled');
         } else {
             
         }
@@ -65,6 +65,60 @@ $(document).ready(function () {
             $("#uploadButton_excelNewSales").removeAttr('disabled');
         } else {
             
+        }
+    });
+
+    // Excel Collection Upload Form On Submit
+    $("#uploadForm_excelCollection").on("submit", function (e) {
+
+        if($('#sheets').val() == "" || $('#sheets').val() == null || $('#sheets').val() == "undefined"){
+            e.preventDefault();
+
+            var formData = new FormData(this);
+    
+            $.ajax({
+                url: "/excel-collection/loadSheets",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $("#response").html("");
+                    
+                    response.forEach((sheet) => {
+                        let newOption = $('<option>', { value: sheet, text: sheet }); 
+                        if(sheet.includes("COL")){ $('#sheets').append(newOption).trigger("chosen:updated"); }
+                    });
+
+                },
+                error: function (xhr) {
+                    $("#response").html("<p>No File has been Selected</p>");
+                }
+            });
+
+            $("#uploadForm_excelCollection").attr("action", '/excel-collection/upload');
+            $("#uploadButton_excelCollection").removeAttr('disabled');
+        } else {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+    
+            $.ajax({
+                url: "/excel-collection/upload",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $("#response").html("<p>Uploaded Successfully</p>");
+                },
+                error: function (xhr) {
+                    $("#response").html("<p>No File has been Selected</p>");
+                }
+            });
+
+            $("#uploadForm_excelCollection").attr("action", '/excel-collection/upload');
+            $("#uploadButton_excelCollection").removeAttr('disabled');
         }
     });
 

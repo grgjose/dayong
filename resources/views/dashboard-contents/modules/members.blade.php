@@ -363,7 +363,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="uploadForm" action="/members/loadSheets" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm_ExcelMembers" action="/members/loadSheets" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-row">
@@ -387,7 +387,7 @@
                 </div>
                 
                 <div class="modal-footer">
-                    <button type="submit" id="uploadButton" class="btn btn-success" disabled>Upload</button>
+                    <button type="submit" id="uploadButton_ExcelMembers" class="btn btn-success" disabled>Upload</button>
                     <button type="submit" class="btn btn-warning">Load Sheets</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
