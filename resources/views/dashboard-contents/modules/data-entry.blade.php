@@ -402,11 +402,11 @@
                         <div class="col">
                             <label for="data_count">Data Count (The higher the slower)</label>
                             <select class="form-control chosen-select" id="data_count" name="data_count" value="10">
-                                <option value="10">10</option>
-                                <option value="20">50</option>
-                                <option value="20">100</option>
-                                <option value="20">200</option>
-                                <option value="20">500</option>
+                                <option value="100">100</option>
+                                <option value="500">500</option>
+                                <option value="1000">1000</option>
+                                <option value="2000">2000</option>
+                                <option value="5000">5000</option>
                             </select>
                         </div>
                     </div> <br>

@@ -22,9 +22,8 @@ class ExcelEntryImport implements WithMultipleSheets
 
     public function sheets(): array
     {
-
         return [
-            $this->sheetName => new EntryImport(),
+            $this->sheetName => new EntryImport($this->sheetName),
         ];
     }
 }

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string("transferred")->nullable();
 
             $table->string("sheetName")->nullable();
+            $table->string("remarks")->nullable();
             $table->boolean("isImported")->default(false)->nullable();
             $table->timestamps();
         });

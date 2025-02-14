@@ -22,25 +22,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Exception;
 
-//List of Constants (COL)
-
-    const TIMESTAMP = 0;
-    const BRANCH = 1;
-    const MARKETTING_AGENT = 2;
-    const STATUS = 3;
-    const PHMEMBER = 4;
-    const OR_NUMBER = 5;
-    const OR_DATE = 6;
-    const AMOUNT_COLLECTED = 7;
-    const MONTH_OF = 8;
-    const NOP = 9;
-    const DATE_REMITTED = 10;
-    const DAYONG_PROGRAM = 11;
-    const REACTIVATION = 12;
-    const TRANSFERRED = 13;
-
-//
-
 class EntryController extends Controller
 {
     //
@@ -439,112 +420,78 @@ class EntryController extends Controller
 
         }
 
-
         // Back to View
         return redirect('/entries')->with("success_msg","Created Successfully"); 
     }
 
-    public function upload(Request $request)
+    public function parseFullName($fullName) 
     {
+        // Define common name extensions
+        $extensions = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'];
 
-        if(auth()->check()){
+        // Trim and clean up extra spaces
+        $fullName = trim(preg_replace('/\s+/', ' ', $fullName));
 
-            $validated = $request->validate([
-                'upload_file' => ['required', 'file']
-            ]);
+        // Check if input is in "Last, First, Middle" or "Last, First Extension, Middle" format
+        if (strpos($fullName, ',') !== false) {
+            $parts = array_map('trim', explode(',', $fullName));
 
-            $programs = DB::table('programs')->orderBy('code')->get();
-            $branches = DB::table('branches')->orderBy('branch')->get();
+            $lastName = $parts[0] ?? '';
+            $firstName = $parts[1] ?? '';
+            $middleName = $parts[2] ?? '';
 
-            $array = (new EntryImport)->toArray($request->file('upload_file'));
-            
-            foreach($array as $sheet){
-
-                for ($row = 1; $row < sizeOf($sheet); $row++) {
-
-                    if($sheet[$row][TIMESTAMP] != ""){
-
-                        $contents = new Entry();
-
-                        foreach($branches as $branch){
-                            if(strtolower(trim($branch->branch)) == strtolower(trim($sheet[$row][BRANCH]))){
-                                $contents->branch_id = $branch->id;
-                                break; break;
-                            }
-                        }
-
-                        $name = ucwords(strtolower(trim($sheet[$row][MARKETTING_AGENT])), " .");
-                        if(strpos($name, ",") > 0){
-                            $tmp = explode(",", $name);
-                            $fname = ucwords($tmp[1]);
-                            $lname = ucwords($tmp[0]);
-                        } else {
-                            $fname = substr($name, strpos($name, " ") + 1);
-                            $lname = substr($name, 0, strpos($name, " "));
-                        }
-
-                        $users = DB::table('users')->where('lname', $lname)
-                        ->where('fname', 'LIKE', $fname)->get();
-
-                        if(count($users) == 0){
-                            // Show Error
-                        } else {
-                            $user_id = $users[0]->id;
-                        }
-
-                        $contents->marketting_agent = $user_id;
-
-                        $name = ucwords(strtolower(trim($sheet[$row][PHMEMBER])), " .");
-                        if(strpos($name, ",") > 0){
-                            $tmp = explode(",", $name);
-                            $fname = ucwords($tmp[1]);
-                            $lname = ucwords($tmp[0]);
-                        } else {
-                            $fname = substr($name, strpos($name, " ") + 1);
-                            $lname = substr($name, 0, strpos($name, " "));
-                        }
-
-                        $members = DB::table('members')->where('lname', $lname)
-                        ->where('fname', 'LIKE', $fname)->get();
-
-                        if(count($members) == 0){
-                            
-                        } else {
-                            $member_id = $members[0]->id;
-                        }
-
-                        $contents->member_id = $member_id;
-                        $contents->or_number = $validated["or_number"];
-                        $contents->amount = $validated["amount"];
-                        $contents->number_of_payment = $validated["number_of_payment"];
-
-                        foreach($programs as $program){
-                            if(strtolower(trim($program->code)) == strtolower(trim($sheet[$row][DAYONG_PROGRAM]))){
-                                $contents->program_id = $program->id; 
-                                break; break;
-                            }
-                        }
-
-                        $contents->month_from = $validated["month_from"];
-                        $contents->month_to = $validated["month_to"];
-                        $contents->is_reactivated = 0;
-                        $contents->is_transferred = 0;
-                        $contents->remarks = $validated["remarks"];
-            
-                        $contents->save();
-                    }
-                }
+            // Split first name to check for an extension
+            $firstNameParts = explode(' ', $firstName);
+            if (count($firstNameParts) > 1 && in_array(end($firstNameParts), $extensions)) {
+                $nameExtension = array_pop($firstNameParts);
+                $firstName = implode(' ', $firstNameParts);
+            } else {
+                $nameExtension = '';
             }
-            
 
-            //ImportExcelFile::dispatch($array);
-
-            return redirect('/members')->with("success_msg", "Uploaded Successfully");
-
-        } else {
-            return redirect('/');
+            return [
+                'fname' => ucwords(strtolower($firstName)),
+                'mname' => ucwords(strtolower($middleName)),
+                'lname' => ucwords(strtolower($lastName)),
+                'ext' => ucwords(strtolower($nameExtension))
+            ];
         }
 
+        // Default format: "First Middle Last Extension"
+        $parts = explode(' ', $fullName);
+        $count = count($parts);
+
+        $firstName = '';
+        $middleName = '';
+        $lastName = '';
+        $nameExtension = '';
+
+        if ($count == 1) {
+            $firstName = $parts[0];
+        } elseif ($count == 2) {
+            $firstName = $parts[0];
+            $lastName = $parts[1];
+        } elseif ($count >= 3) {
+            if (in_array($parts[$count - 1], $extensions)) {
+                $nameExtension = $parts[$count - 1];
+                array_pop($parts);
+                $count--;
+            }
+
+            $firstName = $parts[0];
+            $lastName = $parts[$count - 1];
+
+            if ($count > 2) {
+                $middleName = implode(' ', array_slice($parts, 1, $count - 2));
+            }
+        }
+
+        return [
+            'fname' => ucwords(strtolower($firstName)),
+            'mname' => ucwords(strtolower($middleName)),
+            'lname' => ucwords(strtolower($lastName)),
+            'ext' => ucwords(strtolower($nameExtension))
+        ];
     }
 
     public function viewDetails($id)
@@ -604,7 +551,7 @@ class EntryController extends Controller
         }
     }
 
-    public function excelTimestampToString($excelTimestamp) 
+    public function excelTimestampToString($excelTimestamp)
     {
         // Define the base date for Excel dates (January 1, 1900 is considered day 1 in Excel)
         $excelEpoch = new DateTime('1899-12-30'); // Excel date 0 corresponds to 1899-12-30
@@ -629,7 +576,8 @@ class EntryController extends Controller
         return $excelEpoch->format('Y-m-d H:i:s');
     }
 
-    public function getIncentivesMatrix($id, $program_id){
+    public function getIncentivesMatrix($id, $program_id)
+    {
         $matrix = DB::table('matrix')->where('program_id', $program_id)->orderBy('program_id')->get();
         $entries = DB::table('entries')
             ->where('member_id', $id)
@@ -656,7 +604,52 @@ class EntryController extends Controller
         return "";
     }
 
-    public function validateMonth($month) {
+    public function excelDateToPhpDate($excelDate) 
+    {
+        // Ensure it's a float
+        $excelDate = (float) $excelDate;
+    
+        // Convert Excel date to Unix timestamp
+        $unixTimestamp = ($excelDate - 25569) * 86400;
+    
+        // Format the date as M/D/YYYY H:i:s AM/PM
+        return date("n/j/Y g:i:s A", $unixTimestamp);
+    }
+
+    public function excelToMySQLDateTime($excelDate)
+    {
+        try {
+            if (!is_numeric($excelDate)) {
+                return null;
+            }
+    
+            $excelDate = floatval($excelDate);
+    
+            if ($excelDate < 0) {
+                return null;
+            }
+    
+            $days = floor($excelDate);
+            $fraction = $excelDate - $days;
+    
+            $date = new DateTime('1899-12-30');
+            $date->modify("+$days days");
+    
+            // Calculate time as hours, minutes, and seconds
+            $hours = floor($fraction * 24);
+            $minutes = floor(($fraction * 1440) % 60);
+            $seconds = floor(($fraction * 86400) % 60);
+    
+            $date->setTime($hours, $minutes, $seconds);
+    
+            return $date->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function validateMonth($month)
+    {
         $months = [
             'january', 'february', 'march', 'april', 'may', 'june',
             'july', 'august', 'september', 'october', 'november', 'december',
@@ -667,7 +660,8 @@ class EntryController extends Controller
         return in_array(strtolower($month), $months, true);
     }
 
-    public function getMonthNumber($month) {
+    public function getMonthNumber($month)
+    {
         $months = [
             'january' => 1, 'february' => 2, 'march' => 3, 'april' => 4, 'may' => 5, 'june' => 6,
             'july' => 7, 'august' => 8, 'september' => 9, 'october' => 10, 'november' => 11, 'december' => 12,

@@ -305,7 +305,7 @@ class NewSalesController extends Controller
                         $members = DB::table('members')
                         ->where('lname', '=', $fullname['lname'])
                         ->where('fname', '=', $fullname['fname'])
-                        //->where('mname', '=', $fullname['mname'])
+                        ->where('mname', '=', $fullname['mname'])
                         ->where('ext', '=', $fullname['ext'])
                         ->get();
 
@@ -319,10 +319,6 @@ class NewSalesController extends Controller
                             $excelMember->remarks = "It matched with More than 2 Members on the Member List, please be specific";
                             $excelMember->save();
                             continue;
-                        }
-
-                        if($members[0]->mname != $fullname['mname']){
-                            dd($members[0]->mname.'/'.$fullname['mname']);
                         }
 
                         $member = Member::find($members[0]->id);
