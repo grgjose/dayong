@@ -92,7 +92,7 @@
                                         </td>
                                         <td>
                                             @foreach($users as $user)
-                                                @if($user->id == $entry->marketting_agent)
+                                                @if($user->id == $entry->agent_id)
                                                     {{ $user->fname.' '.$user->lname; }}
                                                     @break
                                                 @endif
@@ -186,7 +186,7 @@
                                     </div>
                                     <div class="form-group col">
                                         <label for="member_id">Agent:</label>
-                                        <select class="form-control chosen-select" id="marketting_agent" name="marketting_agent">
+                                        <select class="form-control chosen-select" id="agent_id" name="agent_id">
                                             @foreach($users as $user)
                                                 <option value="{{ $user->id; }}">{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</option>
                                             @endforeach
@@ -288,7 +288,7 @@
                                     </div>
                                     <div class="form-group col">
                                         <label for="member_id">Agent:</label>
-                                        <select class="form-control chosen-select" id="edit_marketting_agent" name="marketting_agent">
+                                        <select class="form-control chosen-select" id="edit_agent_id" name="agent_id">
                                             @foreach($users as $user)
                                                 <option value="{{ $user->id; }}">{{ $user->fname.' '.$user->mname.' '.$user->lname; }}</option>
                                             @endforeach
@@ -395,32 +395,32 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="uploadForm" action="/entries/import" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm_collection" action="/entries/import" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-row">
                         <div class="col">
                             <label for="data_count">Data Count (The higher the slower)</label>
-                            <select class="form-control chosen-select" id="data_count" name="data_count" value="10">
-                                <option value="100">100</option>
-                                <option value="500">500</option>
+                            <div id="response"></div>
+                            <select class="form-control chosen-select" id="data_count" name="data_count" value="1000">
                                 <option value="1000">1000</option>
-                                <option value="2000">2000</option>
                                 <option value="5000">5000</option>
+                                <option value="10000">10000</option>
+                                <option value="12000">12000</option>
+                                <option value="15000">15000</option>
                             </select>
                         </div>
                     </div> <br>
                 </div>
                 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" id="uploadButton_collection" class="btn btn-primary">Upload</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 
 <span style="display: none;" id="temp"></span>
 

@@ -35,6 +35,7 @@ return new class extends Migration
             $table->string("contact_person_num")->nullable();
             $table->string("status")->nullable();
             $table->boolean("is_deleted")->nullable()->default(false);
+            $table->boolean("is_remitted")->nullable()->default(false);
             $table->timestamps();
         });
     }

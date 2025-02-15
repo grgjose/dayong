@@ -39,24 +39,25 @@
                         <table id="excelCollectionTable" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <td>ID</td>
-                                    <td>Timestamp</td>
-                                    <td>Branch</td>
-                                    <td>Marketting Agent</td>
-                                    <td>Status</td>
-                                    <td>PH/MEMBER</td>
-                                    <td>OR#</td>
-                                    <td>OR Date</td>
-                                    <td>Amount Collected</td>
-                                    <td>Month Of</td>
-                                    <td>NOP</td>
-                                    <td>Date Remitted</td>
-                                    <td>Dayong Program</td>
-                                    <td>Reactivation</td>
-                                    <td>Transferred</td>
-                                    <td>Is Imported?</td>
-                                    <td>Created At</td>
-                                    <td>Updated At</td>
+                                    <th>ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Branch</th>
+                                    <th>Marketting Agent</th>
+                                    <th>Status</th>
+                                    <th>PH/MEMBER</th>
+                                    <th>OR#</th>
+                                    <th>OR Date</th>
+                                    <th>Amount Collected</th>
+                                    <th>Month Of</th>
+                                    <th>NOP</th>
+                                    <th>Date Remitted</th>
+                                    <th>Dayong Program</th>
+                                    <th>Reactivation</th>
+                                    <th>Transferred</th>
+                                    <th>Remarks</th>
+                                    <th>Is Imported?</th>
+                                    <th>Created At</th>
+                                    <th>Updated At</th>
                                 </tr>
                             </thead>
                             <tbody>

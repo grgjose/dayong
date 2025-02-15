@@ -720,6 +720,7 @@
             {data: "dayong_program", name: "dayong_program"},
             {data: "reactivation", name: "reactivation"},
             {data: "transferred", name: "transferred"},
+            {data: "remarks", name: "remarks"},
             {data: "isImported", name: "isImported"},
             {data: "created_at", name: "created_at"},
             {data: "updated_at", name: "updated_at"},

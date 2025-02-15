@@ -54,7 +54,7 @@ class ExcelCollectionController extends Controller
     {
         if(auth()->check()){
             
-            return DataTables::query(DB::table('excel_entries'))->toJson();
+            return DataTables::query(DB::table('excel_entries')->where('isImported', false))->toJson();
 
         } else {
             return redirect('/');

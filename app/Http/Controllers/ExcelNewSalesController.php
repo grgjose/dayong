@@ -97,7 +97,7 @@ class ExcelNewSalesController extends Controller
     {
         if(auth()->check()){
             
-            return DataTables::query(DB::table('excel_members'))->toJson();
+            return DataTables::query(DB::table('excel_members')->where('isImported', false))->toJson();
 
         } else {
             return redirect('/');

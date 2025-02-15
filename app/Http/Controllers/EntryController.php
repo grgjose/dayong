@@ -144,13 +144,16 @@ class EntryController extends Controller
  
     public function import(Request $request)
     {
-        $my_user = auth()->user();
+        $my_user = auth()->user(); $total_count = 0;
         $programs = DB::table('programs')->orderBy('code')->get();
         $branches = DB::table('branches')->orderBy('branch')->get();
-        $toImportEntries = DB::table('excel_entries')->orderBy('id')->skip(0)->take((int)$request->input('data_count'))->get();
+        $toImportEntries = DB::table('excel_entries')
+        ->where('isImported', false)->orderBy('id')
+        ->skip(0)->take((int)$request->input('data_count'))->get();
 
         foreach($toImportEntries as $toImport) {
 
+            $total_count = $total_count + 1;
             if($toImport->timestamp != ""){
 
                 // (PERFORM VALIDATIONS)
@@ -158,9 +161,9 @@ class EntryController extends Controller
                     // 1. Validate Timestamp
                         $timestamp = $this->excelToMySQLDateTime(trim($toImport->timestamp));
                         if($timestamp == null) { 
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Invalid Timestamp!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Invalid Timestamp!";
+                            $excelEntry->save();
                             goto next; 
                         }
                     //
@@ -170,14 +173,14 @@ class EntryController extends Controller
                         $branches = DB::table('branches')->where('branch', trim($toImport->branch))->get();
 
                         if(count($branches) == 0){ 
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Branch is not in the Branches List";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Branch is not in the Branches List";
+                            $excelEntry->save();
                             goto next;
                         } elseif (count($branches) > 1){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "It matched with More than 2 Branches on the User List, please be specific";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "It matched with More than 2 Branches on the User List, please be specific";
+                            $excelEntry->save();
                             goto next;
                         }
 
@@ -199,18 +202,17 @@ class EntryController extends Controller
                             $lname = substr($name, 0, strpos($name, " "));
                         }
                         
-                        $users = DB::table('users')->where('lname', $lname)
-                        ->where('fname', 'LIKE', $fname)->get();
+                        $users = DB::table('users')->where('lname', $lname)->get();
 
                         if(count($users) == 0){ 
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Marketting Agent is not in the Users List";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Marketting Agent is not in the Users List";
+                            $excelEntry->save();
                             goto next;
                         } elseif (count($users) > 1){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "It matched with More than 2 Marketting Agent on the User List, please be specific";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "It matched with More than 2 Marketting Agent on the User List, please be specific";
+                            $excelEntry->save();
                             goto next;
                         }
 
@@ -221,9 +223,9 @@ class EntryController extends Controller
                     // 4. Validate Status
                         if((strtolower(trim($toImport->status)) != "active") 
                          && strtolower(trim($toImport->status)) != "collector"){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Status should be Active or Collector";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Status should be Active or Collector";
+                            $excelEntry->save();
                             goto next;
                         }
                         $status = trim($toImport->status);
@@ -245,14 +247,14 @@ class EntryController extends Controller
                         ->get();
 
                         if(count($members) == 0){ 
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Member is not existing in Member's List";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Member is not existing in Member's List";
+                            $excelEntry->save();
                             goto next;
                         } elseif (count($members) > 1){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "It matched with More than 2 Members on the Member List, please be specific";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "It matched with More than 2 Members on the Member List, please be specific";
+                            $excelEntry->save();
                             goto next;
                         }
 
@@ -264,19 +266,19 @@ class EntryController extends Controller
                         $query = DB::table('members_program')->where('or_number', '=', trim($toImport->or_number))->get();
 
                         if (trim($toImport->or_number) == ""){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Missing OR Number!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Missing OR Number!";
+                            $excelEntry->save();
                             goto next;
                         } elseif (count($query) > 0){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "OR Number is already existing!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "OR Number is already existing!";
+                            $excelEntry->save();
                             goto next;
                         } elseif (!is_numeric(trim($toImport->or_number))){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "OR Number is not a Number!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "OR Number is not a Number!";
+                            $excelEntry->save();
                             goto next;
                         } 
                         $or_number = (int)trim($toImport->or_number);
@@ -286,23 +288,23 @@ class EntryController extends Controller
                         $or_date = $this->excelToMySQLDateTime(trim($toImport->or_date));
 
                         if($or_date == null){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Invalid OR Date Value!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Invalid OR Date Value!";
+                            $excelEntry->save();
                             goto next;
                         }
                     //
 
                     // 8. Validate Amount Collected
                         if (trim($toImport->amount_collected) == ""){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Missing Amount Collected!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Missing Amount Collected!";
+                            $excelEntry->save();
                             goto next;
                         } elseif (!is_numeric(trim($toImport->amount_collected))){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Amount is not a Number!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Amount is not a Number!";
+                            $excelEntry->save();
                             goto next;
                         } 
                         $amount = (int)trim($toImport->amount_collected);
@@ -312,9 +314,9 @@ class EntryController extends Controller
                         $month_of = trim($toImport->month_of);
 
                         if($month_of == ""){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Month Of is Empty!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Month Of is Empty!";
+                            $excelEntry->save();
                             goto next;
                         } else {
 
@@ -324,9 +326,9 @@ class EntryController extends Controller
                                 $month = strtolower(trim($months[$i]));
                                 
                                 if(!$this->validateMonth($month)){
-                                    $excelMember = ExcelEntries::find($toImport->id);
-                                    $excelMember->remarks = "Invalid Month Value" . $month . "!";
-                                    $excelMember->save();
+                                    $excelEntry = ExcelEntries::find($toImport->id);
+                                    $excelEntry->remarks = "Invalid Month Value" . $month . "!";
+                                    $excelEntry->save();
                                     goto next;
                                 } 
                             }
@@ -343,9 +345,9 @@ class EntryController extends Controller
                         $date_remitted = $this->excelToMySQLDateTime(trim($toImport->date_remitted));
 
                         if($date_remitted == null){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Invalid Date Remitted Value!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Invalid Date Remitted Value!";
+                            $excelEntry->save();
                             goto next;
                         }
                         
@@ -356,14 +358,14 @@ class EntryController extends Controller
                         ->where('code', '=', trim($toImport->dayong_program))->get();
 
                         if(count($programs) == 0){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "Program not Existing in Settings!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "Program not Existing in Settings!";
+                            $excelEntry->save();
                             goto next;
                         } elseif (count($programs) > 1){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "More than 2 Programs found in Settings!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "More than 2 Programs found in Settings!";
+                            $excelEntry->save();
                             goto next;
                         } else {
                             $program_id = $programs[0]->id;
@@ -374,17 +376,17 @@ class EntryController extends Controller
                     // 12. Validate Type of Transaction
                         if((strtolower(trim($toImport->reactivation)) != "no") 
                          && strtolower(trim($toImport->reactivation)) != "yes"){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "reactivation column should only be No or Yes!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "reactivation column should only be No or Yes!";
+                            $excelEntry->save();
                             goto next;
                         }
 
                         if((strtolower(trim($toImport->transferred)) != "no") 
                          && strtolower(trim($toImport->transferred)) != "yes"){
-                            $excelMember = ExcelEntries::find($toImport->id);
-                            $excelMember->remarks = "transferred column should only be No or Yes!";
-                            $excelMember->save();
+                            $excelEntry = ExcelEntries::find($toImport->id);
+                            $excelEntry->remarks = "transferred column should only be No or Yes!";
+                            $excelEntry->save();
                             goto next;
                         }
 
@@ -412,6 +414,13 @@ class EntryController extends Controller
                     $entry->is_reactivated = $is_reactivated;
                     $entry->is_transferred = $is_transferred;
                     $entry->created_at = $timestamp;
+                    $entry->save();
+
+                    $excelEntry = ExcelEntries::find($toImport->id);
+                    $excelEntry->remarks = "";
+                    $excelEntry->isImported = true;
+                    $excelEntry->save();
+
 
                 //
             }
@@ -421,7 +430,7 @@ class EntryController extends Controller
         }
 
         // Back to View
-        return redirect('/entries')->with("success_msg","Created Successfully"); 
+        return redirect('/entries')->with("success_msg",$total_count. " Collection Records Imported Successfully"); 
     }
 
     public function parseFullName($fullName) 

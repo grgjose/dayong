@@ -64,7 +64,28 @@ $(document).ready(function () {
             $("#uploadForm_excelNewSales").attr("action", '/excel-new-sales/upload');
             $("#uploadButton_excelNewSales").removeAttr('disabled');
         } else {
-            
+            e.preventDefault();
+
+            $("#response").html("<p>Uploading... please wait...</p>");
+            var formData = new FormData(this);
+    
+            $.ajax({
+                url: "/excel-new-sales/upload",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $("#response").html("<p>Uploaded Successfully</p>");
+                    location.reload();
+                },
+                error: function (xhr) {
+                    $("#response").html("<p>No File has been Selected</p>");
+                }
+            });
+
+            $("#uploadForm_excelNewSales").attr("action", '/excel-new-sales/upload');
+            $("#uploadButton_excelNewSales").removeAttr('disabled');
         }
     });
 
@@ -101,6 +122,7 @@ $(document).ready(function () {
         } else {
             e.preventDefault();
 
+            $("#response").html("<p>Uploading... please wait...</p>");
             var formData = new FormData(this);
     
             $.ajax({
@@ -111,6 +133,7 @@ $(document).ready(function () {
                 processData: false,
                 success: function (response) {
                     $("#response").html("<p>Uploaded Successfully</p>");
+                    location.reload();
                 },
                 error: function (xhr) {
                     $("#response").html("<p>No File has been Selected</p>");
@@ -121,5 +144,35 @@ $(document).ready(function () {
             $("#uploadButton_excelCollection").removeAttr('disabled');
         }
     });
+
+
+    // Collection Upload Form On Submit
+    /*
+    $("#uploadForm_collection").on("submit", function (e) {
+
+            e.preventDefault();
+
+            $("#response").html("<p>Uploading... please wait...</p>");
+            var formData = new FormData(this);
+    
+            $.ajax({
+                url: "/entries/import",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $("#response").html("<p>Uploaded Successfully</p>");
+                    //location.reload();
+                },
+                error: function (xhr) {
+                    $("#response").html("<p>No File has been Selected</p>");
+                }
+            });
+
+            $("#uploadButton_collection").removeAttr('disabled');
+
+    });
+    */
 
 });
