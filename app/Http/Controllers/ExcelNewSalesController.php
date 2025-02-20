@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ProcessExcelFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use DateTime;
 use App\Jobs\ImportExcelFile;
 use App\Imports\SalesImport;
@@ -62,6 +63,109 @@ class ExcelNewSalesController extends Controller
         } else {
             return redirect('/');
         }   
+    }
+
+    public function update(Request $request, $id)
+    {
+        if(auth()->check()){
+            $validated = $request->validate([
+                'timestamp' => ['required'],
+                'branch' => ['required'],
+                'marketting_agent' => ['required'],
+                'status' => ['required'],
+                'phmember' => ['required'],
+                'address' => ['required'],
+                'civil_status' => ['required'],
+                'birthdate' => ['nullable'],
+                'name' => ['required'],
+                'contact_num' => ['required'],
+                'type_of_transaction' => ['required'],
+                'with_registration_fee' => ['required'],
+                'registration_amount' => ['nullable'],
+                'dayong_program' => ['required'],
+                'application_no' => ['nullable'],
+                'or_number' => ['required'],
+                'or_date' => ['required'],
+                'amount_collected' => ['required'],
+
+                'name1' => ['nullable'],
+                'age1' => ['nullable'],
+                'relationship1' => ['nullable'],
+                'name2' => ['nullable'],
+                'age2' => ['nullable'],
+                'relationship2' => ['nullable'],
+                'name3' => ['nullable'],
+                'age3' => ['nullable'],
+                'relationship3' => ['nullable'],
+                'name4' => ['nullable'],
+                'age4' => ['nullable'],
+                'relationship4' => ['nullable'],
+                'name5' => ['nullable'],
+                'age5' => ['nullable'],
+                'relationship5' => ['nullable'],
+                
+            ]);
+
+            $excel_member = ExcelMembers::find($id);
+
+            $toConvert = str_replace('T', ' ',$validated['timestamp']);
+            $dateTimeObject = new DateTime($toConvert);  // Example DateTime object
+            $excel_member->timestamp = Date::dateTimeToExcel($dateTimeObject);  // Converts DateTime to Excel serial number
+
+            $excel_member->branch = $validated['branch'];
+            $excel_member->marketting_agent = $validated['marketting_agent'];
+            $excel_member->status = $validated['status'];
+            $excel_member->phmember = $validated['phmember'];
+            $excel_member->address = $validated['address'];
+            $excel_member->civil_status = $validated['civil_status'];
+
+            $toConvert = str_replace('T', ' ',$validated['birthdate']);
+            $dateTimeObject = new DateTime($toConvert);  // Example DateTime object
+            $excel_member->birthdate = Date::dateTimeToExcel($dateTimeObject);  // Converts DateTime to Excel serial number
+
+            $excel_member->name = $validated['name'];
+            $excel_member->contact_num = $validated['contact_num'];
+            $excel_member->type_of_transaction = $validated['type_of_transaction'];
+            $excel_member->with_registration_fee = $validated['with_registration_fee'];
+            $excel_member->registration_amount = $validated['registration_amount'];
+
+            $excel_member->dayong_program = $validated['dayong_program'];
+            $excel_member->application_no = $validated['application_no'];
+            $excel_member->or_number = $validated['or_number'];
+
+            $toConvert = str_replace('T', ' ',$validated['or_date']);
+            $dateTimeObject = new DateTime($toConvert);  // Example DateTime object
+            $excel_member->or_date = Date::dateTimeToExcel($dateTimeObject);  // Converts DateTime to Excel serial number
+
+            $excel_member->amount_collected = $validated['amount_collected'];
+            $excel_member->name1 = $validated['name1'];
+            $excel_member->age1 = $validated['age1'];
+            $excel_member->relationship1 = $validated['relationship1'];
+
+            $excel_member->name2 = $validated['name2'];
+            $excel_member->age2 = $validated['age2'];
+            $excel_member->relationship2 = $validated['relationship2'];
+
+            $excel_member->name3 = $validated['name3'];
+            $excel_member->age3 = $validated['age3'];
+            $excel_member->relationship3 = $validated['relationship3'];
+
+            $excel_member->name4 = $validated['name4'];
+            $excel_member->age4 = $validated['age4'];
+            $excel_member->relationship4 = $validated['relationship4'];
+
+            $excel_member->name5 = $validated['name5'];
+            $excel_member->age5 = $validated['age5'];
+            $excel_member->relationship5 = $validated['relationship5'];
+
+            $excel_member->save();
+
+            // Back to View
+            return redirect('/excel-new-sales')->with("success_msg", "Data Updated");
+
+        } else {
+            return redirect('/');
+        }
     }
 
     public function destroy(Request $request)

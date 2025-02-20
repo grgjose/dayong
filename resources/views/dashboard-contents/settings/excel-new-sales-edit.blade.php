@@ -4,7 +4,9 @@
         <span class="fas fa-times"></span> Close
     </button>
 </div>
-<form>
+<form action="/excel-new-sales/update/{{ $newsale->id }}" method="POST">
+    @csrf
+    @method('PUT')
     <div class="card-body">
         <fieldset class="border p-3 mb-2 rounded" style="--bs-border-opacity: .5;">
             <legend class="h5 pl-2 pr-2" style="width: auto; !important">Collection Details</legend>
@@ -37,11 +39,11 @@
                 </div>
                 <div class="form-group col">
                     <label for="civil_status">Civil Status:</label>
-                    <input type="text" class="form-control" name="civil_status" value="{{ $newsale->civil_status }}" required>
+                    <input type="text" class="form-control" name="civil_status" value="{{ $newsale->civil_status }}">
                 </div>
                 <div class="form-group col">
                     <label for="birthdate">Birthdate:</label>
-                    <input type="date" class="form-control" name="birthdate" value="{{ $newsale->birthdate }}" required>
+                    <input type="date" class="form-control" name="birthdate" value="{{ $newsale->birthdate }}">
                 </div>
             </div>
             <div class="row">
@@ -63,7 +65,7 @@
                 </div>
                 <div class="form-group col">
                     <label for="registration_amount">Registration Amount:</label>
-                    <input type="text" class="form-control" name="registration_amount" value="{{ $newsale->registration_amount }}" required>
+                    <input type="text" class="form-control" name="registration_amount" value="{{ $newsale->registration_amount }}">
                 </div>
             </div>
             <div class="row">
@@ -73,7 +75,7 @@
                 </div>
                 <div class="form-group col">
                     <label for="application_no">Application Number:</label>
-                    <input type="text" class="form-control" name="application_number" value="{{ $newsale->application_no }}" required>
+                    <input type="text" class="form-control" name="application_no" value="{{ $newsale->application_no }}">
                 </div>
                 <div class="form-group col">
                     <label for="or_number">OR Number:</label>
@@ -93,15 +95,15 @@
                 <div class="row">
                     <div class="form-group col">
                         <label for="name{{$i}}">Name:</label>
-                        <input type="text" class="form-control" name="name{{$i}}" value="{{ $names[$i] }}" required>
+                        <input type="text" class="form-control" name="name{{$i}}" value="{{ $names[$i] }}">
                     </div>
                     <div class="form-group col">
                         <label for="age{{$i}}">Age:</label>
-                        <input type="text" class="form-control" name="age{{$i}}" value="{{ $ages[$i] }}" required>
+                        <input type="text" class="form-control" name="age{{$i}}" value="{{ $ages[$i] }}">
                     </div>
                     <div class="form-group col">
                         <label for="relationship{{$i}}">Relationship:</label>
-                        <input type="text" class="form-control" name="relationship{{$i}}" value="{{ $relationships[$i] }}" required>
+                        <input type="text" class="form-control" name="relationship{{$i}}" value="{{ $relationships[$i] }}">
                     </div>
                 </div> <br>
             @endfor
@@ -109,6 +111,7 @@
 
     </div>
     <div class="card-footer">
+        <button type="submit" class="btn btn-primary" style="margin-left: 10px;">Submit</button>
         <button type="button" class="btn btn-secondary" style="margin-left: 10px;" onclick="hideForm()">Close</button>
     </div>
 </form>
