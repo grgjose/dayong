@@ -686,7 +686,7 @@ class MemberController extends Controller
         } 
     }
 
-    public function importMembers(Request $request)
+    public function import(Request $request)
     {
         set_time_limit(240);
         $programs = DB::table('programs')->orderBy('code')->get();

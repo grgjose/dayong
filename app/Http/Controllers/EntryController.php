@@ -408,6 +408,7 @@ class EntryController extends Controller
                     $entry->or_date = $or_date;
                     $entry->amount = $amount;
                     $entry->number_of_payment = $nop;
+                    $entry->date_remitted = $date_remitted;
                     $entry->program_id = $program_id;
                     $entry->month_from = $m1;
                     $entry->month_to = $m2;

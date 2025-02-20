@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-12">
 
-                <!-- TABLE SECTION -->       
+                <!-- TABLE SECTION -->    
                 <div class="card card-info" id="table">
                     <div class="card-header">
                         <h2 class="card-title" style="padding-top: 10px;">New Sales Excel List</h2>
@@ -36,54 +36,20 @@
                         @endif
                     </div>
                     <div class="card-body">
-                        <table id="excelNewSalesTable" class="table table-bordered table-hover">
+                        <table id="excelNewSalesTable" class="table table-sm table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <td>ID</td>
-                                    <td>Timestamp</td>
-                                    <td>Branch</td>
-                                    <td>Marketting Agent</td>
-                                    <td>Status</td>
-                                    <td>PH/Member</td>
-                                    <td>Address</td>
-                                    <td>Civil Status</td>
-                                    <td>Birthdate</td>
-                                    <td>Name</td>
-                                    <td>Contact #</td>
-                                    <td>Type of Transaction</td>
-                                    <td>With Reg Fee</td>
-                                    <td>Registration Amount</td>
-                                    <td>Dayong Program</td>
-                                    <td>Application #</td>
-                                    <td>OR #</td>
-                                    <td>OR Date</td>
-                                    <td>Amount Collected</td>
-                                    
-                                    <td>Name 1</td>
-                                    <td>Age 1</td>
-                                    <td>Relationship 1</td>
-
-                                    <td>Name 2</td>
-                                    <td>Age 2</td>
-                                    <td>Relationship 2</td>
-
-                                    <td>Name 3</td>
-                                    <td>Age 3</td>
-                                    <td>Relationship 3</td>
-
-                                    <td>Name 4</td>
-                                    <td>Age 4</td>
-                                    <td>Relationship 4</td>
-
-                                    <td>Name 5</td>
-                                    <td>Age 5</td>
-                                    <td>Relationship 5</td>
-
-                                    <td>SheetName</td>
-                                    <td>Remarks</td>
-                                    <td>Is Imported</td>
-                                    <td>Created At</td>
-                                    <td>Updated At</td>
+                                    <th style="width: 10%;">Timestamp</th>
+                                    <th style="width: 4%;">Branch</th>
+                                    <th style="width: 10%;">Marketting Agent</th>
+                                    <th style="width: 15%;">PH/Member</th>
+                                    <th style="width: 9%;">Birthdate</th>
+                                    <th style="width: 8%;">Dayong Program</th>
+                                    <th style="width: 8%;">Application #</th>
+                                    <th style="width: 3%;">OR #</th>
+                                    <th style="width: 8%;">OR Date</th>
+                                    <th style="width: 10%;">Remarks</th>
+                                    <th style="width: 15%;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -91,6 +57,10 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <!-- VIEW ENTRY SECTION -->
+                <div class="card card-primary" id="view" style="display: none;">
                 </div>
 
             </div>
@@ -172,16 +142,14 @@
 
     function viewFunction(id)
     {
-        $("#view").load('/members/view/'+id);
-        checkBeneficiaries();
+        $("#view").load('/excel-new-sales/view/'+id);
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
     }
 
     function editFunction(id)
     {
-        $("#view").load('/members/edit/'+id);
-        checkBeneficiaries();
+        $("#view").load('/excel-new-sales/edit/'+id);
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
     }

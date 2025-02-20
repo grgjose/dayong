@@ -41,7 +41,6 @@ Route::post('/entries/upload', [EntryController::class, 'upload']);
 Route::post('/entries/import', [EntryController::class, 'import']);
 Route::get('/entries/view/{id}', [EntryController::class, 'viewDetails']);
 Route::get('/entries/edit/{id}', [EntryController::class, 'editDetails']);
-Route::post('/entries/importEntries', [EntryController::class, 'importEntries']);
 Route::get('/entries/getIncentivesMatrix/{id}/{program_id?}', [EntryController::class, 'getIncentivesMatrix']);
 
 Route::get('/new-sales', [NewSalesController::class, 'index']);
@@ -53,8 +52,6 @@ Route::post('/new-sales/import', [NewSalesController::class, 'import']);
 Route::get('/new-sales/view/{id}', [NewSalesController::class, 'viewDetails']);
 Route::get('/new-sales/edit/{id}', [NewSalesController::class, 'editDetails']);
 Route::get('/new-sales/print/{id}', [NewSalesController::class, 'print']);
-Route::post('/new-sales/importnew-sales', [NewSalesController::class, 'importnew-sales']);
-
 
 Route::get('/members', [MemberController::class, 'index']);
 Route::post('/members/store', [MemberController::class, 'store']);
@@ -65,7 +62,6 @@ Route::post('/members/loadSheets', [MemberController::class, 'loadSheets']);
 Route::get('/members/view/{id}', [MemberController::class, 'viewDetails']);
 Route::get('/members/edit/{id}', [MemberController::class, 'editDetails']);
 Route::get('/members/print/{id}', [MemberController::class, 'print']);
-Route::post('/members/importMembers', [MemberController::class, 'importMembers']);
 
 Route::get('/audit', [AuditController::class, 'index']);
 Route::post('/audit/store', [AuditController::class, 'store']);
@@ -109,13 +105,13 @@ Route::get('/matrix', [MatrixController::class, 'index']);
 Route::post('/matrix/store', [MatrixController::class, 'store']);
 Route::put('/matrix/update/{id}', [MatrixController::class, 'update']);
 Route::post('/matrix/destroy', [MatrixController::class, 'destroy']);
-Route::post('/matrix/change_pic', [MatrixController::class, 'change']);
 
 Route::get('/excel-collection', [ExcelCollectionController::class, 'index']);
 Route::get('/excel-collection/retrieve', [ExcelCollectionController::class, 'retrieve']);
 Route::post('/excel-collection/upload', [ExcelCollectionController::class, 'upload']);
-Route::post('/excel-collection/loadSheets', [ExcelNewSalesController::class, 'loadSheets']);
-Route::post('/excel-collection/store', [ExcelCollectionController::class, 'store']);
+Route::post('/excel-collection/loadSheets', [ExcelCollectionController::class, 'loadSheets']);
+Route::get('/excel-collection/view/{id}', [ExcelCollectionController::class, 'viewDetails']);
+Route::get('/excel-collection/edit/{id}', [ExcelCollectionController::class, 'editDetails']);
 Route::put('/excel-collection/update/{id}', [ExcelCollectionController::class, 'update']);
 Route::post('/excel-collection/destroy', [ExcelCollectionController::class, 'destroy']);
 
@@ -123,6 +119,7 @@ Route::get('/excel-new-sales', [ExcelNewSalesController::class, 'index']);
 Route::get('/excel-new-sales/retrieve', [ExcelNewSalesController::class, 'retrieve']);
 Route::post('/excel-new-sales/upload', [ExcelNewSalesController::class, 'upload']);
 Route::post('/excel-new-sales/loadSheets', [ExcelNewSalesController::class, 'loadSheets']);
-Route::post('/excel-new-sales/store', [ExcelNewSalesController::class, 'store']);
+Route::get('/excel-new-sales/view/{id}', [ExcelNewSalesController::class, 'viewDetails']);
+Route::get('/excel-new-sales/edit/{id}', [ExcelNewSalesController::class, 'editDetails']);
 Route::put('/excel-new-sales/update/{id}', [ExcelNewSalesController::class, 'update']);
 Route::post('/excel-new-sales/destroy', [ExcelNewSalesController::class, 'destroy']);

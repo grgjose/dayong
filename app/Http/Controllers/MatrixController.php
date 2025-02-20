@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Artisan;
 
 class MatrixController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         if(auth()->check()){
 
             $my_user = auth()->user();
@@ -34,7 +35,8 @@ class MatrixController extends Controller
         }
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         if(auth()->check()){
 
             // Get Request Data
@@ -63,7 +65,8 @@ class MatrixController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         if(auth()->check()){
 
             // Get Request Data
@@ -90,7 +93,8 @@ class MatrixController extends Controller
         }
     }
 
-    public function destroy(Request $request){
+    public function destroy(Request $request)
+    {
         if(auth()->check()){
 
             // Destroy Request Data

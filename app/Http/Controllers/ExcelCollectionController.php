@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use DateTime;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Jobs\ImportExcelFile;
 use App\Models\Beneficiary;
 use App\Models\Member;
@@ -23,6 +24,7 @@ use App\Models\ExcelEntries;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Facades\DataTables;
+use DateTimeZone;
 use Exception;
 
 class ExcelCollectionController extends Controller
@@ -105,9 +107,62 @@ class ExcelCollectionController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        //code
+        if(auth()->check()){
+            $validated = $request->validate([
+                'timestamp' => ['required'],
+                'branch' => ['required'],
+                'marketting_agent' => ['required'],
+                'status' => ['required'],
+                'phmember' => ['required'],
+                'or_number' => ['required'],
+                'or_date' => ['required'],
+                'amount_collected' => ['required'],
+                'month_of' => ['required'],
+                'nop' => ['required'],
+                'date_remitted' => ['required'],
+                'dayong_program' => ['required'],
+                'reactivation' => ['required'],
+                'transferred' => ['required'],
+            ]);
+
+            $excel_entry = ExcelEntries::find($id);
+
+            $toConvert = str_replace('T', ' ',$validated['timestamp']);
+            $dateTimeObject = new DateTime($toConvert);  // Example DateTime object
+            $excel_entry->timestamp = Date::dateTimeToExcel($dateTimeObject);  // Converts DateTime to Excel serial number
+
+            $excel_entry->branch = $validated['branch'];
+            $excel_entry->marketting_agent = $validated['marketting_agent'];
+            $excel_entry->status = $validated['status'];
+            $excel_entry->phmember = $validated['phmember'];
+            $excel_entry->or_number = $validated['or_number'];
+
+            $toConvert = str_replace('T', ' ',$validated['or_date']);
+            $dateTimeObject = new DateTime($toConvert);  // Example DateTime object
+            $excel_entry->or_date = Date::dateTimeToExcel($dateTimeObject);  // Converts DateTime to Excel serial number
+
+            $excel_entry->amount_collected = $validated['amount_collected'];
+            $excel_entry->month_of = $validated['month_of'];
+            $excel_entry->nop = $validated['nop'];
+
+            $toConvert = str_replace('T', ' ',$validated['date_remitted']);
+            $dateTimeObject = new DateTime($toConvert);  // Example DateTime object
+            $excel_entry->date_remitted = Date::dateTimeToExcel($dateTimeObject);  // Converts DateTime to Excel serial number
+
+            $excel_entry->dayong_program = $validated['dayong_program'];
+            $excel_entry->reactivation = $validated['reactivation'];
+            $excel_entry->transferred = $validated['transferred'];
+
+            $excel_entry->save();
+
+            // Back to View
+            return redirect('/excel-collection')->with("success_msg", "Data Updated");
+
+        } else {
+            return redirect('/');
+        }
     }
 
     public function destroy(Request $request)
@@ -365,28 +420,179 @@ class ExcelCollectionController extends Controller
 
     }
 
-    public function excelTimestampToString($excelTimestamp) 
+    public function viewDetails($id)
     {
-        // Define the base date for Excel dates (January 1, 1900 is considered day 1 in Excel)
-        $excelEpoch = new DateTime('1899-12-30'); // Excel date 0 corresponds to 1899-12-30
-        
-        // Separate the integer part (days) and fractional part (time)
-        $days = floor($excelTimestamp);
-        $fractionalDay = $excelTimestamp - $days;
-        
-        // Add the days to the epoch
-        $excelEpoch->modify("+{$days} days");
-        
-        // Calculate the time from the fractional day
-        $totalSeconds = round($fractionalDay * 86400); // 86400 seconds in a day
-        $hours = floor($totalSeconds / 3600);
-        $minutes = floor(($totalSeconds % 3600) / 60);
-        $seconds = $totalSeconds % 60;
-        
-        // Add the time to the date
-        $excelEpoch->setTime($hours, $minutes, $seconds);
-        
-        // Return the formatted date string
-        return $excelEpoch->format('Y-m-d H:i:s');
+
+        if(auth()->check()){
+            $my_user = auth()->user();
+            $entries = DB::table('excel_entries')->where('id', $id)->get();
+            
+            $entries[0]->timestamp = $this->excelToMySQLDateTime($entries[0]->timestamp);
+            if($entries[0]->timestamp != null) { $entries[0]->timestamp = str_replace(" ", "T", $entries[0]->timestamp); }
+
+            $entries[0]->date_remitted = $this->excelToMySQLDateTime($entries[0]->date_remitted);
+            if($entries[0]->date_remitted != null) { $entries[0]->date_remitted = explode(' ', $entries[0]->date_remitted)[0]; }
+
+            $entries[0]->or_date = $this->excelToMySQLDateTime($entries[0]->or_date);
+            if($entries[0]->or_date != null) { $entries[0]->or_date = explode(' ', $entries[0]->or_date)[0]; }
+
+            return view('dashboard-contents.settings.excel-collection-view', [
+                'id' => $id,
+                'entries' => $entries[0],
+            ]);
+
+        } else {
+            return redirect('/');
+        }
     }
+
+    public function editDetails($id)
+    {
+        if(auth()->check()){
+            $my_user = auth()->user();
+            $entries = DB::table('excel_entries')->where('id', $id)->get();
+            
+            $entries[0]->timestamp = $this->excelToMySQLDateTime($entries[0]->timestamp);
+            if($entries[0]->timestamp != null) { $entries[0]->timestamp = str_replace(" ", "T", $entries[0]->timestamp); }
+
+            $entries[0]->date_remitted = $this->excelToMySQLDateTime($entries[0]->date_remitted);
+            if($entries[0]->date_remitted != null) { $entries[0]->date_remitted = explode(' ', $entries[0]->date_remitted)[0]; }
+
+            $entries[0]->or_date = $this->excelToMySQLDateTime($entries[0]->or_date);
+            if($entries[0]->or_date != null) { $entries[0]->or_date = explode(' ', $entries[0]->or_date)[0]; }
+
+            return view('dashboard-contents.settings.excel-collection-edit', [
+                'id' => $id,
+                'entries' => $entries[0],
+            ]);
+
+        } else {
+            return redirect('/');
+        }
+    }
+
+    public function excelToMySQLDateTime($excelDate)
+    {
+        try {
+            if (!is_numeric($excelDate)) {
+                return null;
+            }
+    
+            $excelDate = floatval($excelDate);
+    
+            if ($excelDate < 0) {
+                return null;
+            }
+    
+            $days = floor($excelDate);
+            $fraction = $excelDate - $days;
+    
+            $date = new DateTime('1899-12-30');
+            $date->modify("+$days days");
+    
+            // Calculate time as hours, minutes, and seconds
+            $hours = floor($fraction * 24);
+            $minutes = floor(($fraction * 1440) % 60);
+            $seconds = floor(($fraction * 86400) % 60);
+    
+            $date->setTime($hours, $minutes, $seconds);
+    
+            return $date->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    /*
+    public function mySQLDateTimeToExcel($mysqlDateTime)
+    {
+        // Validate the input format
+        if (empty($mysqlDateTime) || !strtotime($mysqlDateTime)) {
+            return null;  // Return null if the input is invalid
+        }
+    
+        // Check if the input contains time (T separator)
+        if (strpos($mysqlDateTime, 'T') !== false) {
+            // Convert MySQL datetime string to Unix timestamp
+            $timestamp = strtotime($mysqlDateTime);
+        } else {
+            // If no time, add a default time to the date (00:00:00) for calculation
+            $mysqlDateTime .= 'T00:00:00';
+            $timestamp = strtotime($mysqlDateTime);
+        }
+    
+        // Excel's epoch start is 1900-01-01 00:00:00
+        $excelEpoch = strtotime('1900-01-01 00:00:00');
+    
+        // Check for potential errors with strtotime
+        if ($timestamp === false || $excelEpoch === false) {
+            return null;  // Return null in case of error during strtotime
+        }
+    
+        // Calculate the difference in seconds
+        $diffInSeconds = $timestamp - $excelEpoch;
+    
+        // Convert to Excel date (days from 1900-01-01), divide by 86400 (seconds in a day)
+        // Excel date system uses a "day" starting at 1900-01-01 00:00:00
+        $excelDate = $diffInSeconds / 86400; // 86400 is the number of seconds in a day
+    
+        // Return the result with high precision (up to 9 decimal places)
+        return round($excelDate, 9); 
+    }
+    */
+    
+    public function mySQLDateTimeToExcel($mysqlDateTime)
+    {
+        // Validate input format (expected format: YYYY-MM-DDTHH:MM:SS)
+        if (empty($mysqlDateTime) || !preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $mysqlDateTime)) {
+            return null;  // Return null if the input is invalid
+        }
+    
+        // Split the input into date and time components
+        list($date, $time) = explode('T', $mysqlDateTime);
+        list($year, $month, $day) = explode('-', $date);
+        list($hour, $minute, $second) = explode(':', $time);
+    
+        // Calculate the number of days since Excel epoch (1900-01-01)
+        $daysSince1900 = $this->calculateDaysSince1900($year, $month, $day);
+    
+        // Calculate the time as a fraction of the day
+        $timeAsFraction = ($hour * 3600 + $minute * 60 + $second) / 86400;
+    
+        // Combine the whole days and the fractional part
+        $excelDate = $daysSince1900 + $timeAsFraction;
+    
+        // Return the result with high precision
+        return round($excelDate, 9);
+    }
+    
+    // Helper function to calculate the number of days since 1900-01-01
+    private function calculateDaysSince1900($year, $month, $day)
+    {
+        $days = 0;
+    
+        // Account for the years from 1900 to the year before the given year
+        for ($y = 1900; $y < $year; $y++) {
+            $days += $this->isLeapYear($y) ? 366 : 365;
+        }
+    
+        // Account for the months in the given year before the given month
+        $daysInMonth = [31, 28 + $this->isLeapYear($year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        for ($m = 1; $m < $month; $m++) {
+            $days += $daysInMonth[$m - 1];
+        }
+    
+        // Add the days in the given month
+        $days += $day - 1; // Subtract 1 because we start counting from the first day of the month
+    
+        return $days;
+    }
+    
+    // Helper function to check if a year is a leap year
+    private function isLeapYear($year)
+    {
+        return ($year % 4 == 0 && ($year % 100 != 0 || $year % 400 == 0));
+    }
+    
+
 }

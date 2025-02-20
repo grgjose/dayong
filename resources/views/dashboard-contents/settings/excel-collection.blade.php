@@ -36,34 +36,30 @@
                         @endif
                     </div>
                     <div class="card-body">
-                        <table id="excelCollectionTable" class="table table-bordered table-hover">
+                        <table id="excelCollectionTable" class="table table-sm table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Timestamp</th>
-                                    <th>Branch</th>
-                                    <th>Marketting Agent</th>
-                                    <th>Status</th>
-                                    <th>PH/MEMBER</th>
-                                    <th>OR#</th>
-                                    <th>OR Date</th>
-                                    <th>Amount Collected</th>
-                                    <th>Month Of</th>
-                                    <th>NOP</th>
-                                    <th>Date Remitted</th>
-                                    <th>Dayong Program</th>
-                                    <th>Reactivation</th>
-                                    <th>Transferred</th>
-                                    <th>Remarks</th>
-                                    <th>Is Imported?</th>
-                                    <th>Created At</th>
-                                    <th>Updated At</th>
+                                    <th style="width: 10%;">Timestamp</th>
+                                    <th style="width: 4%;">Branch</th>
+                                    <th style="width: 8%;">MAS</th>
+                                    <th style="width: 15%;">PH/MEMBER</th>
+                                    <th style="width: 3%;">OR#</th>
+                                    <th style="width: 8%;">OR Date</th>
+                                    <th style="width: 8%;">MonthOf</th>
+                                    <th style="width: 2%;">NOP</th>
+                                    <th style="width: 3%;">Program</th>
+                                    <th style="width: 24%;">Remarks</th>
+                                    <th style="width: 15%;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <!-- VIEW ENTRY SECTION -->
+                <div class="card card-primary" id="view" style="display: none;">
                 </div>
 
             </div>
@@ -130,31 +126,16 @@
         $("#table").removeAttr("style");
     }
 
-    function checkBeneficiaries()
-    {
-        var program = $("#program_id").val();
-        var x = $("#ben_" + program).html();
-        if(x == 0){
-            $(".beneficiaries").removeAttr("style");
-            $(".beneficiaries").attr("style", "display: none;");
-        } else {
-            $(".beneficiaries").removeAttr("style");
-            $(".beneficiaries").attr("style", "--bs-border-opacity: .5;");
-        }
-    }
-
     function viewFunction(id)
     {
-        $("#view").load('/members/view/'+id);
-        checkBeneficiaries();
+        $("#view").load('/excel-collection/view/'+id);
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
     }
 
     function editFunction(id)
     {
-        $("#view").load('/members/edit/'+id);
-        checkBeneficiaries();
+        $("#view").load('/excel-collection/edit/'+id);
         $("#table").attr("style", "display: none;");
         $("#view").removeAttr("style");
     }

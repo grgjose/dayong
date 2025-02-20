@@ -22,6 +22,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+
+                <!-- TABLE SECTION -->  
                 <div class="card card-info" id="table">
                     <div class="card-header">
                         <h2 class="card-title" style="padding-top: 10px;">Branches List</h2>

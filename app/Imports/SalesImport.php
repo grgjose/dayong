@@ -43,7 +43,7 @@ class SalesImport implements ToModel
                 'birthdate' => $row[7],
                 'age' => $row[8],
                 'name' => $row[9],
-                'contact_no' => $row[10],
+                'contact_num' => $row[10],
                 'type_of_transaction' => $row[11],
                 'with_registration_fee' => $row[12],
                 'registration_amount' => $row[13],

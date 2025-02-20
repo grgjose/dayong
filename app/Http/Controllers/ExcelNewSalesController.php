@@ -28,46 +28,6 @@ use PHPUnit\Logging\Exception;
 use Yajra\DataTables\Facades\DataTables;
 use TypeError;
 
-//List of Constants (NS)
-
-    const TIMESTAMP = 0;
-    const BRANCH = 1;
-    const MARKETTING_AGENT = 2;
-    const STATUS = 3;
-    const PHMEMBER = 4;
-    const ADDRESS = 5;
-    const CIVIL_STATUS = 6;
-    const BIRTHDATE = 7;
-    const AGE = 8;
-    const NAME = 9;
-    const CONTACT_NO = 10;
-    const TYPE_OF_TRANSACTION = 11;
-    const WITH_REGISTRATION_FEE = 12;
-    const REGISTRATION_AMOUNT = 13;
-    const DAYONG_PROGRAM = 14;
-    const APPLICATION_NO = 15;
-    const OR_NUMBER = 16;
-    const OR_DATE = 17;
-    const AMOUNT_COLLECTED = 18;
-
-    const NAME1 = 19;
-    const AGE1 = 20;
-    const RELATIONSHIP1 = 21;
-
-    const NAME2 = 22;
-    const AGE2 = 23;
-    const RELATIONSHIP2 = 24;
-
-    const NAME3 = 25;
-    const AGE3 = 26;
-    const RELATIONSHIP3 = 27;
-
-    const NAME4 = 28;
-    const AGE4 = 29;
-    const RELATIONSHIP4 = 30;
-
-//
-
 class ExcelNewSalesController extends Controller
 {
     public function index()
@@ -267,62 +227,107 @@ class ExcelNewSalesController extends Controller
 
     public function viewDetails($id)
     {
-        $my_user = auth()->user();
-        $member = DB::table('members')->where('id', $id)->get();
-        $member_program = DB::table('members_program')->where('member_id', $id)->get();
-        $claimant = DB::table('claimants')->where('id', $member_program[0]->claimants_id)->get();
-        $arr = explode(",", $member_program[0]->beneficiaries_ids); array_pop($arr);
-        $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
-        $branches = DB::table('branches')->where('id', $member_program[0]->branch_id)->get();
-        $programs = DB::table('programs')->where('id', $member_program[0]->program_id)->get();
-        
-        if(auth()->check()){
 
-            return view('dashboard-contents.modules.members-view', [
+        if(auth()->check()){
+            $my_user = auth()->user();
+            $newsale = DB::table('excel_members')->where('id', $id)->get();
+            
+            $newsale[0]->timestamp = $this->excelToMySQLDateTime($newsale[0]->timestamp);
+            if($newsale[0]->timestamp != null) { $newsale[0]->timestamp = str_replace(" ", "T", $newsale[0]->timestamp); }
+
+            $newsale[0]->birthdate = $this->excelToMySQLDateTime($newsale[0]->birthdate);
+            if($newsale[0]->birthdate != null) { $newsale[0]->birthdate = explode(' ', $newsale[0]->birthdate)[0]; }
+
+            $newsale[0]->or_date = $this->excelToMySQLDateTime($newsale[0]->or_date);
+            if($newsale[0]->or_date != null) { $newsale[0]->or_date = explode(' ', $newsale[0]->or_date)[0]; }
+
+            $names = array(
+                $newsale[0]->name1,
+                $newsale[0]->name2,
+                $newsale[0]->name3,
+                $newsale[0]->name4,
+                $newsale[0]->name5,
+            );
+
+            $ages = array(
+                $newsale[0]->age1,
+                $newsale[0]->age2,
+                $newsale[0]->age3,
+                $newsale[0]->age4,
+                $newsale[0]->age5,
+            );
+
+            $relationships = array(
+                $newsale[0]->relationship1,
+                $newsale[0]->relationship2,
+                $newsale[0]->relationship3,
+                $newsale[0]->relationship4,
+                $newsale[0]->relationship5,
+            );
+
+            return view('dashboard-contents.settings.excel-new-sales-view', [
                 'id' => $id,
-                'member' => $member[0],
-                'member_program' => $member_program[0],
-                'claimant' => $claimant[0],
-                'beneficiaries' => $beneficiaries,
-                'programs' => $programs[0],
-                'branches' => $branches[0]
+                'newsale' => $newsale[0],
+                'names' => $names,
+                'ages' => $ages,
+                'relationships' => $relationships,
             ]);
 
-        } 
+        } else {
+            return redirect('/');
+        }
     }
 
     public function editDetails($id)
     {
-        $my_user = auth()->user();
-
-        $branches = DB::table('branches')->orderBy('id')->get();
-        $programs = DB::table('programs')->orderBy('id')->get();
-
-        $member = DB::table('members')->where('id', $id)->get();
-        $member_program = DB::table('members_program')->where('member_id', $id)->get();
-        $claimant = DB::table('claimants')->where('id', $member_program[0]->claimants_id)->get();
-        $arr = explode(",", $member_program[0]->beneficiaries_ids); array_pop($arr);
-        $beneficiaries = DB::table('beneficiaries')->whereIn('id', $arr)->get();
-
-        
-        $branch_one = DB::table('branches')->where('id', $member_program[0]->branch_id)->get();
-        $program_one = DB::table('programs')->where('id', $member_program[0]->program_id)->get();
-        
         if(auth()->check()){
+            $my_user = auth()->user();
+            $newsale = DB::table('excel_members')->where('id', $id)->get();
+            
+            $newsale[0]->timestamp = $this->excelToMySQLDateTime($newsale[0]->timestamp);
+            if($newsale[0]->timestamp != null) { $newsale[0]->timestamp = str_replace(" ", "T", $newsale[0]->timestamp); }
 
-            return view('dashboard-contents.modules.members-edit', [
+            $newsale[0]->birthdate = $this->excelToMySQLDateTime($newsale[0]->birthdate);
+            if($newsale[0]->birthdate != null) { $newsale[0]->birthdate = explode(' ', $newsale[0]->birthdate)[0]; }
+
+            $newsale[0]->or_date = $this->excelToMySQLDateTime($newsale[0]->or_date);
+            if($newsale[0]->or_date != null) { $newsale[0]->or_date = explode(' ', $newsale[0]->or_date)[0]; }
+
+            $names = array(
+                $newsale[0]->name1,
+                $newsale[0]->name2,
+                $newsale[0]->name3,
+                $newsale[0]->name4,
+                $newsale[0]->name5,
+            );
+
+            $ages = array(
+                $newsale[0]->age1,
+                $newsale[0]->age2,
+                $newsale[0]->age3,
+                $newsale[0]->age4,
+                $newsale[0]->age5,
+            );
+
+            $relationships = array(
+                $newsale[0]->relationship1,
+                $newsale[0]->relationship2,
+                $newsale[0]->relationship3,
+                $newsale[0]->relationship4,
+                $newsale[0]->relationship5,
+            );
+
+            return view('dashboard-contents.settings.excel-new-sales-edit', [
                 'id' => $id,
-                'member' => $member[0],
-                'member_program' => $member_program[0],
-                'claimant' => $claimant[0],
-                'beneficiaries' => $beneficiaries,
-                'programs' => $programs,
-                'branches' => $branches,
-                'branch_one' => $branch_one[0],
-                'program_one' => $program_one[0],
+                'newsale' => $newsale[0],
+                'names' => $names,
+                'ages' => $ages,
+                'relationships' => $relationships,
             ]);
 
-        } 
+        } else {
+            return redirect('/');
+        }
     }
 
     public function importMembers()
@@ -640,5 +645,37 @@ class ExcelNewSalesController extends Controller
             dd($excelTimestamp);
         }
 
+    }
+
+    public function excelToMySQLDateTime($excelDate)
+    {
+        try {
+            if (!is_numeric($excelDate)) {
+                return null;
+            }
+    
+            $excelDate = floatval($excelDate);
+    
+            if ($excelDate < 0) {
+                return null;
+            }
+    
+            $days = floor($excelDate);
+            $fraction = $excelDate - $days;
+    
+            $date = new DateTime('1899-12-30');
+            $date->modify("+$days days");
+    
+            // Calculate time as hours, minutes, and seconds
+            $hours = floor($fraction * 24);
+            $minutes = floor(($fraction * 1440) % 60);
+            $seconds = floor(($fraction * 86400) % 60);
+    
+            $date->setTime($hours, $minutes, $seconds);
+    
+            return $date->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            return null;
+        }
     }
 }

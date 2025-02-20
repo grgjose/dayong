@@ -329,54 +329,54 @@
                 @csrf
               </form>
               @if($my_user->usertype == 1)
-              <li class="nav-header">ADDITIONAL SETTINGS</li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-cogs"></i>
-                  <p>
-                    SETTINGS
-                    <i class="fas fa-angle-left right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item  tab-2">
-                    <a href="/branch" class="nav-link">
-                      <i class="fas fa-code-branch nav-icon"></i>
-                      <p>Branches</p>
-                    </a>
-                  </li>
-                  <li class="nav-item tab-2">
-                    <a href="/program" class="nav-link">
-                      <i class="fas fa-medal nav-icon"></i>
-                      <p>Programs</p>
-                    </a>
-                  </li>
-                  <li class="nav-item  tab-2">
-                    <a href="/user-accounts" class="nav-link">
-                      <i class="fas fa-user-friends nav-icon"></i>
-                      <p>Users</p>
-                    </a>
-                  </li>
-                  <li class="nav-item  tab-2">
-                    <a href="/matrix" class="nav-link">
-                      <i class="fas fa-percent nav-icon"></i>
-                      <p>Incentives Matrix</p>
-                    </a>
-                  </li>
-                  <li class="nav-item  tab-2">
-                    <a href="/excel-collection" class="nav-link">
-                      <i class="fas fa-donate nav-icon"></i>
-                      <p>Excel Collection</p>
-                    </a>
-                  </li>
-                  <li class="nav-item  tab-2">
-                    <a href="/excel-new-sales" class="nav-link">
-                      <i class="fas fa-user-cog nav-icon"></i>
-                      <p>Excel New Sales</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
+                <li class="nav-header">ADDITIONAL SETTINGS</li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-cogs"></i>
+                    <p>
+                      SETTINGS
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item tab-2">
+                      <a href="/branch" class="nav-link">
+                        <i class="fas fa-code-branch nav-icon"></i>
+                        <p>Branches</p>
+                      </a>
+                    </li>
+                    <li class="nav-item tab-2">
+                      <a href="/program" class="nav-link">
+                        <i class="fas fa-medal nav-icon"></i>
+                        <p>Programs</p>
+                      </a>
+                    </li>
+                    <li class="nav-item tab-2">
+                      <a href="/user-accounts" class="nav-link">
+                        <i class="fas fa-user-friends nav-icon"></i>
+                        <p>Users</p>
+                      </a>
+                    </li>
+                    <li class="nav-item tab-2">
+                      <a href="/matrix" class="nav-link">
+                        <i class="fas fa-percent nav-icon"></i>
+                        <p>Incentives Matrix</p>
+                      </a>
+                    </li>
+                    <li class="nav-item tab-2">
+                      <a href="/excel-collection" class="nav-link">
+                        <i class="fas fa-donate nav-icon"></i>
+                        <p>Excel Collection</p>
+                      </a>
+                    </li>
+                    <li class="nav-item tab-2">
+                      <a href="/excel-new-sales" class="nav-link">
+                        <i class="fas fa-user-cog nav-icon"></i>
+                        <p>Excel New Sales</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
               @endif
             </ul>
           </nav>
@@ -473,9 +473,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     <!-- Custom Scripts -->
-    <script src="{{asset('js/importfiles.js')}}"></script>
     <script src="{{asset('admin_lte/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script> $(function () { bsCustomFileInput.init(); }); </script>
+
+    <script src="{{asset('js/importfiles.js')}}"></script>
+    <script src="{{asset('js/excelfiles.js')}}"></script>
+
 
     <script>
 
@@ -524,6 +527,7 @@
           case "branch":
           case "program":
           case "user-accounts":
+          case "matrix":
           case "excel-collection":
           case "excel-new-sales":
             $("a[href='/"+ pathname +"']").parent().parent().parent().addClass("menu-is-opening");
@@ -690,102 +694,6 @@
       })();
     </script>
 
-    <script type="text/javascript">
-
-      $(function(){
-        var table = $("#excelCollectionTable").DataTable({
-          processing: true,
-          serverSide: true,
-          paging: true,
-          lengthChange: true,
-          searching: true,
-          ordering: true,
-          info: true,
-          autoWidth: false,
-          responsive: true,
-          ajax: "excel-collection/retrieve",
-          columns: [
-            {data: "id", name: "id"},
-            {data: "timestamp", name: "timestamp"},
-            {data: "branch", name: "branch"},
-            {data: "marketting_agent", name: "marketting_agent"},
-            {data: "status", name: "status"},
-            {data: "phmember", name: "phmember"},
-            {data: "or_number", name: "or_number"},
-            {data: "or_date", name: "or_date"},
-            {data: "amount_collected", name: "amount_collected"},
-            {data: "month_of", name: "month_of"},
-            {data: "nop", name: "nop"},
-            {data: "date_remitted", name: "date_remitted"},
-            {data: "dayong_program", name: "dayong_program"},
-            {data: "reactivation", name: "reactivation"},
-            {data: "transferred", name: "transferred"},
-            {data: "remarks", name: "remarks"},
-            {data: "isImported", name: "isImported"},
-            {data: "created_at", name: "created_at"},
-            {data: "updated_at", name: "updated_at"},
-          ]
-        });
-      });
-
-      $(function(){
-        var table = $("#excelNewSalesTable").DataTable({
-          processing: true,
-          serverSide: true,
-          paging: true,
-          lengthChange: true,
-          searching: true,
-          ordering: true,
-          info: true,
-          autoWidth: false,
-          responsive: true,
-          ajax: "excel-new-sales/retrieve",
-          columns: [
-            {data: "id", name: "id"},
-            {data: "timestamp", name: "timestamp"},
-            {data: "branch", name: "branch"},
-            {data: "marketting_agent", name: "marketting_agent"},
-            {data: "status", name: "status"},
-            {data: "phmember", name: "phmember"},
-            {data: "address", name: "address"},
-            {data: "civil_status", name: "civil_status"},
-            {data: "birthdate", name: "birthdate"},
-            {data: "name", name: "name"},
-            {data: "contact_num", name: "contact_num"},
-            {data: "type_of_transaction", name: "type_of_transaction"},
-            {data: "with_registration_fee", name: "with_registration_fee"},
-            {data: "registration_amount", name: "registration_amount"},
-            {data: "dayong_program", name: "dayong_program"},
-            {data: "application_no", name: "application_no"},
-            {data: "or_number", name: "or_number"},
-            {data: "or_date", name: "or_date"},
-            {data: "amount_collected", name: "amount_collected"},
-            {data: "name1", name: "name1"},
-            {data: "age1", name: "age1"},
-            {data: "relationship1", name: "relationship1"},
-            {data: "name2", name: "name2"},
-            {data: "age2", name: "age2"},
-            {data: "relationship2", name: "relationship2"},
-            {data: "name3", name: "name3"},
-            {data: "age3", name: "age3"},
-            {data: "relationship3", name: "relationship3"},
-            {data: "name4", name: "name4"},
-            {data: "age4", name: "age4"},
-            {data: "relationship4", name: "relationship4"},
-            {data: "name5", name: "name5"},
-            {data: "age5", name: "age5"},
-            {data: "relationship5", name: "relationship5"},
-            {data: "sheetName", name: "sheetName"},
-            {data: "remarks", name: "remarks"},
-            {data: "isImported", name: "isImported"},
-            {data: "created_at", name: "created_at"},
-            {data: "updated_at", name: "updated_at"},
-          ]
-        });
-      });
-
-    </script>
-
     @if(session()->has('error_msg'))
       <script>
           toastr.options.preventDuplicates = true;
@@ -814,12 +722,12 @@
       </script>
     @endif
 
-  <script>
-    function showErrorToast(val){
-      toastr.options.preventDuplicates = true;
-      toastr.error(val);
-    }
-  </script>
+    <script>
+      function showErrorToast(val){
+        toastr.options.preventDuplicates = true;
+        toastr.error(val);
+      }
+    </script>
 
   </body>
 </html>
