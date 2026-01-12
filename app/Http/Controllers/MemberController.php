@@ -187,7 +187,7 @@ class MemberController extends Controller
             $claimant->created_at = $validated['created_at'];
 
             $claimant->save();
-            $member->claimants_id = $claimants_id;
+            $member->claimant_id = $claimants_id;
 
             // Get Next Auto Increment
             $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
@@ -573,11 +573,15 @@ class MemberController extends Controller
     {
         if(auth()->check()){
 
-            $validated = $request->validate(['upload_file' => ['required', 'file']]);
-            $spreadsheet = IOFactory::load($validated['upload_file']);
-            $sheets = $spreadsheet->getSheetNames();
+            ini_set('memory_limit', '2048M');
 
-            return $sheets;
+            $validated = $request->validate(['upload_file' => ['required', 'file']]);
+            //$spreadsheet = IOFactory::load($validated['upload_file']);
+            $reader = IOFactory::createReaderForFile($validated['upload_file']);
+            /** @var IReader $reader */
+            $sheetNames = $reader->listWorksheetNames($validated['upload_file']); // No need to fully load the spreadsheet!
+
+            return $sheetNames;
 
         } else {
             return redirect('/');
@@ -626,8 +630,8 @@ class MemberController extends Controller
         $member = DB::table('members')->where('id', $id)->get();
         $users = DB::table('users')->where('usertype', 3)->get();
 
-        if( $member[0]->claimants_id != "" &&  $member[0]->claimants_id != null){
-            $claimants = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+        if( $member[0]->claimant_id != "" &&  $member[0]->claimant_id != null){
+            $claimants = DB::table('claimants')->where('id', $member[0]->claimant_id)->get();
             $claimant = $claimants[0];
         } else {
             $claimant = null;
@@ -659,8 +663,8 @@ class MemberController extends Controller
         $member = DB::table('members')->where('id', $id)->get();
         $users = DB::table('users')->where('usertype', 3)->get();
 
-        if( $member[0]->claimants_id != "" &&  $member[0]->claimants_id != null){
-            $claimants = DB::table('claimants')->where('id', $member[0]->claimants_id)->get();
+        if( $member[0]->claimant_id != "" &&  $member[0]->claimant_id != null){
+            $claimants = DB::table('claimants')->where('id', $member[0]->claimant_id)->get();
             $claimant = $claimants[0];
         } else {
             $claimant = null;

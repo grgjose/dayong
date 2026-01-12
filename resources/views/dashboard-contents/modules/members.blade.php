@@ -205,7 +205,7 @@
                                     </div>
                                     <div class="form-group col">
                                         <label for="ext_c">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)" required>
+                                        <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
                                     </div>
                                 </div>
                                 <div class="row">
