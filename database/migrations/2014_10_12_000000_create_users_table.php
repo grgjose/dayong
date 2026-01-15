@@ -20,14 +20,15 @@ return new class extends Migration
             $table->string('lname')->nullable();
             $table->string('ext')->nullable();
             $table->string('email')->unique()->nullable();
-            $table->string('status')->nullable(); // Pending Registration, Active, Inactive, Suspended, Resigned
-            $table->integer('branch_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->timestamp('birthdate')->nullable();
             $table->string('contact_num')->nullable();
+            $table->timestamp('birthdate')->nullable();
+            $table->string('address')->nullable();
+            $table->integer('branch_id')->nullable();
             $table->string('profile_pic')->nullable();
             $table->boolean('with_fidelity')->nullable();
             $table->string('password')->nullable();
+            $table->string('status')->nullable(); // Pending Registration, Active, Inactive, Suspended, Resigned
             $table->rememberToken();
             $table->timestamps();
         });

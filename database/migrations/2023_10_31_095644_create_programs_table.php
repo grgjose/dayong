@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("code")->nullable();
             $table->string("description")->nullable();
-            $table->boolean("with_beneficiaries")->default(false);
-            $table->integer("beneficiaries_count")->default(2);
+            $table->integer("beneficiaries_count")->default(2)->nullable();
             // Member Age Limits
             $table->integer("age_min")->nullable();
             $table->integer("age_max")->nullable();
@@ -26,7 +25,6 @@ return new class extends Migration
             // Term Limits
             $table->integer("term_min")->nullable();
             $table->integer("term_max")->nullable();
-            $table->integer("payment_mode")->nullable(); // 1-Monthly, 2-Quarterly, 3-Semi-Annual, 4-Annual
             $table->decimal("amount_min", 15, 2)->nullable();
             $table->decimal("amount_max", 15, 2)->nullable();
             $table->string("status")->nullable(); // Active, Inactive
