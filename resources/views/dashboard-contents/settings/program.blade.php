@@ -37,7 +37,7 @@
                                     <th>#</th>
                                     <th>Code</th>
                                     <th>Description</th>
-                                    <th>With Beneficiaries</th>
+                                    <th>Beneficiaries Count</th>
                                     <th>Minimum Age Requirement</th>
                                     <th>Maximum Age Requirement</th>
                                     <th>Created At</th>
@@ -51,12 +51,9 @@
                                         <td><input type="checkbox" /></td>
                                         <td id="code_{{ $program->id; }}">{{ $program->code; }}</td>
                                         <td id="description_{{ $program->id; }}">{{ $program->description; }}</td>
-                                        <td id="with_beneficiaries_{{ $program->id; }}">
-                                            @if($program->with_beneficiaries == 0)
-                                                NO
-                                            @else
-                                                YES
-                                            @endif
+                                        <td id="beneficiaries_count_{{ $program->id; }}">{{ $program->beneficiaries_count; }}</td>
+                                        <td id="age_min_{{ $program->id; }}">{{ $program->age_min; }}</td>
+                                        <td id="age_max_{{ $program->id; }}">{{ $program->age_max; }}</td>
                                         </td>
                                         <td id="age_min_{{ $program->id; }}">{{ $program->age_min; }}</td>
                                         <td id="age_max_{{ $program->id; }}">{{ $program->age_max; }}</td>
@@ -104,11 +101,8 @@
                                 </div> <br>
                                 <div class="row">
                                     <div class="form-group col">
-                                        <label for="with_beneficiaries">With Beneficiaries:</label>
-                                        <select type="text" class="form-control chosen-select" id="with_beneficiaries" name="with_beneficiaries" value="" required>
-                                            <option value="yes">Yes</option>
-                                            <option value="no">No</option>
-                                        </select>
+                                        <label for="beneficiaries_count">Beneficiaries Count</label>
+                                        <input type="number" class="form-control" id="beneficiaries_count" name="beneficiaries_count" value="0" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="age_min">Minimum Age:</label>
@@ -156,11 +150,8 @@
                                 </div> <br>
                                 <div class="row">
                                     <div class="form-group col">
-                                        <label for="with_beneficiaries">With Beneficiaries:</label>
-                                        <select class="form-control chosen-select" id="edit_with_beneficiaries" name="with_beneficiaries" required>
-                                            <option value="yes">Yes</option>
-                                            <option value="no">No</option>
-                                        </select>
+                                        <label for="beneficiaries_count">Beneficiaries Count:</label>
+                                        <input type="number" class="form-control" id="edit_beneficiaries_count" name="beneficiaries_count" value="" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="age_min">Minimum Age:</label>
@@ -230,7 +221,7 @@
 
         $("#edit_code").val($("#code_"+id).html());
         $("#edit_description").val($("#description_"+id).html());
-        $("#edit_with_beneficiaries").val($("#with_beneficiaries_"+id).html().toLowerCase().trim()).trigger("chosen:updated");;
+        $("#edit_beneficiaries_count").val($("#beneficiaries_count_"+id).html());
         $("#edit_age_min").val($("#age_min_"+id).html());
         $("#edit_age_max").val($("#age_max_"+id).html());
 

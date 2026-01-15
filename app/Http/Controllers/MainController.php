@@ -76,20 +76,30 @@ class MainController extends Controller
         }
     }
 
-    public function login(Request $request){
-        $validated = $request->validate([
-            "username" => ['required', 'min:2'],
-            "password" => ['required', 'min:2']
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => ['required', 'string', 'min:2'],
+            'password' => ['required', 'string', 'min:2'],
         ]);
-        
-        $remember = $request->input("remember_me");
 
-        if(auth()->attempt($validated, $remember) || auth()->viaRemember()){
+        $remember = $request->boolean('remember_me');
+
+        // Detect if input is an email
+        $field = filter_var($request->username, FILTER_VALIDATE_EMAIL)
+            ? 'email'
+            : 'username';
+
+        if (auth()->attempt([
+                $field => $request->username,
+                'password' => $request->password,
+            ], $remember)) {
+
             $request->session()->regenerate();
             return redirect('/');
-        } else {
-            return redirect('/')->with('error_msg', 'Invalid Credentials!');
         }
+
+        return back()->with('error_msg', 'Invalid Credentials!');
     }
 
     public function logout(Request $request){

@@ -230,10 +230,10 @@
                                         <label for="incentive">Incentive 1-50 (%):</label>
                                         <input type="number" class="form-control" id="incentives" name="incentives" onkeyup="enforceMinMax(this)" min="1" max="50">
                                     </div>
-                                    <div class="form-group col">
+                                    {{-- <div class="form-group col">
                                         <label for="fidelity">Fidelity 1-10 (%):</label>
                                         <input type="number" class="form-control" id="fidelity" name="fidelity" onkeyup="enforceMinMax(this)" min="1" max="10">
-                                    </div>
+                                    </div> --}}
                                     <div class="form-group col">
                                         <div class="custom-control custom-switch custom-switch-on-warning" style="padding-left: 3.25rem; padding-top: 2.25rem;">
                                             <input type="checkbox" class="custom-control-input" id="reactivated" name="reactivated" value="reactivated">

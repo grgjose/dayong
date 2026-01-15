@@ -158,7 +158,7 @@
                                             @endforeach
                                         </select>
                                         @foreach($programs as $program)
-                                            <span style="display: none;" id="ben_{{ $program->id }}">{{ $program->with_beneficiaries; }}</span>
+                                            <span style="display: none;" id="ben_{{ $program->id }}">{{ $program->beneficiaries_count; }}</span>
                                         @endforeach
                                     </div>
                                     <div class="form-group col">

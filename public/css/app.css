@@ -1,3 +1,8 @@
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
 body {
     background-color: #fff;
     font-family: sans-serif;
@@ -18,6 +23,7 @@ h1 > a {
     padding-left: 1.5rem;   /* mobile */
     padding-right: 1.5rem;
     min-height: 100vh;
+    box-sizing: border-box;
     display: -webkit-box;
     display: flex;
     -webkit-box-orient: vertical;
@@ -140,18 +146,18 @@ h1 > a {
     }
 }
 
-.login-wrapper {
+.auth-wrapper {
     width: 300px;
     max-width: 100%;
 }
 
 @media (max-width: 575px) {
-    .login-wrapper {
+    .auth-wrapper {
     width: 100%;
     }
 }
 
-.login-wrapper .form-control {
+.auth-wrapper .form-control {
     border: 0;
     border-bottom: 1px solid #e7e7e7;
     border-radius: 0;
@@ -161,23 +167,23 @@ h1 > a {
     margin-bottom: 7px;
 }
 
-.login-wrapper .form-control::-webkit-input-placeholder {
+.auth-wrapper .form-control::-webkit-input-placeholder {
     color: #b0adad;
 }
 
-.login-wrapper .form-control::-moz-placeholder {
+.auth-wrapper .form-control::-moz-placeholder {
     color: #b0adad;
 }
 
-.login-wrapper .form-control:-ms-input-placeholder {
+.auth-wrapper .form-control:-ms-input-placeholder {
     color: #b0adad;
 }
 
-.login-wrapper .form-control::-ms-input-placeholder {
+.auth-wrapper .form-control::-ms-input-placeholder {
     color: #b0adad;
 }
 
-.login-wrapper .form-control::placeholder {
+.auth-wrapper .form-control::placeholder {
     color: #b0adad;
 }
 
@@ -250,7 +256,7 @@ h1 > a {
     margin-left: 16px;
 }
 
-.login-wrapper-footer-text {
+.auth-wrapper-footer-text {
     font-size: 14px;
     text-align: center;
 }

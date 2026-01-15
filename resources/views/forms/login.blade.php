@@ -30,13 +30,13 @@
   <body class="container-fluid">
     <div class="row">
         <div class="col-12 col-md-5 form-section">
-          <div class="login-wrapper">
+          <div class="auth-wrapper login-wrapper">
             <h2 class="login-title">Sign in</h2>
             <form action="/login" method="post" class="w-100" style="max-width: 23rem;">
               @csrf
               <div class="mb-3">
-                <label for="username" class="visually-hidden">Email</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="Username">
+                <label for="username" class="visually-hidden">Username / Email</label>
+                <input type="text" name="username" id="username" class="form-control" placeholder="Username / Email">
               </div>
               <div class="mb-3">
                 <label for="password" class="visually-hidden">Password</label>
@@ -58,61 +58,53 @@
             <p class="login-wrapper-footer-text">Need an account? <a href="#!" class="text-reset text-decoration-underline">Request Account here</a></p>
           </div>
 
-          <div class="forgot-password-wrapper" style="display: none;">
+          <div class="auth-wrapper forgot-password-wrapper" style="display: none;">
             <h2 class="login-title">Forgot Password</h2>
             <form action="/login" method="post" class="w-100" style="max-width: 23rem;">
               @csrf
               <div class="mb-3">
-                <label for="username" class="visually-hidden">Email</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="Username">
+                <label for="email" class="visually-hidden">Email</label>
+                <input type="email" name="email" id="email_forgot" class="form-control" placeholder="Email">
               </div>
               <div class="d-flex justify-content-between align-items-center mb-5">
-                <input name="login" id="login" class="btn btn-primary login-btn" type="submit" value="Send Reset Link">
-                <a href="#!" class="back-to-login">Back to Login</a>
+                <input name="submit" id="submit" class="btn btn-secondary login-btn" type="submit" value="Send Reset Link">
+                <a href="#!" class="back-to-login forgot-password-link">Back to Login</a>
               </div>
             </form>           
             <p class="login-wrapper-footer-text">Need an account? <a href="#!" class="text-reset text-decoration-underline">Request Account here</a></p>
           </div>
 
-          <div class="register-wrapper" style="display: none;">
+          <div class="auth-wrapper register-wrapper" style="display: none;">
             <h2 class="login-title">Register</h2>
             <form action="/register" method="post" class="w-100" style="max-width: 23rem;">
               @csrf
 
               <div class="mb-3">
-                <label for="username" class="visually-hidden">First Name</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="First Name">
+                <label for="fname" class="visually-hidden">First Name</label>
+                <input type="text" name="fname" id="fname" class="form-control" placeholder="First Name">
               </div>
               <div class="mb-3">
-                <label for="username" class="visually-hidden">Middle Name</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="Middle Name">
+                <label for="mname" class="visually-hidden">Middle Name</label>
+                <input type="text" name="mname" id="mname" class="form-control" placeholder="Middle Name">
               </div>
               <div class="mb-3">
-                <label for="username" class="visually-hidden">Last Name</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="Last Name">
+                <label for="lname" class="visually-hidden">Last Name</label>
+                <input type="text" name="lname" id="lname" class="form-control" placeholder="Last Name">
               </div>
               <div class="mb-3">
-                <label for="username" class="visually-hidden">Email</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="Email">
+                <label for="email" class="visually-hidden">Email</label>
+                <input type="text" name="email" id="email_register" class="form-control" placeholder="Email">
               </div>
               <div class="mb-3">
                 <label for="password" class="visually-hidden">Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+                <input type="password" name="password" id="password_reg" class="form-control" placeholder="Password">
               </div>
               <div class="mb-3">
                 <label for="confirm_password" class="visually-hidden">Confirm Password</label>
-                <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm Password">
-              </div>
-              <div class="form-floating mb-4">
-                <div class="icheck-primary">
-                  <input type="checkbox" name="remember_me" id="remember">
-                  <label for="remember">
-                    &nbsp; &nbsp; Remember Me
-                  </label>
-                </div>
+                <input type="password" name="confirm_password" id="confirm_password_reg" class="form-control" placeholder="Confirm Password">
               </div>
               <div class="d-flex justify-content-between align-items-center mb-5">
-                <input name="login" id="login" class="btn btn-primary login-btn" type="submit" value="Login">
+                <input name="register" id="register" class="btn btn-primary login-btn" type="submit" value="Register">
                 <a href="#!" class="forgot-password-link">Password?</a>
               </div>
             </form>           
