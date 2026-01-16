@@ -30,6 +30,15 @@
         z-index: 5;
     }
 
+    .beneficiary-1 { border: 2px solid #28a745 !important; } /* Green */
+    .beneficiary-2 { border: 2px solid #8a2be2 !important; } /* Violet */
+    .beneficiary-3 { border: 2px solid #ffc107 !important; } /* Yellow */
+    .beneficiary-4 { border: 2px solid #4169e1 !important; } /* Royal Blue */
+
+    .text-uppercase {
+        text-transform: uppercase;
+    }
+
 </style>
 
 <!-- Main content -->
@@ -37,6 +46,16 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <!-- TABLE SECTION -->                
                 <div class="card card-info" id="table">
@@ -137,7 +156,7 @@
                             <!-- Checkbox to Add NewSales Info -->
                             <div class="form-group">
                                 <div class="custom-control custom-switch custom-switch-on-success" style="padding-left: 3.25rem; padding-top: 0.75rem;">
-                                    <input type="checkbox" class="custom-control-input" id="add_new_sales" name="add_new_sales" value="add_new_sales" onclick="toggleNewSales()">
+                                    <input type="checkbox" class="custom-control-input" id="add_new_sales" name="add_new_sales" value="add_new_sales" onclick="toggleNewSales()" checked>
                                     <label class="custom-control-label" for="add_new_sales">Add To New Sales After Member Registration</label>
                                 </div>
                             </div>
@@ -147,19 +166,19 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="fname">First Name</label>
-                                        <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" required>
+                                        <input type="text" class="form-control text-uppercase" id="fname" name="fname" placeholder="Enter First Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="mname">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname" name="mname" placeholder="Enter Middle Name">
+                                        <input type="text" class="form-control text-uppercase" id="mname" name="mname" placeholder="Enter Middle Name">
                                     </div>
                                     <div class="form-group col">
                                         <label for="lname">Last Name</label>
-                                        <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" required>
+                                        <input type="text" class="form-control text-uppercase" id="lname" name="lname" placeholder="Enter Last Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="ext">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
+                                        <input type="text" class="form-control text-uppercase" id="ext" name="ext" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
                                     </div>
                                     
                                 </div>
@@ -168,39 +187,35 @@
                                         $curr = date('Y-m-d');
                                     @endphp
                                     <div class="form-group col">
-                                        <label for="app_no">Creation Date:</label>
-                                        <input type="date" class="form-control" id="created_at" name="created_at" value="{{ $curr }}" required>
-                                    </div>
-                                    <div class="form-group col">
                                         <label for="birthdate">Birthdate</label>
                                         <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Enter Birthdate" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="sex">Sex</label>
                                         <select class="form-control chosen-select" id="sex" name="sex" required>
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
+                                            <option value="male">MALE</option>
+                                            <option value="female">FEMALE</option>
                                         </select>
                                     </div>
                                     <div class="form-group col">
                                         <label for="birthplace">Place of Birth</label>
-                                        <input type="text" class="form-control" id="birthplace" name="birthplace" placeholder="Enter Place of Birth" required>
+                                        <input type="text" class="form-control text-uppercase" id="birthplace" name="birthplace" placeholder="Enter Place of Birth" required>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="citizenship">Citizenship</label>
-                                        <input type="text" class="form-control" id="citizenship" name="citizenship" placeholder="Enter Citizenship (Filipino, American, etc.)" required>
+                                        <input type="text" class="form-control text-uppercase" id="citizenship" name="citizenship" placeholder="Enter Citizenship (Filipino, American, etc.)" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="civil_status">Civil Status</label>
                                         <select class="form-control chosen-select" id="civil_status" name="civil_status" required>
-                                            <option value="single">Single</option>
-                                            <option value="married">Married</option>
-                                            <option value="widowed">Widowed</option>
-                                            <option value="divorced">Divorced</option>
-                                            <option value="separated">Separated</option>
-                                            <option value="live-in">Live-In</option>
+                                            <option value="single">SINGLE</option>
+                                            <option value="married">MARRIED</option>
+                                            <option value="widowed">WIDOWED</option>
+                                            <option value="divorced">DIVORCED</option>
+                                            <option value="separated">SEPARATED</option>
+                                            <option value="live-in">LIVE-IN</option>
                                         </select>
                                     </div>
                                     <div class="form-group col">
@@ -209,13 +224,13 @@
                                     </div>
                                     <div class="form-group col">
                                         <label for="email">Email address</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email (Optional)">
+                                        <input type="email" class="form-control text-uppercase" id="email" name="email" placeholder="Enter Email (Optional)">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="address">Address</label>
-                                        <input type="text" class="form-control" id="address" name="address" placeholder="Enter Current Address" required>
+                                        <input type="text" class="form-control text-uppercase" id="address" name="address" placeholder="Enter Current Address" required>
                                     </div>
                                 </div>
                             </fieldset>
@@ -225,19 +240,19 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="fname_c">First Name</label>
-                                        <input type="text" class="form-control" id="fname_c" name="fname_c" placeholder="Enter First Name" required>
+                                        <input type="text" class="form-control text-uppercase" id="fname_c" name="fname_c" placeholder="Enter First Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="mname_c">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname_c" name="mname_c" placeholder="Enter Middle Name" required>
+                                        <input type="text" class="form-control text-uppercase" id="mname_c" name="mname_c" placeholder="Enter Middle Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="lname_c">Last Name</label>
-                                        <input type="text" class="form-control" id="lname_c" name="lname_c" placeholder="Enter Last Name" required>
+                                        <input type="text" class="form-control text-uppercase" id="lname_c" name="lname_c" placeholder="Enter Last Name" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="ext_c">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
+                                        <input type="text" class="form-control text-uppercase" id="ext_c" name="ext_c" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -248,8 +263,8 @@
                                     <div class="form-group col">
                                         <label for="sex_c">Sex</label>
                                         <select class="form-control chosen-select" id="sex_c" name="sex_c" required>
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
+                                            <option value="male">MALE</option>
+                                            <option value="female">FEMALE</option>
                                         </select>
                                     </div>
                                     <div class="form-group col">
@@ -259,12 +274,12 @@
                                 </div>
                             </fieldset>
 
-                            <fieldset class="border p-3 mb-2 rounded newsales" style="--bs-border-opacity: .5; display: none;">
+                            <fieldset class="border p-3 mb-2 rounded newsales" style="--bs-border-opacity: .5;">
                                 <legend class="h5 pl-2 pr-2" style="width: auto; !important">New Sales Information</legend>
                                 <div class="row">
                                     <div class="form-group col">
                                         <label for="branch_id">Branch</label>
-                                        <select class="form-control chosen-select" id="branch_id" name="branch_id">
+                                        <select class="form-control chosen-select text-uppercase" id="branch_id" name="branch_id">
                                             @foreach($branches as $branch)
                                                 <option value="{{ $branch->id; }}">{{ $branch->branch; }}</option>
                                             @endforeach
@@ -272,7 +287,7 @@
                                     </div>
                                     <div class="form-group col">
                                         <label for="program_id">Program</label>
-                                        <select class="form-control chosen-select" id="program_id" name="program_id" onchange="checkBeneficiaries()">
+                                        <select class="form-control chosen-select text-uppercase" id="program_id" name="program_id" onchange="checkBeneficiaries()">
                                             @foreach($programs as $program)
                                                 <option value="{{ $program->id; }}">{{ $program->code; }}</option>
                                             @endforeach
@@ -286,74 +301,48 @@
                                         <input type="number" class="form-control" id="or_number" name="or_number" placeholder="Enter OR Number">
                                     </div>
                                     <div class="form-group col">
+                                        <label for="or_date">OR Date:</label>
+                                        <input type="date" class="form-control" id="or_date" name="or_date" placeholder="Enter OR Date">
+                                    </div>
+                                    <div class="form-group col">
                                         <label for="app_no">Application #:</label>
                                         <input type="number" class="form-control" id="app_no" name="app_no" placeholder="Enter Application Number">
                                     </div>
-                                    @php
-                                        $curr = date('Y-m-d');
-                                    @endphp
+                                </div>
+                                <div class="row">
                                     <div class="form-group col">
-                                        <label for="app_no">Creation Date:</label>
-                                        <input type="date" class="form-control" id="created_at" name="created_at" value="{{ $curr }}">
+                                        <label for="registration_fee">Registration Fee:</label>
+                                        <input type="number" class="form-control" id="registration_fee" name="registration_fee" placeholder="Enter Registration Fee Amount">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="contact_person_num">MAS:</label>
+                                        <select class="form-control chosen-select text-uppercase" id="agent_id" name="agent_id">
+                                            @foreach($users as $user)
+                                                @if($user->usertype == 3)
+                                                    <option class="text-uppercase" value="{{ $user->id; }}">{{ strtoupper($user->fname.' '.$user->mname.' '.$user->lname) }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="contact_person_num">Amount Collected:</label>
+                                        <input type="text" class="form-control" id="amount" name="amount" placeholder="Enter Amount">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="contact_person_num">Incentives Amount:</label>
+                                        <input type="text" class="form-control" id="incentives" name="incentives" placeholder="Enter Incentive's Amount">
                                     </div>
                                 </div>
                             </fieldset>
 
                             <!-- Add Button for Beneficiaries -->
                             <div class="form-group mb-3 mt-3">
-                                <button type="button" class="btn btn-info" id="add_beneficiary_btn" onclick="addBeneficiary()">
+                                <button type="button" class="btn btn-info" id="add-beneficiary" onclick="addBeneficiary()">
                                     <span class="fas fa-plus"></span> Add Beneficiary
                                 </button>
                             </div>
 
-                            <fieldset class="border p-3 mb-2 rounded beneficiaries" style="display: none; position: relative;">
-                                <button type="button" class="btn btn-sm btn-danger beneficiary-remove-btn"
-                                        title="Remove Beneficiary"
-                                        onclick="removeThisBeneficiary(this)">
-                                    &times;
-                                </button> 
-
-                                <legend class="h5 pl-2 pr-2" style="width: auto;">Beneficiaries #1</legend>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="fname_b1">First Name</label>
-                                        <input type="text" class="form-control" id="fname_b1" name="fname_b1" placeholder="Enter First Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="mname_b1">Middle Name</label>
-                                        <input type="text" class="form-control" id="mname_b1" name="mname_b1" placeholder="Enter Middle Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="lname_b1">Last Name</label>
-                                        <input type="text" class="form-control" id="lname_b1" name="lname_b1" placeholder="Enter Last Name">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="ext_">Ext Name</label>
-                                        <input type="text" class="form-control" id="ext_b1" name="ext_b1" placeholder="Enter Ext. Name (Jr, Sr, Etc.)">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col">
-                                        <label for="birthdate_b1">Birthdate</label>
-                                        <input type="date" class="form-control" id="birthdate_b1" name="birthdate_b1" placeholder="Enter Birthdate">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="sex_b1">Sex</label>
-                                        <select class="form-control chosen-select" id="sex_b1" name="sex_b1">
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="relationship_b1">Relationship</label>
-                                        <input type="text" class="form-control" id="relationship_b1" name="relationship_b1" placeholder="Enter Relationship">
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="contact_num_b1">Contact #</label>
-                                        <input type="number" class="form-control" id="contact_num_b1" name="contact_num_b1" placeholder="Enter Contact Number (+63)">
-                                    </div>
-                                </div>
-                            </fieldset>
+                            <div id="beneficiaries-container"></div>
 
                         </div>
                         <div class="card-footer">
@@ -438,6 +427,70 @@
         </div>
     </div>
 </div>
+
+<!-- Beneficiary Template (Hidden) -->
+<template id="beneficiary-template">
+    <fieldset class="border p-3 mb-2 rounded beneficiaries position-relative">
+        <button type="button"
+                class="btn btn-sm btn-danger beneficiary-remove-btn"
+                title="Remove Beneficiary">
+            &times;
+        </button>
+
+        <legend class="h5 pl-2 pr-2 beneficiary-legend" style="width:auto;">
+            Beneficiaries #__INDEX__
+        </legend>
+
+        <div class="row">
+            <div class="form-group col">
+                <label>First Name</label>
+                <input type="text" class="form-control text-uppercase" placeholder="First Name"
+                       name="beneficiaries[__INDEX__][fname]">
+            </div>
+            <div class="form-group col">
+                <label>Middle Name</label>
+                <input type="text" class="form-control text-uppercase" placeholder="Middle Name"
+                       name="beneficiaries[__INDEX__][mname]">
+            </div>
+            <div class="form-group col">
+                <label>Last Name</label>
+                <input type="text" class="form-control text-uppercase" placeholder="Last Name"
+                       name="beneficiaries[__INDEX__][lname]">
+            </div>
+            <div class="form-group col">
+                <label>Ext Name</label>
+                <input type="text" class="form-control text-uppercase" placeholder="Ext Name (Jr, Sr, Etc.)"
+                       name="beneficiaries[__INDEX__][ext]">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label>Birthdate</label>
+                <input type="date" class="form-control" 
+                       name="beneficiaries[__INDEX__][birthdate]">
+            </div>
+            <div class="form-group col">
+                <label>Sex</label> 
+                <select class="form-control"
+                        name="beneficiaries[__INDEX__][sex]">
+                    <option value="male">MALE</option>
+                    <option value="female">FEMALE</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label>Relationship</label>
+                <input type="text" class="form-control text-uppercase" placeholder="Relationship"
+                       name="beneficiaries[__INDEX__][relationship]">
+            </div>
+            <div class="form-group col">
+                <label>Contact #</label>
+                <input type="number" class="form-control text-uppercase" placeholder="Contact Number (+63)"
+                       name="beneficiaries[__INDEX__][contact_num]">
+            </div>
+        </div>
+    </fieldset>
+</template>
 
 <form id="soa_printer" method="POST">
     @csrf

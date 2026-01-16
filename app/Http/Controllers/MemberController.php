@@ -99,139 +99,161 @@ class MemberController extends Controller
         if(auth()->check()){
 
             // Get Request Data
-            $my_user = auth()->user();
-            $validated = $request->validate([
+                $my_user = auth()->user();
+                $validated = $request->validate([
 
-                "created_at" => ['required'],
+                    // Personal Information
+                    "fname" => ['required'],
+                    "mname" => ['nullable'],
+                    "lname" => ['required'],
+                    "ext" => ['nullable'],
+                    "birthdate" => ['required'],
+                    "sex" => ['required'],
+                    "birthplace" => ['required'],
+                    "citizenship" => ['required'],
+                    "civil_status" => ['required'],
+                    "contact_num" => ['required'],
+                    "email" => ['nullable'],
+                    "address" => ['required'],
+                    
+                    // Claimant's Personal Information
+                    "fname_c" => ['required'],
+                    "mname_c" => ['required'],
+                    "lname_c" => ['required'],
+                    "ext_c" => ['nullable'],
+                    "birthdate_c" => ['required'],
+                    "sex_c" => ['required'],
+                    "contact_num_c" => ['required'],
 
-                // Personal Information
-                "fname" => ['required'],
-                "mname" => ['nullable'],
-                "lname" => ['required'],
-                "ext" => ['nullable'],
-                "birthdate" => ['required'],
-                "sex" => ['required'],
-                "birthplace" => ['required'],
-                "citizenship" => ['required'],
-                "civil_status" => ['required'],
-                "contact_num" => ['required'],
-                "email" => ['nullable'],
-                "address" => ['required'],
+                    // Location and Program
+                    "program_id" => ['required'],
+                    "branch_id" => ['required'],
+                    "or_number" => ['required'],
+                    "or_date" => ['required'],
+                    "app_no" => ['required'],
+                    "member_id" => ['nullable'],
+
+                    // Others
+                    "registration_fee" => ['nullable'],
+                    "agent_id" => ['nullable'],
+                    "amount" => ['nullable'],
+                    "incentives" => ['nullable'],
                 
-                // Claimant's Personal Information
-                "fname_c" => ['required'],
-                "mname_c" => ['required'],
-                "lname_c" => ['required'],
-                "ext_c" => ['nullable'],
-                "birthdate_c" => ['required'],
-                "sex_c" => ['required'],
-                "contact_num_c" => ['required'],
+                    // Beneficiaries's Personal Information
+                    'beneficiaries' => ['sometimes','array','max:10'],
 
-                // Beneficiaries's #1 Personal Information
-                "fname_b1" => ['nullable'],
-                "mname_b1" => ['nullable'],
-                "lname_b1" => ['nullable'],
-                "ext_b1" => ['nullable'],
-                "birthdate_b1" => ['nullable'],
-                "sex_b1" => ['nullable'],
-                "relationship_b1" => ['nullable'],
-                "contact_num_b1" => ['nullable'],
+                    'beneficiaries.*.fname' => ['required','string','max:255'],
+                    'beneficiaries.*.mname' => ['nullable','string','max:255'],
+                    'beneficiaries.*.lname' => ['required','string','max:255'],
+                    'beneficiaries.*.ext' => ['nullable','string','max:50'],
 
-                // Beneficiaries's #2 Personal Information
-                "fname_b2" => ['nullable'],
-                "mname_b2" => ['nullable'],
-                "lname_b2" => ['nullable'],
-                "ext_b2" => ['nullable'],
-                "birthdate_b2" => ['nullable'],
-                "sex_b2" => ['nullable'],
-                "relationship_b2" => ['nullable'],
-                "contact_num_b2" => ['nullable'],
+                    'beneficiaries.*.birthdate' => ['required','date'],
+                    'beneficiaries.*.sex' => ['required','in:male,female'],
+                    'beneficiaries.*.relationship' => ['required','string','max:255'],
+                    'beneficiaries.*.contact_num' => ['required','string','max:12'],
 
-            ]);
+                ]);
+            //
 
             // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
+                $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
+                $member_id = $statement[0]->Auto_increment;
+            //
             
             // Save Request Data (Member's Personal Information)
-            $member = new Member();
+                $member = new Member();
 
-            $member->fname = $validated['fname'];
-            $member->mname = $validated['mname'];
-            $member->lname = $validated['lname'];
-            $member->ext = $validated['ext'];
-            $member->birthdate = $validated['birthdate'];
-            $member->sex = $validated['sex'];
-            $member->birthplace = $validated['birthplace'];
-            $member->citizenship = $validated['citizenship'];
-            $member->civil_status = $validated['civil_status'];
-            $member->contact_num = $validated['contact_num'];
-            $member->email = $validated['email'];
-            $member->address = $validated['address'];
-            $member->created_at = $validated['created_at'];
-            $member->agent_id = $my_user->id;
+                $member->fname = $validated['fname'];
+                $member->mname = $validated['mname'];
+                $member->lname = $validated['lname'];
+                $member->ext = $validated['ext'];
+                $member->contact_num = $validated['contact_num'];
+                $member->email = $validated['email'];
+                $member->birthdate = $validated['birthdate'];
+                $member->sex = $validated['sex'];
+                $member->birthplace = $validated['birthplace'];
+                $member->citizenship = $validated['citizenship'];
+                $member->civil_status = $validated['civil_status'];
+                $member->address = $validated['address'];
+                $member->agent_id = $validated['agent_id'];
+                $member->encoder_id = $my_user->id;
+            //
 
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'claimants'");
-            $claimants_id = $statement[0]->Auto_increment;
+            // Get Next Auto Increment for Claimants
+                $statement = DB::select("SHOW TABLE STATUS LIKE 'claimants'");
+                $claimants_id = $statement[0]->Auto_increment;
+            //
 
             // Save Request Data (Member's Claimants Information)
-            $claimant = new Claimant();
+                $claimant = new Claimant();
 
-            $claimant->fname = $validated['fname_c'];
-            $claimant->mname = $validated['mname_c'];
-            $claimant->lname = $validated['lname_c'];
-            $claimant->ext = $validated['ext_c'];
-            $claimant->birthdate = $validated['birthdate_c'];
-            $claimant->sex = $validated['sex_c'];
-            $claimant->contact_num = $validated['contact_num_c'];
-            $claimant->created_at = $validated['created_at'];
+                $claimant->fname = $validated['fname_c'];
+                $claimant->mname = $validated['mname_c'];
+                $claimant->lname = $validated['lname_c'];
+                $claimant->ext = $validated['ext_c'];
+                $claimant->birthdate = $validated['birthdate_c'];
+                $claimant->sex = $validated['sex_c'];
+                $claimant->contact_num = $validated['contact_num_c'];
+                
+                $member->claimant_id = $claimants_id;
+            //
 
-            $claimant->save();
-            $member->claimant_id = $claimants_id;
-
-            // Get Next Auto Increment
-            $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
-            $beneficiary_id = $statement[0]->Auto_increment;
-            $beneficiaries_ids = "";
+            // Get Next Auto Increment for Beneficiaries
+                $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
+                $beneficiary_id = $statement[0]->Auto_increment;
+                $beneficiaries_ids = ""; $beneficiaries = [];
+            //
             
             // Save Request Data (Member's Beneficiaries Information)
+                foreach ($validated['beneficiaries'] ?? [] as $item) {
 
-            if($validated['fname_b1'] != ""){
-                $beneficiary_1 = new Beneficiary();
+                    $beneficiary = new Beneficiary();
 
-                $beneficiary_1->fname = $validated['fname_b1'];
-                $beneficiary_1->mname = $validated['mname_b1'];
-                $beneficiary_1->lname = $validated['lname_b1'];
-                $beneficiary_1->ext = $validated['ext_b1'];
-                $beneficiary_1->birthdate = $validated['birthdate_b1'];
-                $beneficiary_1->relationship = $validated['relationship_b1'];
-                $beneficiary_1->sex = $validated['sex_b1'];
-                $beneficiary_1->contact_num = $validated['contact_num_b1']; 
-                $beneficiary_1->created_at = $validated['created_at'];
+                    // 🔒 Normalize strings (ALL CAPS)
+                    $beneficiary->fname   = mb_strtoupper(trim($item['fname']));
+                    $beneficiary->mname  = mb_strtoupper(trim($item['mname'] ?? ''));
+                    $beneficiary->lname    = mb_strtoupper(trim($item['lname']));
+                    $beneficiary->ext     = mb_strtoupper(trim($item['ext'] ?? ''));
 
-                $beneficiary_1->save();
-                $beneficiaries_ids = $beneficiaries_ids . $beneficiary_id;
-            }
+                    $beneficiary->birthdate    = $item['birthdate'];
+                    $beneficiary->sex          = $item['sex'];
 
-            if($validated['fname_b2'] != ""){
-                $beneficiary_2 = new Beneficiary();
+                    $beneficiary->relationship = mb_strtoupper(trim($item['relationship']));
+                    $beneficiary->contact_num  = trim($item['contact_num']);
 
-                $beneficiary_2->fname = $validated['fname_b2'];
-                $beneficiary_2->mname = $validated['mname_b2'];
-                $beneficiary_2->lname = $validated['lname_b2'];
-                $beneficiary_2->ext = $validated['ext_b2'];
-                $beneficiary_2->birthdate = $validated['birthdate_b2'];
-                $beneficiary_2->relationship = $validated['relationship_b2'];
-                $beneficiary_2->sex = $validated['sex_b2'];
-                $beneficiary_2->contact_num = $validated['contact_num_b2']; 
-                $beneficiary_2->created_at = $validated['created_at'];
+                    // Foreign key (example)
+                    $beneficiaries[] = $beneficiary;
+                    
+                    $beneficiaries_ids = $beneficiaries_ids . $beneficiary->id . ",";
+                }
 
-                $beneficiary_2->save();
-                $beneficiaries_ids = $beneficiaries_ids . "," . (string)((int)$beneficiary_id + 1);
-            }
+                $member->beneficiaries_ids = $beneficiaries_ids;
+            //
 
-            $member->beneficiaries_ids = $beneficiaries_ids;
-            $member->save();
+            // New Sales 
+                $newsales = new MembersProgram();
+                $newsales->member_id = $member_id;
+                $newsales->program_id = $validated['program_id'];
+                $newsales->branch_id = $validated['branch_id'];
+                $newsales->or_number = $validated['or_number'];
+                $newsales->or_date = $validated['or_date'];
+                $newsales->app_no = $validated['app_no'];
+                $newsales->registration_fee = $validated['registration_fee'] ?? 0;
+                $newsales->amount = $validated['amount'] ?? 0;
+                $newsales->incentives = $validated['incentives'] ?? 0;
+                $newsales->encoder_id = $my_user->id;
+                $newsales->agent_id = $validated['agent_id'];
+            //
+        
+            // Save Beneficiaries, Claimants, and Member then Add to New Sales
+                foreach ($beneficiaries as $beneficiary) {
+                    $beneficiary->save();
+                }
+                $claimant->save();
+                $member->save();
+                $newsales->save();
+            //
+
 
             // Back to View
             return redirect('/members')->with("success_msg", $member->lname." Member Created Successfully");

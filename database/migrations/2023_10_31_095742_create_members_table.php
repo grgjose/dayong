@@ -25,7 +25,8 @@ return new class extends Migration
             $table->string("contact_num")->nullable();
             $table->string("email")->nullable();
             $table->string("address")->nullable();
-            $table->string("agent_id")->nullable();
+            $table->integer("agent_id")->nullable();
+            $table->integer("encoder_id")->nullable();
             $table->string("branch_id")->nullable();
             $table->string("claimant_id")->nullable();
             $table->string("beneficiaries_ids")->nullable();

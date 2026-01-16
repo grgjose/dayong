@@ -39,7 +39,8 @@
                                 <div class="card-body box-profile">
                                     <div class="text-center">
                                         <img class="profile-user-img img-fluid img-circle fill" style="width: 100px !important; height: 100px !important;" 
-                                        src="{{asset('storage/profile_pic/'.$my_user["profile_pic"])}}" alt="User profile picture">
+                                        src="{{asset('storage/profile_pic/'.$my_user["profile_pic"])}}" 
+                                        onerror="this.onerror=null;this.src='{{ asset('storage/profile_pic/default.jpg') }}';" alt="User profile picture">
                                     </div>
                                     <h3 class="profile-username text-center">{{ $my_user->fname.' '.$my_user->mname.' '.$my_user->lname; }}</h3>
                                     <p class="text-muted text-center">{{ $my_user->email; }}</p>

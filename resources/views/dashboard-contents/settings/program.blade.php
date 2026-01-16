@@ -38,8 +38,10 @@
                                     <th>Code</th>
                                     <th>Description</th>
                                     <th>Beneficiaries Count</th>
-                                    <th>Minimum Age Requirement</th>
-                                    <th>Maximum Age Requirement</th>
+                                    <th>Member Minimum Age</th>
+                                    <th>Member Maximum Age</th>
+                                    <th>Beneficiary Minimum Age</th>
+                                    <th>Beneficiary Maximum Age</th>
                                     <th>Created At</th>
                                     <th>Updated At</th>
                                     <th>Action</th>
@@ -54,9 +56,8 @@
                                         <td id="beneficiaries_count_{{ $program->id; }}">{{ $program->beneficiaries_count; }}</td>
                                         <td id="age_min_{{ $program->id; }}">{{ $program->age_min; }}</td>
                                         <td id="age_max_{{ $program->id; }}">{{ $program->age_max; }}</td>
-                                        </td>
-                                        <td id="age_min_{{ $program->id; }}">{{ $program->age_min; }}</td>
-                                        <td id="age_max_{{ $program->id; }}">{{ $program->age_max; }}</td>
+                                        <td id="ben_age_min_{{ $program->id; }}">{{ $program->ben_age_min; }}</td>
+                                        <td id="ben_age_max_{{ $program->id; }}">{{ $program->ben_age_max; }}</td>
                                         <td id="created_at_{{ $program->id; }}">{{ $program->created_at; }}</td>
                                         <td id="updated_at_{{ $program->id; }}">{{ $program->updated_at; }}</td>
                                         <td>

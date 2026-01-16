@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('members_program', function (Blueprint $table) {
             $table->id();
             $table->string("app_no")->nullable();
-            $table->integer("user_id")->nullable();
             $table->integer("encoder_id")->nullable();
             $table->integer("agent_id")->nullable();
             $table->integer("member_id")->nullable();

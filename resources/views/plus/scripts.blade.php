@@ -301,136 +301,107 @@
       }
     </script>
 
-    <script>
-      function toggleNewSales() {
-          if ($('#add_new_sales').is(':checked')) {
-              $('.newsales').slideDown();
-          } else {
-              $('.newsales').slideUp();
-          }
-      }
-    </script>
+<!-- Module: Members -->
+<script>
 
-    <script>
-        let beneficiaryCount = 1;
+  let beneficiaryIndex = 0;
+  const maxBeneficiaries = 20;
 
-        $(document).ready(function () {
-            $('.beneficiaries').hide();
-            beneficiaryCount = 1;
-        });
+  document.getElementById('add-beneficiary').addEventListener('click', () => {
+    const container = document.getElementById('beneficiaries-container');
 
-        function addBeneficiary() {
-            let $last = $('.beneficiaries').last();
-            let $clone = $last.clone();
+    if (container.children.length >= maxBeneficiaries) {
+        toastr.error("Maximum number of " + maxBeneficiaries + " beneficiaries reached");
+        return;
+    }
 
-            beneficiaryCount++;
+    const template = document.getElementById('beneficiary-template').innerHTML;
+    const html = template.replaceAll('__INDEX__', beneficiaryIndex);
 
-            // Update legend
-            $clone.find('legend').text('Beneficiaries #' + (beneficiaryCount - 1));
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
 
-            // Update inputs
-            $clone.find('input, select').each(function () {
-                let name = $(this).attr('name');
-                let id = $(this).attr('id');
+    const fieldset = wrapper.firstElementChild;
 
-                if (name) {
-                    $(this).attr('name', name.replace(/\d+$/, beneficiaryCount));
-                }
+    fieldset.querySelector('.beneficiary-remove-btn').addEventListener('click', () => {
+        fieldset.remove();
+        renumberBeneficiaries();
+    });
 
-                if (id) {
-                    $(this).attr('id', id.replace(/\d+$/, beneficiaryCount));
-                }
+    container.appendChild(fieldset);
+    beneficiaryIndex++;
+    renumberBeneficiaries();
+  });
 
-                $(this).val('');
-            });
+  function renumberBeneficiaries() {
+    document.querySelectorAll('.beneficiaries').forEach((fs, i) => {
+        const number = i + 1;
 
-            $clone.insertAfter($last).slideDown();
-            updateRemoveButtons();
-        }
+        // Update legend
+        fs.querySelector('.beneficiary-legend').textContent =
+            `Beneficiaries #${number}`;
 
-        function removeThisBeneficiary(btn) {
-            if ($('.beneficiaries').length <= 1) {
-                alert('At least one beneficiary is required.');
-                return;
-            }
+        // Remove previous color classes
+        fs.classList.remove(
+            'beneficiary-1',
+            'beneficiary-2',
+            'beneficiary-3',
+            'beneficiary-4'
+        );
 
-            $(btn).closest('.beneficiaries').slideUp(function () {
-                $(this).remove();
-                renumberBeneficiaries();
-            });
-        }
+        // Apply color sequence (1 → 4)
+        const colorClass = `beneficiary-${((number - 1) % 4) + 1}`;
+        fs.classList.add(colorClass);
+    });
+  }
 
-        function renumberBeneficiaries() {
-          beneficiaryCount = 0;
+  function toggleNewSales() {
+    if ($('#add_new_sales').is(':checked')) {
+        $('.newsales').slideDown();
+    } else {
+        $('.newsales').slideUp();
+    }
+  }
 
-          $('.beneficiaries').each(function () {
-            beneficiaryCount++;
-
-            $(this).find('legend').text('Beneficiaries #' + (beneficiaryCount - 1));
-
-            $(this).find('input, select').each(function () {
-                let name = $(this).attr('name');
-                let id = $(this).attr('id');
-
-                if (name) {
-                    $(this).attr('name', name.replace(/\d+$/, beneficiaryCount - 1));
-                }
-
-                if (id) {
-                    $(this).attr('id', id.replace(/\d+$/, beneficiaryCount - 1));
-                }
-            });
-          });
-
-          updateRemoveButtons();
-        }
-
-        function updateRemoveButtons() {
-            if ($('.beneficiaries').length <= 1) {
-                $('.beneficiary-remove-btn').hide();
-            } else {
-                $('.beneficiary-remove-btn').show();
-            }
-        }
-    </script>
+</script>
 
 <!-- Custom scripts -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
 
-      const loginWrapper = document.querySelector(".login-wrapper");
-      const forgotWrapper = document.querySelector(".forgot-password-wrapper");
-      const registerWrapper = document.querySelector(".register-wrapper");
+    const loginWrapper = document.querySelector(".login-wrapper");
+    const forgotWrapper = document.querySelector(".forgot-password-wrapper");
+    const registerWrapper = document.querySelector(".register-wrapper");
 
-      function showOnly(wrapper) {
-        loginWrapper.style.display = "none";
-        forgotWrapper.style.display = "none";
-        registerWrapper.style.display = "none";
-        wrapper.style.display = "block";
-      }
+    function showOnly(wrapper) {
+      loginWrapper.style.display = "none";
+      forgotWrapper.style.display = "none";
+      registerWrapper.style.display = "none";
+      wrapper.style.display = "block";
+    }
 
-      // Forgot password links
-      document.querySelectorAll(".forgot-password-link").forEach(link => {
-        link.addEventListener("click", function (e) {
-          e.preventDefault();
-          showOnly(forgotWrapper);
-        });
+    // Forgot password links
+    document.querySelectorAll(".forgot-password-link").forEach(link => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        showOnly(forgotWrapper);
       });
-
-      // Register links
-      document.querySelectorAll(".login-wrapper-footer-text a").forEach(link => {
-        link.addEventListener("click", function (e) {
-          e.preventDefault();
-          showOnly(registerWrapper);
-        });
-      });
-
-      document.querySelectorAll(".back-to-login").forEach(link => {
-          link.addEventListener("click", function (e) {
-              e.preventDefault();
-              showOnly(loginWrapper);
-          });
-      });
-
     });
+
+    // Register links
+    document.querySelectorAll(".login-wrapper-footer-text a").forEach(link => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        showOnly(registerWrapper);
+      });
+    });
+
+    document.querySelectorAll(".back-to-login").forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            showOnly(loginWrapper);
+        });
+    });
+
+  });
 </script>
