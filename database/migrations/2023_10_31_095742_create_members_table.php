@@ -29,7 +29,6 @@ return new class extends Migration
             $table->integer("encoder_id")->nullable();
             $table->string("branch_id")->nullable();
             $table->string("claimant_id")->nullable();
-            $table->string("beneficiaries_ids")->nullable();
             $table->string("status")->nullable();
             $table->boolean("is_deleted")->nullable()->default(false);
             $table->integer("lastUpdatedBy")->nullable();

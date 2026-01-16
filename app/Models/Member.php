@@ -11,4 +11,11 @@ class Member extends Model
 
     protected $table = 'members';
 
+    public function beneficiaries()
+    {
+        return $this->belongsToMany(Beneficiary::class, 'beneficiary_member')
+            ->withPivot('relationship')
+            ->withTimestamps();
+    }
+
 }

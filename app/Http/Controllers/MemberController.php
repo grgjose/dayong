@@ -95,144 +95,148 @@ class MemberController extends Controller
 
     public function store(Request $request)
     {
+        if (!auth()->check()) {
+            return redirect('/');
+        }
 
-        if(auth()->check()){
+        $my_user = auth()->user();
 
-            // Get Request Data
-                $my_user = auth()->user();
-                $validated = $request->validate([
+        // ✅ VALIDATION
+        $validated = $request->validate([
 
-                    // Personal Information
-                    "fname" => ['required'],
-                    "mname" => ['nullable'],
-                    "lname" => ['required'],
-                    "ext" => ['nullable'],
-                    "birthdate" => ['required'],
-                    "sex" => ['required'],
-                    "birthplace" => ['required'],
-                    "citizenship" => ['required'],
-                    "civil_status" => ['required'],
-                    "contact_num" => ['required'],
-                    "email" => ['nullable'],
-                    "address" => ['required'],
-                    
-                    // Claimant's Personal Information
-                    "fname_c" => ['required'],
-                    "mname_c" => ['required'],
-                    "lname_c" => ['required'],
-                    "ext_c" => ['nullable'],
-                    "birthdate_c" => ['required'],
-                    "sex_c" => ['required'],
-                    "contact_num_c" => ['required'],
+            // Personal Information
+            "fname" => ['required','string','max:255'],
+            "mname" => ['nullable','string','max:255'],
+            "lname" => ['required','string','max:255'],
+            "ext" => ['nullable','string','max:50'],
+            "birthdate" => ['required','date'],
+            "sex" => ['required','in:MALE,FEMALE'],
+            "birthplace" => ['required','string','max:255'],
+            "citizenship" => ['required','string','max:255'],
+            "civil_status" => ['required','string','max:50'],
+            "contact_num" => ['required','string','max:20'],
+            "email" => ['nullable','email','max:255'],
+            "address" => ['required','string','max:500'],
 
-                    // Location and Program
-                    "program_id" => ['required'],
-                    "branch_id" => ['required'],
-                    "or_number" => ['required'],
-                    "or_date" => ['required'],
-                    "app_no" => ['required'],
-                    "member_id" => ['nullable'],
+            // Claimant's Personal Information
+            "fname_c" => ['required','string','max:255'],
+            "mname_c" => ['required','string','max:255'],
+            "lname_c" => ['required','string','max:255'],
+            "ext_c" => ['nullable','string','max:50'],
+            "birthdate_c" => ['required','date'],
+            "sex_c" => ['required','in:MALE,FEMALE'],
+            "contact_num_c" => ['required','string','max:20'],
 
-                    // Others
-                    "registration_fee" => ['nullable'],
-                    "agent_id" => ['nullable'],
-                    "amount" => ['nullable'],
-                    "incentives" => ['nullable'],
-                
-                    // Beneficiaries's Personal Information
-                    'beneficiaries' => ['sometimes','array','max:10'],
+            // Location and Program
+            "program_id" => ['required','integer'],
+            "branch_id" => ['required','integer'],
+            "or_number" => ['required','string','max:100'],
+            "or_date" => ['required','date'],
+            "app_no" => ['required','string','max:100'],
+            "member_id" => ['nullable'],
 
-                    'beneficiaries.*.fname' => ['required','string','max:255'],
-                    'beneficiaries.*.mname' => ['nullable','string','max:255'],
-                    'beneficiaries.*.lname' => ['required','string','max:255'],
-                    'beneficiaries.*.ext' => ['nullable','string','max:50'],
+            // Others
+            "registration_fee" => ['nullable','numeric'],
+            "agent_id" => ['nullable','integer'],
+            "amount" => ['nullable','numeric'],
+            "incentives" => ['nullable','numeric'],
 
-                    'beneficiaries.*.birthdate' => ['required','date'],
-                    'beneficiaries.*.sex' => ['required','in:male,female'],
-                    'beneficiaries.*.relationship' => ['required','string','max:255'],
-                    'beneficiaries.*.contact_num' => ['required','string','max:12'],
+            // Beneficiaries
+            'beneficiaries' => ['sometimes','array','max:10'],
 
-                ]);
-            //
+            'beneficiaries.*.fname' => ['required','string','max:255'],
+            'beneficiaries.*.mname' => ['nullable','string','max:255'],
+            'beneficiaries.*.lname' => ['required','string','max:255'],
+            'beneficiaries.*.ext' => ['nullable','string','max:50'],
 
-            // Get Next Auto Increment
-                $statement = DB::select("SHOW TABLE STATUS LIKE 'members'");
-                $member_id = $statement[0]->Auto_increment;
-            //
-            
-            // Save Request Data (Member's Personal Information)
+            'beneficiaries.*.birthdate' => ['required','date'],
+            'beneficiaries.*.sex' => ['required','in:MALE,FEMALE'],
+            'beneficiaries.*.relationship' => ['required','string','max:255'],
+            'beneficiaries.*.contact_num' => ['required','string','max:20'],
+        ]);
+
+        // ✅ Convert ALL STRING values to ALL CAPS (including nested beneficiaries)
+        array_walk_recursive($validated, function (&$value) {
+            if (is_string($value)) {
+                $value = mb_strtoupper(trim($value));
+            }
+        });
+
+        // ✅ Normalize contact numbers (digits only)
+        $validated['contact_num']   = preg_replace('/\D+/', '', $validated['contact_num']);
+        $validated['contact_num_c'] = preg_replace('/\D+/', '', $validated['contact_num_c']);
+
+        foreach ($validated['beneficiaries'] ?? [] as $k => $item) {
+            $validated['beneficiaries'][$k]['contact_num'] = preg_replace('/\D+/', '', $item['contact_num']);
+        }
+
+        try {
+            DB::transaction(function () use ($validated, $my_user, &$member) {
+
+                // ✅ MEMBER
                 $member = new Member();
-
                 $member->fname = $validated['fname'];
-                $member->mname = $validated['mname'];
+                $member->mname = $validated['mname'] ?? null;
                 $member->lname = $validated['lname'];
-                $member->ext = $validated['ext'];
+                $member->ext = $validated['ext'] ?? null;
                 $member->contact_num = $validated['contact_num'];
-                $member->email = $validated['email'];
+                $member->email = $validated['email'] ?? null;
                 $member->birthdate = $validated['birthdate'];
                 $member->sex = $validated['sex'];
                 $member->birthplace = $validated['birthplace'];
                 $member->citizenship = $validated['citizenship'];
                 $member->civil_status = $validated['civil_status'];
                 $member->address = $validated['address'];
-                $member->agent_id = $validated['agent_id'];
+                $member->agent_id = $validated['agent_id'] ?? null;
                 $member->encoder_id = $my_user->id;
-            //
 
-            // Get Next Auto Increment for Claimants
-                $statement = DB::select("SHOW TABLE STATUS LIKE 'claimants'");
-                $claimants_id = $statement[0]->Auto_increment;
-            //
-
-            // Save Request Data (Member's Claimants Information)
+                // ✅ CLAIMANT
                 $claimant = new Claimant();
-
                 $claimant->fname = $validated['fname_c'];
                 $claimant->mname = $validated['mname_c'];
                 $claimant->lname = $validated['lname_c'];
-                $claimant->ext = $validated['ext_c'];
+                $claimant->ext = $validated['ext_c'] ?? null;
                 $claimant->birthdate = $validated['birthdate_c'];
                 $claimant->sex = $validated['sex_c'];
                 $claimant->contact_num = $validated['contact_num_c'];
-                
-                $member->claimant_id = $claimants_id;
-            //
+                $claimant->save();
 
-            // Get Next Auto Increment for Beneficiaries
-                $statement = DB::select("SHOW TABLE STATUS LIKE 'beneficiaries'");
-                $beneficiary_id = $statement[0]->Auto_increment;
-                $beneficiaries_ids = ""; $beneficiaries = [];
-            //
-            
-            // Save Request Data (Member's Beneficiaries Information)
+                $member->claimant_id = $claimant->id;
+                $member->save();
+
+                // ✅ BENEFICIARIES (Many-to-Many attach)
                 foreach ($validated['beneficiaries'] ?? [] as $item) {
 
-                    $beneficiary = new Beneficiary();
+                    /**
+                     * ✅ Find or Create Beneficiary
+                     * Adjust "matching rules" depending on your real uniqueness.
+                     * Here: same fname + lname + birthdate = same person
+                     */
+                    $beneficiary = Beneficiary::firstOrCreate(
+                        [
+                            'fname' => $item['fname'],
+                            'lname' => $item['lname'],
+                            'birthdate' => $item['birthdate'],
+                        ],
+                        [
+                            'mname' => $item['mname'] ?? null,
+                            'ext' => $item['ext'] ?? null,
+                            'sex' => $item['sex'],
+                            'contact_num' => $item['contact_num'],
+                        ]
+                    );
 
-                    // 🔒 Normalize strings (ALL CAPS)
-                    $beneficiary->fname   = mb_strtoupper(trim($item['fname']));
-                    $beneficiary->mname  = mb_strtoupper(trim($item['mname'] ?? ''));
-                    $beneficiary->lname    = mb_strtoupper(trim($item['lname']));
-                    $beneficiary->ext     = mb_strtoupper(trim($item['ext'] ?? ''));
-
-                    $beneficiary->birthdate    = $item['birthdate'];
-                    $beneficiary->sex          = $item['sex'];
-
-                    $beneficiary->relationship = mb_strtoupper(trim($item['relationship']));
-                    $beneficiary->contact_num  = trim($item['contact_num']);
-
-                    // Foreign key (example)
-                    $beneficiaries[] = $beneficiary;
-                    
-                    $beneficiaries_ids = $beneficiaries_ids . $beneficiary->id . ",";
+                    // ✅ Attach without duplicating pivot row
+                    $member->beneficiaries()->syncWithoutDetaching([
+                        $beneficiary->id => [
+                            'relationship' => $item['relationship'],
+                        ]
+                    ]);
                 }
 
-                $member->beneficiaries_ids = $beneficiaries_ids;
-            //
-
-            // New Sales 
+                // ✅ NEW SALES
                 $newsales = new MembersProgram();
-                $newsales->member_id = $member_id;
+                $newsales->member_id = $member->id;
                 $newsales->program_id = $validated['program_id'];
                 $newsales->branch_id = $validated['branch_id'];
                 $newsales->or_number = $validated['or_number'];
@@ -242,24 +246,17 @@ class MemberController extends Controller
                 $newsales->amount = $validated['amount'] ?? 0;
                 $newsales->incentives = $validated['incentives'] ?? 0;
                 $newsales->encoder_id = $my_user->id;
-                $newsales->agent_id = $validated['agent_id'];
-            //
-        
-            // Save Beneficiaries, Claimants, and Member then Add to New Sales
-                foreach ($beneficiaries as $beneficiary) {
-                    $beneficiary->save();
-                }
-                $claimant->save();
-                $member->save();
+                $newsales->agent_id = $validated['agent_id'] ?? null;
                 $newsales->save();
-            //
+            });
 
+            return redirect('/members')
+                ->with("success_msg", ($member->lname ?? 'MEMBER') . " Member Created Successfully");
 
-            // Back to View
-            return redirect('/members')->with("success_msg", $member->lname." Member Created Successfully");
-
-        } else {
-            return redirect('/');
+        } catch (\Throwable $e) {
+            return back()
+                ->with("error_msg", "Failed to create member. Please try again.")
+                ->withInput();
         }
     }
 

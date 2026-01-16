@@ -105,10 +105,10 @@
                                                 @endif
                                             @endforeach
                                         </td>
-                                        <td id="{{ $member->id; }}_agent">
+                                        <td id="{{ $member->id; }}_encoder">
                                             @foreach($users as $user)
-                                                @if($user->id == $member->agent_id)
-                                                    <span style="display: none;" id="{{ $member->id; }}_agent_id">{{ $member->agent_id; }}</span>
+                                                @if($user->id == $member->encoder_id)
+                                                    <span style="display: none;" id="{{ $member->id; }}_encoder_id">{{ $member->encoder_id; }}</span>
                                                     {{ $user->fname.' '.$user->mname.' '.$user->lname }}
                                                 @endif
                                             @endforeach
